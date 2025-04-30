@@ -5,9 +5,9 @@ const albumSchema = new mongoose.Schema({
   artist: { type: String, required: true },
   imageUrl: { type: String, required: true },
   releaseYear: { type: Number, required: true },
-  songId: { type: mongoose.Schema.Types.ObjectId, ref: 'Song' },
+  songs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Song' }],
 }, {
   timestamps: true,
 });
 
-export const Album = mongoose.model('Album', songSchema);
+export const Album = mongoose.model('Album', albumSchema);
