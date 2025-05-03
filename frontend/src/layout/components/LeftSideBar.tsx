@@ -15,7 +15,7 @@ const LeftSideBar = () => {
     fetchAlbum();
   }, [fetchAlbum]);
 
-  console.log({ albums });
+  console.log('>> check album', { albums }, 'status: ', isLoading);
 
   return (
     <div className="h-full flex flex-col gap-2">
