@@ -1,6 +1,6 @@
-import { Play } from "lucide-react"
 import FeatureGirdSkeleton from "../../../components/skeleton/FeatureGirdSkeleton"
 import { useMusicStore } from "../../../stores/useMusicStore"
+import PlayButton from "./PlayButton"
 
 const FeaturedSection = () => {
   const { isLoading, featuredSongs, error } = useMusicStore()
@@ -20,8 +20,7 @@ const FeaturedSection = () => {
             <p className="font-medium truncate">{song.title}</p>
             <p className="text-sm text-zinc-400 truncate">{song.artist}</p>
           </div>
-
-          <Play className="h-8 w-8 hidden group-hover:block mr-4 mt-5 bg-green-600 text-zinc-900 px-2 rounded-sm" />
+          <PlayButton song={song} />
         </div>
       ))}
     </div>

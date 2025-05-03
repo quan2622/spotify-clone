@@ -1,7 +1,7 @@
-import { Play } from "lucide-react";
 import SectionGridSkeleton from "../../../components/skeleton/SectionGridSkeleton";
 import { Button } from "../../../components/ui/button";
 import { Song } from "../../../types";
+import PlayButton from "./PlayButton";
 
 type SectionGrid = {
   title: string,
@@ -29,7 +29,7 @@ const SectionGrid = ({ songs, title, isLoading }: SectionGrid) => {
                   src={song.imageUrl} alt={song.title}
                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
               </div>
-              <Play className="absolute w-10 h-10 p-2.5 bg-green-500 rounded-full text-black right-[0] bottom-[-4rem] hidden group-hover:block" />
+              <PlayButton song={song} />
             </div>
             <h3 className="font-medium mb-1 truncate">{song.title}</h3>
             <p className="text-sm text-zinc-400 mb-2">{song.artist}</p>
