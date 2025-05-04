@@ -3,6 +3,7 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "../compone
 import LeftSideBar from "./components/LeftSideBar";
 import RightSide from "./components/RightSide";
 import AudioPlayer from "./components/AudioPlayer";
+import PlayBackControls from "./components/PlayBackControls";
 
 
 const MainLayout = () => {
@@ -26,7 +27,7 @@ const MainLayout = () => {
           <RightSide />
         </ResizablePanel>
       </ResizablePanelGroup>
-
+      <PlayBackControls />
     </div>
   )
 }

@@ -1,9 +1,10 @@
 import { useEffect } from "react";
 import Topbar from "../../components/Topbar"
 import { useMusicStore } from "../../stores/useMusicStore"
-import FeaturedSection from "./components/featuredSection";
+import FeaturedSection from "./components/FeaturedSection";
 import { ScrollArea } from "../../components/ui/scroll-area";
 import SectionGrid from "./components/SectionGrid";
+import { usePlayerStore } from "../../stores/usePlayerStore";
 
 
 const HomePage = () => {
@@ -18,21 +19,30 @@ const HomePage = () => {
     trendingSongs,
   } = useMusicStore();
 
+  const { initializeQueue } = usePlayerStore();
+
   useEffect(() => {
     fetchFeaturedSong();
     fetchMadeForYouSong();
     fetchTrendingSong();
   }, [fetchFeaturedSong, fetchMadeForYouSong, fetchTrendingSong]);
 
+  useEffect(() => {
+    if (featuredSongs.length > 0 && madeForYouSongs.length > 0 && trendingSongs.length > 0) {
+      const newsQueue = [...featuredSongs, ...madeForYouSongs, ...trendingSongs];
+      initializeQueue(newsQueue);
+    }
+  }, [initializeQueue, featuredSongs, trendingSongs, madeForYouSongs]);
 
-  console.log('featured: ', featuredSongs);
-  console.log('made for you songs: ', madeForYouSongs);
-  console.log('trending: ', trendingSongs);
+
+  // console.log('featured: ', featuredSongs);
+  // console.log('made for you songs: ', madeForYouSongs);
+  // console.log('trending: ', trendingSongs);
 
   return (
-    <main className="h-full bg-gradient-to-b from-zinc-800 to-zinc-900">
+    <main className="h-full bg-gradient-to-b from-zinc-800 to-zinc-900  rounded-md overflow-hidden">
       <Topbar />
-      <ScrollArea className="h-[calc(100vh-86px)]">
+      <ScrollArea className="h-[calc(100vh-180px)]">
         <div className="p-4 sm:p-6">
           <h1 className="text-2xl sm:text-3xl font-bold mb-6">
             Good Afternoon

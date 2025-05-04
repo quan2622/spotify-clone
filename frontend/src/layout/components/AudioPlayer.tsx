@@ -35,6 +35,7 @@ const AudioPlayer = () => {
       audio.src = currentSong?.audioUrl;
       audio.currentTime = 0;
       prevSongRef.current = currentSong?.audioUrl;
+      console.log('>> check isPlaying: ', isPlaying);
       if (isPlaying) audio.play();
     }
   }, [currentSong, isPlaying]);
