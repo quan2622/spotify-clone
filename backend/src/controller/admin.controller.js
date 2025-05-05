@@ -60,7 +60,7 @@ export const deleteSong = async (req, res, next) => {
 
 export const createAlbum = async (req, res, next) => {
   try {
-    if (!req.files || !req.imageFile) {
+    if (!req.files || !req.files.imageFile) {
       return res.status(400).json({ message: 'Please upload image album' });
     }
 

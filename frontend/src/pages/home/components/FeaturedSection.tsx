@@ -16,8 +16,8 @@ const FeaturedSection = () => {
             src={song.imageUrl}
             alt={song.title}
             className="w-16 sm:w-20 h16 sm:h-20 object-cover flex-shrink-0" />
-          <div className="flex-1 p-4">
-            <p className="font-medium truncate">{song.title}</p>
+          <div className="flex flex-col p-4">
+            <p className="font-medium truncate w-[160px]">{song.title}</p>
             <p className="text-sm text-zinc-400 truncate">{song.artist}</p>
           </div>
           <PlayButton song={song} />
