@@ -42,7 +42,7 @@ const HomePage = () => {
   return (
     <main className="h-full bg-gradient-to-b from-zinc-800 to-zinc-900  rounded-md overflow-hidden">
       <Topbar />
-      <ScrollArea className="h-[calc(100vh-180px)]">
+      <ScrollArea className="h-[calc(100vh-180px)] pb-6">
         <div className="p-4 sm:p-6">
           <h1 className="text-2xl sm:text-3xl font-bold mb-6">
             Good Afternoon
