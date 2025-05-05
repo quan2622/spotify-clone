@@ -12,7 +12,7 @@ export const getAllStat = async (req, res, next) => {
       Song.aggregate([
         {
           $unionWith: {
-            coll: Album,
+            coll: 'albums',
             pipeline: [],
           },
         },
@@ -30,7 +30,7 @@ export const getAllStat = async (req, res, next) => {
       totalAlbum,
       totalSong,
       totalUser,
-      uniqueArtists: uniqueArtists?.count || 0,
+      uniqueArtists: uniqueArtists[0]?.count || 0,
     });
   } catch (error) {
     next(error);

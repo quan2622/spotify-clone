@@ -2,7 +2,8 @@ import { Song } from "../models/song.model.js"
 
 export const getAllSong = async (req, res, next) => {
   try {
-    const songs = await Song.find({}).sort({ createdAt: desc });
+
+    const songs = await Song.find().sort({ createdAt: "desc" });
     res.status(200).json(songs);
   } catch (error) {
     next(error);
