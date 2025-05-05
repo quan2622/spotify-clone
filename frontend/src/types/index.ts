@@ -29,3 +29,10 @@ export interface User {
   createdAt: string,
   udpatedAt: string,
 }
+
+export interface Stat {
+  totalAlbum: number,
+  totalSong: number,
+  totalUser: number,
+  uniqueArtists: number,
+}

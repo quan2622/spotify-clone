@@ -1,22 +1,30 @@
 import { create } from 'zustand'
 import { axiosIntance } from "../lib/axios";
-import { Album, Song } from "../types";
+import { Album, Song, Stat } from "../types";
+import toast from "react-hot-toast";
 
 interface MusicStore {
-  albums: Song[],
-  songs: Album[],
+  albums: Album[],
+  songs: Song[],
   isLoading: boolean,
   error: string | null,
   currentAlbum: Album | null,
   madeForYouSongs: Song[],
   trendingSongs: Song[],
   featuredSongs: Song[],
+  stat: Stat,
+  isSongLoading: boolean,
+  isStatLoading: boolean,
 
   fetchAlbum: () => Promise<void>,
   fetchAlbumById: (albumId: string) => Promise<void>
   fetchFeaturedSong: () => Promise<void>,
   fetchMadeForYouSong: () => Promise<void>,
   fetchTrendingSong: () => Promise<void>,
+  fetchStat: () => Promise<void>,
+  fetchSongAdmin: () => Promise<void>,
+  deleteSongAdmin: (songId: string) => Promise<void>,
+  deleteAlbumAdmin: (albumId: string) => Promise<void>,
 }
 
 export const useMusicStore = create<MusicStore>((set) => ({
@@ -28,7 +36,14 @@ export const useMusicStore = create<MusicStore>((set) => ({
   madeForYouSongs: [],
   trendingSongs: [],
   featuredSongs: [],
-
+  stat: {
+    totalAlbum: 0,
+    totalSong: 0,
+    totalUser: 0,
+    uniqueArtists: 0,
+  },
+  isSongLoading: false,
+  isStatLoading: false,
 
   fetchAlbum: async () => {
     // data fetching logic...
@@ -82,6 +97,63 @@ export const useMusicStore = create<MusicStore>((set) => ({
       set({ trendingSongs: res.data });
     } catch (error: any) {
       set({ error: error.response.data.message });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+  fetchStat: async () => {
+    set({ isStatLoading: true, error: null });
+    try {
+      const res = await axiosIntance.get('stats');
+      set({ stat: res.data });
+    } catch (error: any) {
+      set({ error: error.message });
+    } finally {
+      set({ isStatLoading: false });
+    }
+  },
+  fetchSongAdmin: async () => {
+    set({ isSongLoading: true, error: null });
+    try {
+      const res = await axiosIntance.get('songs');
+      set({ songs: res.data })
+    } catch (error: any) {
+      set({ error: error.message });
+    } finally {
+      set({ isSongLoading: false });
+    }
+  },
+  deleteSongAdmin: async (songId) => {
+    set({ isLoading: true, error: null });
+    try {
+      const res = await axiosIntance.delete(`admin/songs/${songId}`);
+
+      set(state => ({
+        songs: state.songs.filter(s => s._id !== songId),
+      }))
+      toast.success(res.data.message);
+    } catch (error: any) {
+      toast.error(error.message || 'Fail to delete song');
+      set({ error: error });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+  deleteAlbumAdmin: async (albumId) => {
+    set({ isLoading: true, error: null });
+    try {
+      const res = await axiosIntance.delete(`admin/albums/${albumId}`);
+
+      set(state => ({
+        albums: state.albums.filter(a => a._id !== albumId),
+        songs: state.songs.map((song) =>
+          song.albumId === state.albums.find(a => a._id === albumId)?.title ? { ...song, albumId: null } : song,
+        )
+      }));
+      toast.success(res.data.message);
+    } catch (error: any) {
+      toast.error(error.message || 'Fail to delete album');
+      // set({ error: error });
     } finally {
       set({ isLoading: false });
     }
