@@ -36,3 +36,12 @@ export interface Stat {
   totalUser: number,
   uniqueArtists: number,
 }
+
+export interface Message {
+  _id: string,
+  senderId: string,
+  receiverId: string,
+  content: string,
+  createdAt: string,
+  udpatedAt: string,
+}

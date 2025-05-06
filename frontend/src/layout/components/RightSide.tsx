@@ -9,7 +9,7 @@ const RightSide = () => {
   const { users, fetchUser } = useUserStore();
 
   const { user } = useUser();
-  const isPlaying = true;
+  const isPlaying = false;
   useEffect(() => {
     if (user) fetchUser();
   }, [fetchUser, user]);
