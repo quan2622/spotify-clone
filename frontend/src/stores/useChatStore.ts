@@ -90,7 +90,7 @@ export const useChatStore = create<useChatStore>((set, get) => ({
         }))
       });
 
-      socket.on('activity_updated', (userId: string, activity: string) => {
+      socket.on('activity_updated', ({ userId, activity }) => {
         set((state) => {
           const newActivities = new Map(state.userActivities);
           newActivities.set(userId, activity);
