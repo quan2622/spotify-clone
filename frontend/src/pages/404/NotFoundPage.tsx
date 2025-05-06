@@ -1,4 +1,4 @@
-import { Home, Music, Music2 } from "lucide-react"
+import { Home, Music2 } from "lucide-react"
 import { Button } from "../../components/ui/button"
 import { useNavigate } from "react-router-dom"
 
