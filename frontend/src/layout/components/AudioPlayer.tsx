@@ -9,8 +9,11 @@ const AudioPlayer = () => {
 
   // handle paus/play
   useEffect(() => {
-    if (isPlaying) audioRef.current?.play()
-    else audioRef.current?.pause()
+    if (!audioRef.current) return;
+    if (isPlaying) {
+      audioRef.current.play()
+    }
+    else audioRef.current.pause()
   }, [isPlaying]);
 
   // handle songs ended

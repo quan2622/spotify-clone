@@ -30,6 +30,12 @@ const PlayBackControls = () => {
 
     const handleEnded = () => usePlayerStore.setState({ isPlaying: false });
     audio.addEventListener('ended', handleEnded);
+
+    return () => {
+      audio.removeEventListener('timeupdate', updateTime);
+      audio.removeEventListener('loadedmetadata', updateDuration);
+      audio.removeEventListener('ended', handleEnded);
+    };
   }, [currentSong]);
 
   const handleSeek = (value: number[]) => {
