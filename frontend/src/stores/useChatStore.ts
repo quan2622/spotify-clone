@@ -2,7 +2,6 @@ import { create } from "zustand"
 import { Message, User } from "../types"
 import { axiosIntance } from "../lib/axios";
 import { io } from "socket.io-client";
-import { useAuth } from "@clerk/clerk-react";
 
 interface useChatStore {
   users: User[],
@@ -18,7 +17,7 @@ interface useChatStore {
   fetchUsers: () => Promise<void>,
   initSocket: (userId: string) => void,
   disconnectSocket: () => void,
-  sendMessage: (receiverId: string, content: string) => void,
+  sendMessage: (receiverId: string, senderId: string, content: string) => void,
   fetchMessage: (userId: string) => Promise<void>,
   setSelectedUser: (user: User | null) => void
 }
@@ -33,7 +32,7 @@ export const useChatStore = create<useChatStore>((set, get) => ({
   users: [],
   isLoading: false,
   error: null,
-  socket: null,
+  socket: socket,
   isConnected: false,
   onlineUsers: new Set(),
   userActivities: new Map(),
@@ -108,11 +107,10 @@ export const useChatStore = create<useChatStore>((set, get) => ({
       set({ isConnected: false });
     }
   },
-  sendMessage: (receiverId, content) => {
+  sendMessage: (receiverId, senderId, content) => {
     const socket = get().socket;
     if (!socket) return;
-
-    socket.emit('send_message', { receiverId, senderId: useAuth().userId, content });
+    socket.emit('send_message', { receiverId, senderId, content });
   },
 
   fetchMessage: async (userId: string) => {
@@ -128,7 +126,7 @@ export const useChatStore = create<useChatStore>((set, get) => ({
   },
 
   setSelectedUser: (user) => {
-
+    set({ selectedUser: user });
   }
 
 }))

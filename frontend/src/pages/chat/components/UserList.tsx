@@ -19,7 +19,7 @@ const UserList = () => {
             ) : (
               users.map((user) => (
                 <div key={user._id} onClick={() => setSelectedUser(user)}
-                  className={`flex items-center justify-center lg:justify-start gap-3 rounded-md cursor-pointer transition-colors ${selectedUser?.clerkId === user.clerkId ? 'bg-zinc-800' : 'hover:bg-zinc-800/50'}`}
+                  className={`flex items-center justify-center lg:justify-start gap-3 p-3 rounded-md cursor-pointer transition-colors ${selectedUser?.clerkId === user.clerkId ? 'bg-zinc-700/50' : 'hover:bg-zinc-800/50'}`}
                 >
                   <div className="relative">
                     <Avatar className="size-8 md:size-12">

@@ -25,6 +25,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           await checkAdmin();
           // init socket
           if (userId) {
+            // userId của Clerk <=> clerkId in DB
             initSocket(userId);
           }
         }
