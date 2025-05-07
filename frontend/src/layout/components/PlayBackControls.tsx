@@ -11,7 +11,7 @@ const formatTime = (seconds: number) => {
 }
 
 const PlayBackControls = () => {
-  const { currentSong, isPlaying, togglePlay, playNext, playPrevious, toggleShuffle, isShuffle } = usePlayerStore();
+  const { currentSong, isPlaying, togglePlay, playNext, playPrevious, toggleShuffle, isShuffle, isLoop, toggleLoop } = usePlayerStore();
   const [volume, setVolume] = useState(75);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -89,8 +89,8 @@ const PlayBackControls = () => {
             >
               <SkipForward className="h-4 w-4" />
             </Button>
-            <Button size={'icon'} variant={'ghost'}
-              className="hidden sm:inline-flex hover:text-white text-zinc-400">
+            <Button size={'icon'} variant={'ghost'} onClick={() => toggleLoop()}
+              className={`hidden sm:inline-flex hover:text-white ${isLoop ? 'text-emerald-500' : 'text-zinc-400'}`}>
               <Repeat className="h-4 w-4" />
             </Button>
           </div>

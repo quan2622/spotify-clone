@@ -8,6 +8,7 @@ interface PlayerStore {
   queue: Song[],
   currentIndex: number,
   isShuffle: boolean,
+  isLoop: boolean,
 
   initializeQueue: (songs: Song[]) => void,
   playAlbum: (songs: Song[], startIndex?: number) => void,
@@ -16,6 +17,7 @@ interface PlayerStore {
   playNext: () => void,
   playPrevious: () => void,
   toggleShuffle: () => void,
+  toggleLoop: () => void,
   shuffle: (songs: Song[]) => void,
 }
 
@@ -25,7 +27,11 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
   queue: [],
   currentSong: null,
   isShuffle: false,
+  isLoop: false,
 
+  toggleLoop: () => {
+    set({ isLoop: !get().isLoop });
+  },
   shuffle: (songs) => {
     let song_clone = songs.filter(song => song._id !== get().currentSong?._id);
     if (!get().isShuffle) {
@@ -102,6 +108,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
   playNext: () => {
     const { currentIndex, queue } = get();
     const nextIndex = currentIndex + 1;
+
     if (nextIndex < queue.length) {
       const nextSong = queue[nextIndex];
 

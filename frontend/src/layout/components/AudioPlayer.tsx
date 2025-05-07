@@ -6,7 +6,7 @@ const AudioPlayer = () => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const prevSongRef = useRef<string | null>(null);
 
-  const { isPlaying, playNext, currentSong, isShuffle, shuffle, queue } = usePlayerStore();
+  const { isPlaying, playNext, currentSong, isShuffle, shuffle, queue, isLoop } = usePlayerStore();
   const { featuredSongs, madeForYouSongs, trendingSongs } = useMusicStore();
 
   // handle shuffle
@@ -16,25 +16,50 @@ const AudioPlayer = () => {
     shuffle(newsQueue);
   }, [isShuffle]);
 
-  // handle paus/play
+  // handle pause/play with promise handling
   useEffect(() => {
     if (!audioRef.current) return;
+
     if (isPlaying) {
-      audioRef.current.play()
+      const playPromise = audioRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+          if (error.name !== 'AbortError') {
+            console.error('Error during play:', error);
+          }
+        });
+      }
+    } else {
+      audioRef.current.pause();
     }
-    else audioRef.current.pause()
   }, [isPlaying]);
 
   // handle songs ended
   useEffect(() => {
     const audio = audioRef.current;
     const handleEnded = () => {
-      playNext();
+      if (isLoop) {
+        if (audio) {
+          audio.currentTime = 0;
+
+          // link fix error when play(): https://developer.chrome.com/blog/play-request-was-interrupted
+          const playPromise = audio.play();
+          if (playPromise !== undefined) {
+            playPromise.catch(error => {
+              if (error.name !== 'AbortError') {
+                console.error('Error replaying looped song:', error);
+              }
+            });
+          }
+        }
+      } else {
+        playNext();
+      }
     }
 
     audio?.addEventListener('ended', handleEnded);
     return () => audio?.removeEventListener('ended', handleEnded);
-  }, [playNext]);
+  }, [playNext, isLoop]);
 
   // handle songs changes
   useEffect(() => {
@@ -42,20 +67,37 @@ const AudioPlayer = () => {
 
     const audio = audioRef.current;
 
-    // check if this is actually a new song
     const isSongChange = prevSongRef.current !== currentSong?.audioUrl;
     if (isSongChange) {
+      audio.pause();
       audio.src = currentSong?.audioUrl;
       // reset the playback position
       audio.currentTime = 0;
       prevSongRef.current = currentSong?.audioUrl;
 
-      if (isPlaying) audio.play();
+      if (isPlaying) {
+        const playPromise = audio.play();
+
+        if (playPromise !== undefined) {
+          playPromise.catch(error => {
+            if (error.name !== 'AbortError') {
+              console.error('Error playing new song:', error);
+            }
+          });
+        }
+      }
     }
   }, [currentSong, isPlaying]);
+
+  // Update loop attribute based on isLoop state
+  useEffect(() => {
+    if (!audioRef.current) return;
+    audioRef.current.loop = isLoop;
+  }, [isLoop]);
 
   return (
     <audio ref={audioRef} />
   )
 }
+
 export default AudioPlayer
