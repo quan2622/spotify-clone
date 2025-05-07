@@ -1,11 +1,20 @@
 import { useEffect, useRef } from "react"
 import { usePlayerStore } from "../../stores/usePlayerStore";
+import { useMusicStore } from "../../stores/useMusicStore";
 
 const AudioPlayer = () => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const prevSongRef = useRef<string | null>(null);
 
-  const { isPlaying, playNext, currentSong } = usePlayerStore();
+  const { isPlaying, playNext, currentSong, isShuffle, shuffle, queue } = usePlayerStore();
+  const { featuredSongs, madeForYouSongs, trendingSongs } = useMusicStore();
+
+  // handle shuffle
+  useEffect(() => {
+    if (!queue) return;
+    const newsQueue = isShuffle ? queue : [...featuredSongs, ...madeForYouSongs, ...trendingSongs];
+    shuffle(newsQueue);
+  }, [isShuffle]);
 
   // handle paus/play
   useEffect(() => {

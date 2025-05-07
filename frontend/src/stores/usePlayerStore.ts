@@ -7,6 +7,7 @@ interface PlayerStore {
   isPlaying: boolean,
   queue: Song[],
   currentIndex: number,
+  isShuffle: boolean,
 
   initializeQueue: (songs: Song[]) => void,
   playAlbum: (songs: Song[], startIndex?: number) => void,
@@ -14,6 +15,8 @@ interface PlayerStore {
   togglePlay: () => void,
   playNext: () => void,
   playPrevious: () => void,
+  toggleShuffle: () => void,
+  shuffle: (songs: Song[]) => void,
 }
 
 export const usePlayerStore = create<PlayerStore>((set, get) => ({
@@ -21,11 +24,27 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
   currentIndex: -1,
   queue: [],
   currentSong: null,
+  isShuffle: false,
 
+  shuffle: (songs) => {
+    let song_clone = songs.filter(song => song._id !== get().currentSong?._id);
+    if (!get().isShuffle) {
+      return set({ queue: song_clone });
+    }
+
+    for (let i = song_clone.length - 1; i >= 0; i--) {
+      let j = Math.floor(Math.random() * (i + 1));
+      [song_clone[i], song_clone[j]] = [song_clone[j], song_clone[i]];
+    }
+    set({ queue: song_clone });
+  },
+  toggleShuffle: () => {
+    set({ isShuffle: !get().isShuffle });
+  },
   initializeQueue: (songs: Song[]) => {
     set({
-      queue: songs,
-      currentSong: get().currentSong || songs[0],
+      queue: [...songs],
+      currentSong: songs[0],
       currentIndex: get().currentIndex === -1 ? 0 : get().currentIndex,
     });
   },

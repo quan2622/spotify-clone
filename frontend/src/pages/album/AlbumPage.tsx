@@ -22,6 +22,7 @@ const AlbumPage = () => {
     if (albumId) fetchAlbumById(albumId)
   }, [fetchAlbumById, albumId]);
 
+
   const handlePlayAlbum = () => {
     if (!currentAlbum) return;
 

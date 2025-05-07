@@ -11,7 +11,7 @@ const formatTime = (seconds: number) => {
 }
 
 const PlayBackControls = () => {
-  const { currentSong, isPlaying, togglePlay, playNext, playPrevious } = usePlayerStore();
+  const { currentSong, isPlaying, togglePlay, playNext, playPrevious, toggleShuffle, isShuffle } = usePlayerStore();
   const [volume, setVolume] = useState(75);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -62,7 +62,8 @@ const PlayBackControls = () => {
         {/* player control */}
         <div className="flex flex-col items-center gap-2 flex-1 max-w-full sm:max-w-[45%]">
           <div className="flex items-center gap-4 sm:gap-6">
-            <Button size={'icon'} variant={'ghost'} className="hidden sm:inline-flex hover:text-white text-zinc-400">
+            <Button size={'icon'} variant={'ghost'} onClick={() => toggleShuffle()}
+              className={`hidden sm:inline-flex hover:text-white ${isShuffle ? 'text-emerald-500' : 'text-zinc-400'}`}>
               <Shuffle className="h-4 w-4" />
             </Button>
 
