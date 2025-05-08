@@ -1,5 +1,5 @@
 import { Music } from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../../components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../../../components/ui/card"
 import SongTable from "./SongTable"
 import AddSong from "./AddSong"
 

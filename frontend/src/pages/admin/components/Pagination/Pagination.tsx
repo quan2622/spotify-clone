@@ -9,7 +9,7 @@ const PaginationTable = () => {
   const totalItems = stat.totalSong;
   const pageSize = 4;
 
-  console.log('checl page size: ', pageSize);
+  // console.log('checl page size: ', pageSize);
 
   const onPageChange = (page: any) => {
     getSongPaginate(page);

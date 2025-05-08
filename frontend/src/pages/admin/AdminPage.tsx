@@ -3,8 +3,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/ta
 import { useAuthStore } from "../../stores/useAuthStore"
 import DashBoardStatus from "./components/DashBoardStatus"
 import Header from "./components/Header"
-import AlbumContent from "./components/AlbumContent"
-import SongContent from "./components/SongContent"
+import AlbumContent from "./components/AlbumTable/AlbumContent"
+import SongContent from "./components/SongTable/SongContent"
 import { useEffect } from "react"
 import { useMusicStore } from "../../stores/useMusicStore"
 

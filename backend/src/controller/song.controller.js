@@ -1,3 +1,4 @@
+import { uploadToCloudinary } from "../helper/uploadToCloudinary.js";
 import { Song } from "../models/song.model.js"
 
 export const getAllSong = async (req, res, next) => {
@@ -75,6 +76,48 @@ export const getTrending = async (req, res, next) => {
       }
     ]);
     res.status(200).json(songs);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export const updateSong = async (req, res, next) => {
+  try {
+    const { songId } = req.params;
+    let audioUrl = '';
+    let imageUrl = '';
+    if (req.files) {
+      if (req.files.audioFile) {
+        audioUrl = await uploadToCloudinary(req.files.audioFile);
+      }
+      if (req.files.imageFile) {
+        imageUrl = await uploadToCloudinary(req.files.imageFile);
+      }
+    }
+
+    let data_update = {
+      ...req.body,
+    }
+    if (audioUrl !== '') data_update.audioUrl = audioUrl;
+    if (imageUrl !== '') data_update.imageUrl = imageUrl;
+
+    const song = await Song.findByIdAndUpdate({ _id: songId }, { ...data_update }, { new: true });
+
+    res.status(200).json({
+      song,
+      message: 'Update successed'
+    })
+  } catch (error) {
+    next(error);
+  }
+}
+
+export const getSongById = async (req, res, next) => {
+  try {
+    const { songId } = req.params;
+    const song = await Song.findById(songId);
+
+    res.status(200).json(song);
   } catch (error) {
     next(error);
   }

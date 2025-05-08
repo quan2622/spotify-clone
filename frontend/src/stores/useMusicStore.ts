@@ -16,6 +16,7 @@ interface MusicStore {
   isSongLoading: boolean,
   isStatLoading: boolean,
   currentPage: number,
+  songById: Song | null,
 
   fetchAlbum: () => Promise<void>,
   fetchAlbumById: (albumId: string) => Promise<void>
@@ -27,6 +28,8 @@ interface MusicStore {
   deleteSongAdmin: (songId: string) => Promise<void>,
   deleteAlbumAdmin: (albumId: string) => Promise<void>,
   getSongPaginate: (page?: string) => Promise<void>,
+  updateSong: (data: any, songId: string) => Promise<void>,
+  getSongByID: (id: string) => Promise<void>
 }
 
 export const useMusicStore = create<MusicStore>((set, get) => ({
@@ -47,7 +50,35 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
   isSongLoading: false,
   isStatLoading: false,
   currentPage: 1,
+  songById: null,
 
+  getSongByID: async (id) => {
+    set({ isLoading: true, error: null });
+    try {
+      const res = await axiosIntance.get(`songs/${id}`);
+      console.log('check song by Id: ', res.data);
+    } catch (error: any) {
+      set({ error: error.message });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+  updateSong: async (data, songId) => {
+    set({ isLoading: true, error: null });
+    try {
+      const res = await axiosIntance.put(`songs/${songId}`, data, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      toast.success(res.data.message);
+      const new_songs = get().songs.map(item => item._id === res.data.song._id ? res.data.song : item);
+      console.log('check new data: ', new_songs);
+      set({ songs: new_songs });
+    } catch (error: any) {
+      set({ error: error });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
   getSongPaginate: async (page = '1') => {
     set({ isLoading: true, error: null });
     try {

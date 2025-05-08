@@ -1,36 +1,103 @@
-import { CirclePlus, Upload } from "lucide-react"
-import { Button } from "../../../components/ui/button"
-import { useMusicStore } from "../../../stores/useMusicStore"
-import { useRef, useState } from "react";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTrigger } from "../../../components/ui/dialog";
+import { PenLine, Upload } from "lucide-react"
+import { Button } from "../../../../components/ui/button"
+import { useMusicStore } from "../../../../stores/useMusicStore"
+import { useEffect, useRef, useState } from "react";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTrigger } from "../../../../components/ui/dialog";
 import { DialogDescription, DialogTitle } from "@radix-ui/react-dialog";
-import { Input } from "../../../components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../components/ui/select";
+import { Input } from "../../../../components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../../components/ui/select";
 import toast from "react-hot-toast";
-import { axiosIntance } from "../../../lib/axios";
+import { Song } from "../../../../types";
 
+type UpdateSong = {
+  song: Song,
+}
 
-const AddSong = () => {
-  const { albums, getSongPaginate } = useMusicStore();
+type newSong = {
+  title: string,
+  artist: string,
+  album: string | undefined,
+  duration: string
+}
+
+type dataFile = {
+  audio: File | null,
+  image: File | null
+}
+
+const urlToFile = async (url: string, filename: string, mimeType: string) => {
+  const response = await fetch(url);
+  const blod = await response.blob();
+
+  return new File([blod], filename, { type: mimeType })
+}
+
+const UpdateSong = ({ song }: UpdateSong) => {
+  const { albums, getSongPaginate, updateSong } = useMusicStore();
   const [songDialogOpen, setSongDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const [newSong, setNewSong] = useState<{ title: string, artist: string, album: string, duration: string }>({
+  const [newSong, setNewSong] = useState<newSong>({
     title: '',
     artist: '',
     album: '',
     duration: '0',
-  })
+  });
 
-  const [files, setFile] = useState<{ audio: File | null, image: File | null }>({
+  const [files, setFile] = useState<dataFile>({
     audio: null,
     image: null,
+  });
+
+  const [isChange, setIsChange] = useState({
+    cTitle: false,
+    cArtist: false,
+    cAlbum: false,
+    cDuration: false,
+    cAudio: false,
+    cImage: false,
   })
 
   const audioInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
 
-  const handleSubmitCreate = async () => {
+
+  useEffect(() => {
+    if (!song) return
+    const fetchAudioFile = async () => {
+      const audioFile = await urlToFile(song.audioUrl, song.title, 'audio/mpeg');
+      const imageFile = await urlToFile(song.imageUrl, song.title, 'image/jpeg');
+      setFile((prevFiles) => ({
+        ...prevFiles,
+        audio: audioFile,
+        image: imageFile
+      }));
+      setNewSong({
+        title: song.title,
+        artist: song.artist,
+        album: song.albumId ?? undefined,
+        duration: '',
+      });
+      handleDuration(audioFile)
+    };
+
+    fetchAudioFile();
+  }, []);
+
+  useEffect(() => {
+    if (!files.audio) return;
+    handleDuration(files.audio);
+  }, [files.audio]);
+
+  const handleDuration = (file: File) => {
+    const audio = document.createElement("audio");
+    audio.src = URL.createObjectURL(file);
+    audio.addEventListener("loadedmetadata", () => {
+      setNewSong({ ...newSong, duration: (Math.floor(audio.duration)).toString() })
+    });
+  }
+
+  const handleSubmitUpdate = async () => {
     setIsLoading(true);
     try {
       if (!files.audio || !files.image) {
@@ -38,33 +105,30 @@ const AddSong = () => {
       }
 
       const formData = new FormData();
-      formData.append('title', newSong.title);
-      formData.append('artist', newSong.artist);
-      formData.append('duration', newSong.duration);
-      if (newSong && newSong.album !== 'none') {
-        formData.append('albumId', newSong.album);
+      if (isChange.cTitle)
+        formData.append('title', newSong.title);
+      if (isChange.cArtist)
+        formData.append('artist', newSong.artist);
+      if (isChange.cDuration)
+        formData.append('duration', newSong.duration);
+      if (newSong && newSong.album !== 'none' && isChange.cAlbum) {
+        if (newSong.album) {
+          formData.append('albumId', newSong.album);
+        }
       }
-      formData.append('audioFile', files.audio);
-      formData.append('imageFile', files.image);
+      if (isChange.cAudio)
+        formData.append('audioFile', files.audio);
+      if (isChange.cImage)
+        formData.append('imageFile', files.image);
 
-      await axiosIntance.post('admin/songs', formData, {
-        headers: { 'Content-Type': 'multipart/from-data' }
-      });
+      for (let pair of formData.entries()) {
+        console.log(`${pair[0]}:`, pair[1]);
+      }
 
-      setNewSong({
-        title: '',
-        artist: '',
-        duration: '0',
-        album: '',
-      })
-      setFile({
-        audio: null,
-        image: null,
-      })
-      toast.success('Song added successfully');
+      await updateSong(formData, song._id)
       await getSongPaginate();
     } catch (error: any) {
-      toast.error('Failed to add song: ' + error.message);
+      toast.error('Failed to update song: ' + error.message);
     } finally {
       setIsLoading(false);
     }
@@ -73,16 +137,16 @@ const AddSong = () => {
   return (
     <Dialog open={songDialogOpen} onOpenChange={setSongDialogOpen}>
       <DialogTrigger asChild>
-        <Button className="flex items-center rounded-md bg-emerald-500 hover:bg-emerald-600 text-white">
-          <CirclePlus className="h-4 w-4 mt-[3px]" />
-          Add Song
+        <Button variant={"ghost"} size={'sm'}
+          className="text-yellow-500 hover:text-yellow-300 hover:bg-red-400/10" >
+          <PenLine className="size-4" />
         </Button>
       </DialogTrigger>
       <DialogContent className="bg-zinc-900  border-zinc-700 max-h-[80vh] overflow-auto">
         <DialogHeader>
-          <DialogTitle>Add New Song</DialogTitle>
+          <DialogTitle>Update Song</DialogTitle>
           <DialogDescription>
-            Add a new song to your collection.
+            Update song to your collection.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-4">
@@ -90,18 +154,18 @@ const AddSong = () => {
             onChange={(e) => {
               if (!e.target.files) return;
               const file = e.target.files[0];
-              const audio = document.createElement("audio");
-              audio.src = URL.createObjectURL(file);
-              audio.addEventListener("loadedmetadata", () => {
-                setNewSong({ ...newSong, duration: (Math.floor(audio.duration)).toString() })
-              });
+              handleDuration(file);
               setFile({ ...files, audio: e.target.files![0] });
+              setIsChange({ ...isChange, cAudio: true, cDuration: true })
             }
             }
           />
 
           <input type="file" accept="image/*" ref={imageInputRef} hidden
-            onChange={(e) => setFile({ ...files, image: e.target.files![0] })}
+            onChange={(e) => {
+              setFile({ ...files, image: e.target.files![0] })
+              setIsChange({ ...isChange, cImage: true })
+            }}
           />
 
           {/* Image upload area */}
@@ -143,13 +207,19 @@ const AddSong = () => {
           {/* Other fields */}
           <div className="space-y-2">
             <label className="font-medium text-sm">Title</label>
-            <Input value={newSong.title} onChange={(e) => setNewSong({ ...newSong, title: e.target.value })}
+            <Input value={newSong.title} onChange={(e) => {
+              setNewSong({ ...newSong, title: e.target.value })
+              setIsChange({ ...isChange, cTitle: true })
+            }}
               className="bg-zinc-800 border-zinc-700"
             />
           </div>
           <div className="space-y-2">
             <label className="font-medium text-sm">Artist</label>
-            <Input value={newSong.artist} onChange={(e) => setNewSong({ ...newSong, artist: e.target.value })}
+            <Input value={newSong.artist} onChange={(e) => {
+              setNewSong({ ...newSong, artist: e.target.value })
+              setIsChange({ ...isChange, cArtist: true })
+            }}
               className="bg-zinc-800 border-zinc-700"
             />
           </div>
@@ -163,7 +233,10 @@ const AddSong = () => {
 
           <div className="space-y-2">
             <label >Album (options)</label>
-            <Select value={newSong.album} onValueChange={(value) => setNewSong({ ...newSong, album: value })}>
+            <Select value={newSong.album} onValueChange={(value) => {
+              setNewSong({ ...newSong, album: value })
+              setIsChange({ ...isChange, cAlbum: true })
+            }}>
               <SelectTrigger className="bg-zinc-800 border-zinc-700">
                 <SelectValue placeholder='Select album' />
               </SelectTrigger>
@@ -179,7 +252,7 @@ const AddSong = () => {
         </div>
         <DialogFooter>
           <Button variant={'outline'} onClick={() => setSongDialogOpen(false)} disabled={isLoading}>Cancel</Button>
-          <Button onClick={handleSubmitCreate} disabled={isLoading}>
+          <Button onClick={handleSubmitUpdate} disabled={isLoading}>
             {isLoading ? 'Uploading ...' : 'Add Song'}
           </Button>
         </DialogFooter>
@@ -187,4 +260,4 @@ const AddSong = () => {
     </Dialog>
   )
 }
-export default AddSong
+export default UpdateSong
