@@ -15,6 +15,7 @@ interface MusicStore {
   stat: Stat,
   isSongLoading: boolean,
   isStatLoading: boolean,
+  currentPage: number,
 
   fetchAlbum: () => Promise<void>,
   fetchAlbumById: (albumId: string) => Promise<void>
@@ -22,12 +23,13 @@ interface MusicStore {
   fetchMadeForYouSong: () => Promise<void>,
   fetchTrendingSong: () => Promise<void>,
   fetchStat: () => Promise<void>,
-  fetchSongAdmin: () => Promise<void>,
+  // fetchSongAdmin: () => Promise<void>,
   deleteSongAdmin: (songId: string) => Promise<void>,
   deleteAlbumAdmin: (albumId: string) => Promise<void>,
+  getSongPaginate: (page?: string) => Promise<void>,
 }
 
-export const useMusicStore = create<MusicStore>((set) => ({
+export const useMusicStore = create<MusicStore>((set, get) => ({
   albums: [],
   songs: [],
   isLoading: false,
@@ -44,7 +46,22 @@ export const useMusicStore = create<MusicStore>((set) => ({
   },
   isSongLoading: false,
   isStatLoading: false,
+  currentPage: 1,
 
+  getSongPaginate: async (page = '1') => {
+    set({ isLoading: true, error: null });
+    try {
+      const res = await axiosIntance.get(`songs?page=${page}`);
+      set({
+        songs: res.data,
+        currentPage: +page,
+      });
+    } catch (error: any) {
+      set({ error: error.message });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
   fetchAlbum: async () => {
     // data fetching logic...
     set({ isLoading: true, error: null, });
@@ -112,24 +129,25 @@ export const useMusicStore = create<MusicStore>((set) => ({
       set({ isStatLoading: false });
     }
   },
-  fetchSongAdmin: async () => {
-    set({ isSongLoading: true, error: null });
-    try {
-      const res = await axiosIntance.get('songs');
-      set({ songs: res.data })
-    } catch (error: any) {
-      set({ error: error.message });
-    } finally {
-      set({ isSongLoading: false });
-    }
-  },
+  // fetchSongAdmin: async () => {
+  //   set({ isSongLoading: true, error: null });
+  //   try {
+  //     const res = await axiosIntance.get('songs');
+  //     set({ songs: res.data })
+  //   } catch (error: any) {
+  //     set({ error: error.message });
+  //   } finally {
+  //     set({ isSongLoading: false });
+  //   }
+  // },
   deleteSongAdmin: async (songId) => {
     set({ isLoading: true, error: null });
     try {
+      console.log('song Id: ', songId);
       const res = await axiosIntance.delete(`admin/songs/${songId}`);
-
+      get().getSongPaginate((get().currentPage).toString());
       set(state => ({
-        songs: state.songs.filter(s => s._id !== songId),
+        stat: { ...state.stat, totalSong: state.stat.totalSong - 1 }
       }))
       toast.success(res.data.message);
     } catch (error: any) {

@@ -2,8 +2,11 @@ import { Song } from "../models/song.model.js"
 
 export const getAllSong = async (req, res, next) => {
   try {
+    let { page } = req.query;
+    const limit = 4;
+    let number_skip = (+page - 1) * limit
 
-    const songs = await Song.find().sort({ createdAt: "desc" });
+    const songs = await Song.find().sort({ createdAt: "desc" }).skip(number_skip).limit(limit);
     res.status(200).json(songs);
   } catch (error) {
     next(error);

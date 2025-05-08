@@ -10,13 +10,13 @@ import { useMusicStore } from "../../stores/useMusicStore"
 
 const AdminPage = () => {
   const { isAdmin, isLoading } = useAuthStore()
-  const { fetchStat, fetchSongAdmin, fetchAlbum } = useMusicStore();
+  const { fetchStat, getSongPaginate, fetchAlbum } = useMusicStore();
 
   useEffect(() => {
     fetchAlbum();
-    fetchSongAdmin();
     fetchStat();
-  }, [fetchStat, fetchSongAdmin, fetchAlbum]);
+    getSongPaginate();
+  }, [fetchStat, fetchAlbum, getSongPaginate]);
 
 
   if (!isAdmin && !isLoading) {

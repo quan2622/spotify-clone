@@ -11,7 +11,7 @@ import { axiosIntance } from "../../../lib/axios";
 
 
 const AddSong = () => {
-  const { albums, fetchSongAdmin } = useMusicStore();
+  const { albums, getSongPaginate } = useMusicStore();
   const [songDialogOpen, setSongDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -62,7 +62,7 @@ const AddSong = () => {
         image: null,
       })
       toast.success('Song added successfully');
-      await fetchSongAdmin();
+      await getSongPaginate();
     } catch (error: any) {
       toast.error('Failed to add song: ' + error.message);
     } finally {
