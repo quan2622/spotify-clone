@@ -1,8 +1,8 @@
 import { useEffect } from "react";
-import { useMusicStore } from "../../../stores/useMusicStore"
+import { useMusicStore } from "../../../../stores/useMusicStore"
 import { Calendar, Music, Trash2 } from "lucide-react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../components/ui/table";
-import { Button } from "../../../components/ui/button";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../components/ui/table";
+import { Button } from "../../../../components/ui/button";
 
 const AlbumTable = () => {
   const { albums, deleteAlbumAdmin, fetchAlbum } = useMusicStore();

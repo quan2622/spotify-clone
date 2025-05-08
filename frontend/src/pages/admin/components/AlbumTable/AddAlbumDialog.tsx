@@ -1,11 +1,11 @@
 import { useRef, useState } from "react"
-import { Dialog, DialogHeader, DialogTrigger, DialogContent, DialogDescription, DialogTitle, DialogFooter } from "../../../components/ui/dialog"
-import { Button } from "../../../components/ui/button";
+import { Dialog, DialogHeader, DialogTrigger, DialogContent, DialogDescription, DialogTitle, DialogFooter } from "../../../../components/ui/dialog"
+import { Button } from "../../../../components/ui/button";
 import { CirclePlus, Upload } from "lucide-react";
-import { Input } from "../../../components/ui/input";
+import { Input } from "../../../../components/ui/input";
 import toast from "react-hot-toast";
-import { axiosIntance } from "../../../lib/axios";
-import { useMusicStore } from "../../../stores/useMusicStore";
+import { axiosIntance } from "../../../../lib/axios";
+import { useMusicStore } from "../../../../stores/useMusicStore";
 
 const AddAlbumDialog = () => {
   const { fetchAlbum } = useMusicStore();
