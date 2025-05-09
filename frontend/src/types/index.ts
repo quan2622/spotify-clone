@@ -20,6 +20,16 @@ export interface Album {
   createdAt: string,
   udpatedAt: string,
 }
+export interface AlbumAdmin {
+  _id: string,
+  title: string,
+  artist: string,
+  imageUrl: string,
+  releaseYear: number,
+  songs: string[],
+  createdAt: string,
+  udpatedAt: string,
+}
 
 export interface User {
   _id: string,

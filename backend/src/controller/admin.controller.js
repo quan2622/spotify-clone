@@ -2,6 +2,15 @@ import { Song } from "../models/song.model.js";
 import { Album } from "../models/album.model.js";
 import { uploadToCloudinary } from "../helper/uploadToCloudinary.js";
 
+export const getAllSong = async (req, res, next) => {
+  try {
+    const songs = await Song.find().sort({ createdAt: 'desc' });
+    res.status(200).json(songs);
+  } catch (error) {
+    next(error);
+  }
+}
+
 export const createSong = async (req, res, next) => {
   try {
     if (!req.files || !req.files.audioFile || !req.files.imageFile) {
@@ -90,6 +99,19 @@ export const deleteAlbum = async (req, res, next) => {
   } catch (error) {
     console.log('Error delete album', error);
     next(error);
+  }
+}
+
+export const updateAlbum = async (req, res, next) => {
+  try {
+    const { songIds } = req.body;
+    const { albumId } = req.params;
+
+    await Album.findByIdAndUpdate({ _id: albumId }, { songs: [...songIds] });
+    await Song.updateMany({ _id: { $in: songIds } }, { albumId: albumId });
+    res.status(200).json({ message: 'Update successed' });
+  } catch (error) {
+    next(error)
   }
 }
 

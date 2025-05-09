@@ -24,7 +24,7 @@ interface MusicStore {
   fetchMadeForYouSong: () => Promise<void>,
   fetchTrendingSong: () => Promise<void>,
   fetchStat: () => Promise<void>,
-  // fetchSongAdmin: () => Promise<void>,
+  fetchSongAdmin: () => Promise<void>,
   deleteSongAdmin: (songId: string) => Promise<void>,
   deleteAlbumAdmin: (albumId: string) => Promise<void>,
   getSongPaginate: (page?: string) => Promise<void>,
@@ -160,17 +160,17 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
       set({ isStatLoading: false });
     }
   },
-  // fetchSongAdmin: async () => {
-  //   set({ isSongLoading: true, error: null });
-  //   try {
-  //     const res = await axiosIntance.get('songs');
-  //     set({ songs: res.data })
-  //   } catch (error: any) {
-  //     set({ error: error.message });
-  //   } finally {
-  //     set({ isSongLoading: false });
-  //   }
-  // },
+  fetchSongAdmin: async () => {
+    set({ isSongLoading: true, error: null });
+    try {
+      const res = await axiosIntance.get('admin/songs');
+      set({ songs: res.data })
+    } catch (error: any) {
+      set({ error: error.message });
+    } finally {
+      set({ isSongLoading: false });
+    }
+  },
   deleteSongAdmin: async (songId) => {
     set({ isLoading: true, error: null });
     try {

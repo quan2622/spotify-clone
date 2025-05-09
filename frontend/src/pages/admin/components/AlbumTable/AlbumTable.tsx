@@ -3,13 +3,15 @@ import { useMusicStore } from "../../../../stores/useMusicStore"
 import { Calendar, Music, Trash2 } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../components/ui/table";
 import { Button } from "../../../../components/ui/button";
+import UpdateAlbum from "./UpdateAlbum";
 
 const AlbumTable = () => {
-  const { albums, deleteAlbumAdmin, fetchAlbum } = useMusicStore();
+  const { albums, deleteAlbumAdmin, fetchAlbum, fetchSongAdmin } = useMusicStore();
 
   useEffect(() => {
     fetchAlbum();
-  }, [fetchAlbum]);
+    fetchSongAdmin();
+  }, [fetchAlbum, fetchSongAdmin]);
 
   return (
     <Table>
@@ -45,6 +47,8 @@ const AlbumTable = () => {
             </TableCell>
             <TableCell className="text-right">
               <div className="flex gap-2 justify-end">
+                <UpdateAlbum album={album} />
+
                 <Button variant={"ghost"} size={'sm'}
                   className="text-red-400 hover:text-red-300 hover:bg-red-400/10"
                   onClick={() => {
