@@ -7,6 +7,7 @@ const songSchema = new mongoose.Schema({
   audioUrl: { type: String, required: true },
   duration: { type: Number, required: true },
   albumId: { type: mongoose.Schema.Types.ObjectId, ref: 'Album', required: false },
+  totalListens: { type: Number, default: 0 },
 }, {
   timestamps: true,
 });

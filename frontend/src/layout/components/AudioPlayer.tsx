@@ -1,13 +1,18 @@
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { usePlayerStore } from "../../stores/usePlayerStore";
 import { useMusicStore } from "../../stores/useMusicStore";
+import { useAuth } from "@clerk/clerk-react";
 
 const AudioPlayer = () => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const prevSongRef = useRef<string | null>(null);
-
-  const { isPlaying, playNext, currentSong, isShuffle, shuffle, queue, isLoop } = usePlayerStore();
+  const { userId } = useAuth()
+  const { isPlaying, playNext, currentSong, isShuffle, shuffle, queue, isLoop, recordListen } = usePlayerStore();
   const { featuredSongs, madeForYouSongs, trendingSongs } = useMusicStore();
+
+  // State to track listen progress and prevent duplicate listens
+  const [listenProgress, setListenProgress] = useState(0);
+  const [hasRecordedListen, setHasRecordedListen] = useState(false);
 
   // handle shuffle
   useEffect(() => {
@@ -75,6 +80,10 @@ const AudioPlayer = () => {
       audio.currentTime = 0;
       prevSongRef.current = currentSong?.audioUrl;
 
+      // Reset listen progress and recorded state
+      setListenProgress(0);
+      setHasRecordedListen(false);
+
       if (isPlaying) {
         const playPromise = audio.play();
 
@@ -94,6 +103,27 @@ const AudioPlayer = () => {
     if (!audioRef.current) return;
     audioRef.current.loop = isLoop;
   }, [isLoop]);
+
+  // Track listen progress
+  useEffect(() => {
+    const audio = audioRef.current;
+
+    const handleTimeUpdate = () => {
+      if (!audio || !currentSong || !userId) return;
+
+      const progress = (audio.currentTime / audio.duration) * 100;
+      setListenProgress(progress);
+      // Record listen if progress exceeds 80% and hasn't been recorded yet
+      if (progress >= 80 && !hasRecordedListen) {
+        console.log('check progress: ', progress);
+        recordListen(currentSong._id, userId);
+        setHasRecordedListen(true);
+      }
+    };
+
+    audio?.addEventListener("timeupdate", handleTimeUpdate);
+    return () => audio?.removeEventListener("timeupdate", handleTimeUpdate);
+  }, [currentSong, hasRecordedListen, recordListen]);
 
   return (
     <audio ref={audioRef} />

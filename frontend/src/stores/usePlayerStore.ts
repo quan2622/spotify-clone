@@ -1,6 +1,8 @@
 import { create } from "zustand";
 import { Song } from "../types";
 import { useChatStore } from "./useChatStore";
+import toast from "react-hot-toast";
+import { axiosIntance } from "../lib/axios";
 
 interface PlayerStore {
   currentSong: Song | null,
@@ -9,6 +11,7 @@ interface PlayerStore {
   currentIndex: number,
   isShuffle: boolean,
   isLoop: boolean,
+  totalListens: number,
 
   initializeQueue: (songs: Song[]) => void,
   playAlbum: (songs: Song[], startIndex?: number) => void,
@@ -19,6 +22,8 @@ interface PlayerStore {
   toggleShuffle: () => void,
   toggleLoop: () => void,
   shuffle: (songs: Song[]) => void,
+  updateSongListens: (songId: string, totalListens: number) => void,
+  recordListen: (songId: string, userId: string) => Promise<void>,
 }
 
 export const usePlayerStore = create<PlayerStore>((set, get) => ({
@@ -28,6 +33,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
   currentSong: null,
   isShuffle: false,
   isLoop: false,
+  totalListens: 0,
 
   toggleLoop: () => {
     set({ isLoop: !get().isLoop });
@@ -37,11 +43,13 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
     if (!get().isShuffle) {
       return set({ queue: song_clone });
     }
-
-    for (let i = song_clone.length - 1; i >= 0; i--) {
-      let j = Math.floor(Math.random() * (i + 1));
-      [song_clone[i], song_clone[j]] = [song_clone[j], song_clone[i]];
-    }
+    let flag = song_clone;
+    do {
+      for (let i = song_clone.length - 1; i >= 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1));
+        [song_clone[i], song_clone[j]] = [song_clone[j], song_clone[i]];
+      }
+    } while (flag.length === song_clone.length && song_clone.every((item, index) => item === flag[index]));
     set({ queue: song_clone });
   },
   toggleShuffle: () => {
@@ -165,6 +173,33 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
           activity: `Idle`,
         })
       }
+    }
+  },
+  updateSongListens: (songId, totalListens) => {
+    set((state) => ({
+      queue: state.queue.map((song) =>
+        song._id === songId ? { ...song, totalListens } : song
+      ),
+      currentSong:
+        state.currentSong && state.currentSong._id === songId
+          ? { ...state.currentSong, totalListens }
+          : state.currentSong,
+    }));
+  },
+  recordListen: async (songId, userId) => {
+    const payload = { songId, userId, timestamp: Date.now() };
+
+    try {
+      const response = await axiosIntance.post("stats/recordListen", payload);
+      const data = response.data;
+      console.log("check data return: ", data);
+      if (data.success) {
+        get().updateSongListens(songId, data.totalListens);
+      } else {
+        throw new Error(data.message || "API error");
+      }
+    } catch (error) {
+      console.error("Error recording listen:", error);
     }
   },
 }))
