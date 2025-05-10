@@ -1,39 +1,61 @@
-import { useEffect } from "react";
-import { useParams } from "react-router-dom"
-import { useMusicStore } from "../../stores/useMusicStore";
-import { ScrollArea } from "../../components/ui/scroll-area";
-import { Button } from "../../components/ui/button";
+import { useNavigate, useParams } from "react-router-dom"
+import { useMusicStore } from "../../../stores/useMusicStore"
+import { Song } from "../../../types"
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { ScrollArea } from "../../../components/ui/scroll-area";
+import { Button } from "../../../components/ui/button";
+import { usePlayerStore } from "../../../stores/usePlayerStore";
 import { Clock, Pause, Play } from "lucide-react";
-import { usePlayerStore } from "../../stores/usePlayerStore";
+import { formatDuraion } from "../../album/AlbumPage";
 
-export const formatDuraion = (duration: number) => {
-  const minutes = Math.floor(duration / 60);
-  const remainingSecond = duration % 60;
-  return `${minutes}:${remainingSecond.toString().padStart(2, '0')}`;
-}
+import MadeOfYouImage from '/SectionGrid/MadeForYou.jpg';
+import TrendingImage from '/SectionGrid/viral_trending.jpg';
 
-const AlbumPage = () => {
-  const { albumId } = useParams();
-  const { isLoading, currentAlbum, fetchAlbumById } = useMusicStore();
-
-  const { playAlbum, currentSong, isPlaying, togglePlay } = usePlayerStore();
+const ShowAll = () => {
+  const { page } = useParams();
+  const { isLoading, trendingSongs, madeForYouSongs, fetchMadeForYouSong, fetchTrendingSong, sloganMadeForYou, sloganTrending } = useMusicStore();
+  const { currentSong, isPlaying, togglePlay, playAlbum } = usePlayerStore()
+  const [songs, setSongs] = useState<Song[]>([]);
+  const { albums, fetchAlbum } = useMusicStore();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (albumId) fetchAlbumById(albumId)
-  }, [fetchAlbumById, albumId]);
+    fetchAlbum();
+  }, [fetchAlbum]);
 
+  useEffect(() => {
+    if (!page) return;
+    const fetchData = async (page: string) => {
+      if (page === "Made for you") {
+        await fetchMadeForYouSong();
+      } else if (page === "Trending") {
+        await fetchTrendingSong();
+      } else {
+        toast.error("Page not found");
+      }
+    }
+    fetchData(page);
+  }, [page]);
+
+  useEffect(() => {
+    if (trendingSongs) setSongs(trendingSongs);
+    else setSongs(madeForYouSongs);
+  }, [trendingSongs, madeForYouSongs]);
+
+  console.log(page, songs);
 
   const handlePlayAlbum = () => {
-    if (!currentAlbum) return;
+    if (!songs) return;
 
-    const isCurrentAlbumPLaying = currentAlbum?.songs.some(song => song._id === currentSong?._id);
+    const isCurrentAlbumPLaying = songs.some(song => song._id === currentSong?._id);
     if (isCurrentAlbumPLaying) return togglePlay();
-    else playAlbum(currentAlbum?.songs);
+    else playAlbum(songs);
   }
 
   const handlePlaySong = (index: number) => {
-    if (!currentAlbum?.songs) return;
-    playAlbum(currentAlbum?.songs, index);
+    if (!songs) return;
+    playAlbum(songs, index);
   }
 
   if (isLoading) return null;
@@ -48,16 +70,15 @@ const AlbumPage = () => {
           {/* content */}
           <div className="relative z-10">
             <div className="flex p-6 gap-6 pb-8">
-              <img src={currentAlbum?.imageUrl} alt={currentAlbum?.title}
+              <img src={page === 'Trending' ? TrendingImage : MadeOfYouImage} alt={page}
                 className="w-[240px] h-[240px] shadow-xl rounded"
               />
               <div className="flex flex-col justify-end">
                 <p className="text-sm font-medium">Album</p>
-                <h1 className="text-7xl font-bold my-4">{currentAlbum?.title}</h1>
+                <h1 className="text-7xl font-bold my-4">{page}</h1>
                 <div className="flex items-center gap-2 text-sm text-zinc-100">
-                  <span className="font-medium text-white">{currentAlbum?.artist}</span>
-                  <span>• {currentAlbum?.songs.length} songs</span>
-                  <span>• {currentAlbum?.releaseYear}</span>
+                  <span className="font-medium text-white">{page === 'trending' ? sloganTrending : sloganMadeForYou}</span>
+                  <span>• {songs.length} songs</span>
                 </div>
               </div>
             </div>
@@ -68,7 +89,7 @@ const AlbumPage = () => {
                 className="w-14 h-14 rounded-full bg-green-500 hover:bg-green-400 hover:scale-105 transition-all"
                 onClick={handlePlayAlbum}
               >
-                {isPlaying && currentAlbum?.songs.some(song => currentSong?._id === song._id) ?
+                {isPlaying && songs.some(song => currentSong?._id === song._id) ?
                   <Pause className="h-8 w-8 text-black" />
                   :
                   <Play className="h-8 w-8 text-black" />
@@ -76,7 +97,7 @@ const AlbumPage = () => {
               </Button>
             </div>
             {/* Table section */}
-            <div className="bg-black/20 backdrop-blur-sm">
+            <div className="bg-black/1 backdrop-blur-sm">
               {/* Table header */}
               <div className="grid grid-cols-[16px_4fr_2fr_1fr] gap-4 px-10 py-2 text-sm text-zinc-400 border-b border-white/5">
                 <div>#</div>
@@ -89,7 +110,7 @@ const AlbumPage = () => {
               {/* song lists */}
               <div className="px-6">
                 <div className="space-y-2 py-4">
-                  {currentAlbum?.songs.map((song, index) => {
+                  {songs.map((song, index) => {
                     const isCurrent = currentSong?._id === song._id;
                     return (
                       <div
@@ -123,10 +144,31 @@ const AlbumPage = () => {
                 </div>
               </div>
             </div>
+
+            {/* Suggestion */}
+            <div className="bg-zinc-900/80 p-8">
+              <h1 className="text-white text-lg font-bold mt-6 mb-4">Suggestion</h1>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                {albums.map(album => (
+                  <div className="group bg-zinc8700/40 rounded-md hover:bg-zinc-700/40 transition-all cursor-pointer p-4"
+                    onClick={() => navigate(`/albums/${album._id}`)}>
+                    <div className="relative">
+                      <div className="aspect-square rounded-md shadow-lg overflow-hidden">
+                        <img src={album.imageUrl} alt={album.title}
+                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        />
+                      </div>
+                    </div>
+                    <h3 className="font-medium mb-1 mt-2 truncate">{album.title}</h3>
+                    <p className="text-sm text-zinc-400 mb-2">{album.artist}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </ScrollArea>
     </div>
   )
 }
-export default AlbumPage
+export default ShowAll

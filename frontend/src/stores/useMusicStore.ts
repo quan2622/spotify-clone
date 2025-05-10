@@ -17,6 +17,8 @@ interface MusicStore {
   isStatLoading: boolean,
   currentPage: number,
   songById: Song | null,
+  sloganMadeForYou: string,
+  sloganTrending: string,
 
   fetchAlbum: () => Promise<void>,
   fetchAlbumById: (albumId: string) => Promise<void>
@@ -33,6 +35,8 @@ interface MusicStore {
 }
 
 export const useMusicStore = create<MusicStore>((set, get) => ({
+  sloganMadeForYou: 'A playlist crafted for your every move, mood, and moment.',
+  sloganTrending: 'The playlist everyone’s talking about — fresh, fast, and always on point.',
   albums: [],
   songs: [],
   isLoading: false,
