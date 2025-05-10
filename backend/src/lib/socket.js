@@ -1,5 +1,6 @@
 import { Server } from 'socket.io'
 import { Message } from '../models/message.model.js'
+import { LoginHistory } from '../models/History.model.js';
 
 export const initializeSocket = (server) => {
   const io = new Server(server, {
@@ -12,15 +13,27 @@ export const initializeSocket = (server) => {
   const userActivities = new Map(); // userId: activity
 
   io.on('connection', (socket) => {  //  notitify to server client can listen event incoming
-    socket.on('user_connected', (userId) => {
+    socket.on('user_connected', async (userId) => {
       userSockets.set(userId, socket.id);
       userActivities.set(userId, 'Idle');
 
-      // broadcast to all connected sockets that this user just logged in
+      // Update login count in the database
+      try {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Normalize to start of the day
+        await LoginHistory.findOneAndUpdate(
+          { userId, date: today },
+          {
+            $inc: { count: 1 },
+            $setOnInsert: { userId, date: today },
+          }, { upsert: true, new: true }
+        )
+      } catch (error) {
+        console.error('Error updating login history:', error);
+      }
+
       io.emit('user_connected', userId);
-
       socket.emit('user_online', Array.from(userSockets.keys()));
-
       io.emit('activities', Array.from(userActivities.entries()));
     });
 
