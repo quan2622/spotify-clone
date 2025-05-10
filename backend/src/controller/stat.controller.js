@@ -2,7 +2,7 @@ import { Song } from "../models/song.model.js"
 import { Album } from "../models/album.model.js"
 import { User } from "../models/user.model.js"
 import { ListenHistory, LoginHistory } from "../models/History.model.js";
-import { startOfISOWeek, subWeeks, format, startOfMonth, subMonths, getMonth, differenceInCalendarWeeks } from "date-fns";
+import { startOfISOWeek, subWeeks, format, startOfMonth, subMonths, getMonth, differenceInCalendarWeeks, getHours, startOfDay, endOfDay } from "date-fns";
 
 export const getAllStat = async (req, res, next) => {
   try {
@@ -42,7 +42,7 @@ export const getAllStat = async (req, res, next) => {
 export const recordListen = async (req, res, next) => {
   try {
     const { songId, userId } = req.body;
-    console.log(songId, userId);
+    // console.log(songId, userId);
     if (!songId || !userId) {
       return res.status(400).json({
         success: false,
@@ -53,17 +53,24 @@ export const recordListen = async (req, res, next) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
+    const start = startOfDay(today);
+    const end = endOfDay(today);
+
     const countListenToday = await ListenHistory.find({
       songId,
       userId,
-      date: today,
+      date: { $gte: start, $lte: end },
     });
-    console.log(countListenToday);
-    if (countListenToday[0].count >= 20) {
-      return res.json({
-        success: false,
-        message: "Vượt quá giới hạn 20 lượt nghe/ngày",
-      })
+
+    // console.log('check count: ', countListenToday);
+
+    if (countListenToday.length > 0) {
+      if (countListenToday[0].count >= 20) {
+        return res.json({
+          success: false,
+          message: "Vượt quá giới hạn 20 lượt nghe/ngày",
+        })
+      }
     }
 
     await ListenHistory.findOneAndUpdate(

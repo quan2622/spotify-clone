@@ -1,4 +1,5 @@
 import { uploadToCloudinary } from "../helper/uploadToCloudinary.js";
+import { ListenHistory } from "../models/History.model.js";
 import { Song } from "../models/song.model.js"
 
 export const getAllSong = async (req, res, next) => {
@@ -41,22 +42,42 @@ export const getFeatureSong = async (req, res, next) => {
 export const getMadeForYou = async (req, res, next) => {
   try {
     // fetch random 4 songs using mongodb's aggregation pipeline
-    const songs = await Song.aggregate([
+    const userId = req.auth.userId;
+
+    const songs = await ListenHistory.aggregate([
       {
-        $sample: { size: 4 },
+        $match: { userId },
+      }, {
+        $group: {
+          _id: '$songId',
+          totalListens: { $sum: '$count' },
+        }
       },
+      { $sort: { totalListens: -1 } },
+      { $limit: 10 },
+      {
+        $lookup: {
+          from: 'songs',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'song_info'
+        }
+      },
+      { $unwind: '$song_info' },
       {
         $project: {
-          _id: 1,
-          title: 1,
-          artist: 1,
-          imageUrl: 1,
-          audioUrl: 1,
-          createdAt: 1,
-          duration: 1,
+          _id: '$_id',
+          totalListens: 1,
+          title: '$song_info.title',
+          artist: '$song_info.artist',
+          imageUrl: '$song_info.imageUrl',
+          audioUrl: '$song_info.audioUrl',
+          duration: '$song_info.duration',
+          createdAt: '$song_info.createdAt',
         }
       }
     ]);
+    // console.log(songs);
     res.status(200).json(songs);
   } catch (error) {
     next(error);
@@ -65,22 +86,7 @@ export const getMadeForYou = async (req, res, next) => {
 export const getTrending = async (req, res, next) => {
   try {
     // fetch random 4 songs using mongodb's aggregation pipeline
-    const songs = await Song.aggregate([
-      {
-        $sample: { size: 4 },
-      },
-      {
-        $project: {
-          _id: 1,
-          title: 1,
-          artist: 1,
-          imageUrl: 1,
-          audioUrl: 1,
-          createdAt: 1,
-          duration: 1,
-        }
-      }
-    ]);
+    const songs = await Song.find().sort({ totalListens: -1 }).limit(20);
     res.status(200).json(songs);
   } catch (error) {
     next(error);
