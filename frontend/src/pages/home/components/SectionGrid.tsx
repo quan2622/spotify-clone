@@ -22,7 +22,7 @@ const SectionGrid = ({ songs, title, isLoading }: SectionGrid) => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {songs.map(song => (
+        {songs.slice(0, 4).map(song => (
           <div key={song._id} className="bg-zinc-800/40 p-4 rounded-md hover:bg-zinc-700/40 transition-all group cursor-pointer">
             <div className="relative mb-4">
               <div className="aspect-square rounded-md shadow-lg overflow-hidden">

@@ -108,7 +108,7 @@ const UpdateAlbum = ({ album }: UpdateAlbum) => {
                 className="w-[92%] p-3 border rounded-md mb-4 mx-3 focus:outline-none focus:ring-2 focus:ring-blue-500 text-zinc-800"
               />
               <ScrollArea className="h-60">
-                <ul className="max-h-96 overflow-y-auto px-3">
+                <ul className="px-3">
                   {availableSongs.map((song) => (
                     <li
                       key={song._id}
@@ -135,7 +135,7 @@ const UpdateAlbum = ({ album }: UpdateAlbum) => {
                 Total: {albumSongs.length} songs
               </p>
               <ScrollArea className="h-60">
-                <ul className="max-h-96 overflow-y-auto px-3">
+                <ul className="px-3">
                   {albumSongs.length === 0 ? (
                     <li className="text-gray-500">No songs yet</li>
                   ) : (

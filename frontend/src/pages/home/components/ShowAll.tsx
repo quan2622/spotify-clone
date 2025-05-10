@@ -17,6 +17,7 @@ const ShowAll = () => {
   const { isLoading, trendingSongs, madeForYouSongs, fetchMadeForYouSong, fetchTrendingSong, sloganMadeForYou, sloganTrending } = useMusicStore();
   const { currentSong, isPlaying, togglePlay, playAlbum } = usePlayerStore()
   const [songs, setSongs] = useState<Song[]>([]);
+  const [bgCL, setBgCL] = useState('');
   const { albums, fetchAlbum } = useMusicStore();
   const navigate = useNavigate();
 
@@ -39,11 +40,14 @@ const ShowAll = () => {
   }, [page]);
 
   useEffect(() => {
-    if (trendingSongs) setSongs(trendingSongs);
-    else setSongs(madeForYouSongs);
-  }, [trendingSongs, madeForYouSongs]);
-
-  console.log(page, songs);
+    if (page === "Made for you" && madeForYouSongs) {
+      setSongs(madeForYouSongs);
+      setBgCL('#978088');
+    } else if (page === "Trending" && trendingSongs) {
+      setSongs(trendingSongs);
+      setBgCL('#cf2b3a');
+    }
+  }, [page, madeForYouSongs, trendingSongs]);
 
   const handlePlayAlbum = () => {
     if (!songs) return;
@@ -64,8 +68,12 @@ const ShowAll = () => {
     <div className="h-full ">
       <ScrollArea className="h-full rounded-md">
         {/* Main content */}
-        <div className="relative h-[calc(100vh-16px)]">
-          <div className="absolute inset-0 bg-gradient-to-b from-[#5038a0]/80 via-zinc-900/80 to-zinc-900 pointer-events-none" aria-hidden='true' />
+        <div className="relative h-[100%]">
+          <div className="absolute inset-0  pointer-events-none"
+            style={{
+              background: `linear-gradient(to bottom, ${bgCL} 0px, ${bgCL} 10vh, #18181b 70vh, #18181b 100%)`
+            }}
+            aria-hidden='true' />
 
           {/* content */}
           <div className="relative z-10">
@@ -97,7 +105,7 @@ const ShowAll = () => {
               </Button>
             </div>
             {/* Table section */}
-            <div className="bg-black/1 backdrop-blur-sm">
+            <div className="bg-black/1 backdrop-blur-sm border-t-zinc-100 pt-6 bg-black/5">
               {/* Table header */}
               <div className="grid grid-cols-[16px_4fr_2fr_1fr] gap-4 px-10 py-2 text-sm text-zinc-400 border-b border-white/5">
                 <div>#</div>
@@ -110,7 +118,7 @@ const ShowAll = () => {
               {/* song lists */}
               <div className="px-6">
                 <div className="space-y-2 py-4">
-                  {songs.map((song, index) => {
+                  {songs.slice(0, 21).map((song, index) => {
                     const isCurrent = currentSong?._id === song._id;
                     return (
                       <div
@@ -150,7 +158,7 @@ const ShowAll = () => {
               <h1 className="text-white text-lg font-bold mt-6 mb-4">Suggestion</h1>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                 {albums.map(album => (
-                  <div className="group bg-zinc8700/40 rounded-md hover:bg-zinc-700/40 transition-all cursor-pointer p-4"
+                  <div key={album._id} className="group bg-zinc8700/40 rounded-md hover:bg-zinc-700/40 transition-all cursor-pointer p-4"
                     onClick={() => navigate(`/albums/${album._id}`)}>
                     <div className="relative">
                       <div className="aspect-square rounded-md shadow-lg overflow-hidden">
