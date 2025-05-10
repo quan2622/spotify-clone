@@ -90,7 +90,7 @@ export const recordListen = async (req, res, next) => {
   }
 }
 
-export const getLoginStats = async (req, res, next) => {
+export const getDataAnalysts = async (req, res, next) => {
   try {
     const { type } = req.query; // type can be 'week' or 'month'
     const today = new Date();
@@ -114,9 +114,9 @@ export const getLoginStats = async (req, res, next) => {
       const startOfThisWeek = startOfISOWeek(today);
       endDate = new Date(startOfThisWeek);
       endDate.setDate(endDate.getDate() - 1);
-      startDate = subWeeks(startOfThisWeek, 5);
+      startDate = subWeeks(startOfThisWeek, 7);
 
-      dateFormat = "%G-%V";
+      dateFormat = "%G-%V"; //theo chuẩn ISO
       for (let i = 5; i >= 1; i--) {
         key.push(format(subWeeks(startOfThisWeek, i), 'RRRR-II'));
       }
@@ -127,7 +127,7 @@ export const getLoginStats = async (req, res, next) => {
       // startDate.setMonth(startOfThisMonth.getMonth() - 3);
 
       const startOfThisMonth = startOfMonth(today);
-      startDate = subMonths(startOfThisMonth, 3);
+      startDate = subMonths(startOfThisMonth, 7);
       endDate = today;
       dateFormat = "%Y-%m";
 
@@ -137,33 +137,44 @@ export const getLoginStats = async (req, res, next) => {
     } else {
       return res.status(400).json({ message: "Invalid type. Use 'week' or 'month'" });
     }
+    // console.log(startDate, endDate);
 
-    let raw_stats = await LoginHistory.aggregate([
-      {
-        $match: { date: { $gte: startDate, $lte: endDate }, }
-      },
-      {
-        $group: {
-          _id: { $dateToString: { format: dateFormat, date: '$date' } },
-          totalLogin: { $sum: '$count' },
+    const getAggregateStats = async (collection, startDate, endDate, dateFormat, key, valueField) => {
+      const raw_stats = await collection.aggregate([
+        {
+          $match: { date: { $gte: startDate, $lte: endDate }, }
+        },
+        {
+          $group: {
+            _id: { $dateToString: { format: dateFormat, date: '$date' } },
+            total: { $sum: '$count' },
+          }
+        },
+        {
+          $sort: { _id: 1 },
         }
-      },
-      {
-        $sort: { _id: 1 },
-      }
-    ]);
+      ]);
 
-    let stats = new Map();
-    key.forEach(k => stats.set(k, 0));
+      let stats = new Map();
+      key.forEach(k => stats.set(k, 0));
 
-    raw_stats.forEach(item => { stats.set(item._id, item.totalLogin) });
+      raw_stats.forEach(item => { stats.set(item._id, item.total) });
 
-    const data = Array.from(stats.entries()).map(([k, v]) => ({
-      _id: k,
-      totalLogin: v,
-    }));
+      return Array.from(stats.entries()).map(([k, v]) => ({
+        _id: k,
+        [valueField]: v,
+      }));
+    }
 
-    res.status(200).json(data);
+    // Total Login
+    const Login = await getAggregateStats(LoginHistory, startDate, endDate, dateFormat, key, 'totalLogin');
+    // Total Listen
+    const Listen = await getAggregateStats(ListenHistory, startDate, endDate, dateFormat, key, 'totalLogin');
+
+    res.status(200).json({
+      Login,
+      Listen,
+    });
   } catch (error) {
     next(error.message);
   }
