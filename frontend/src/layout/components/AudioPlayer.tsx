@@ -11,7 +11,6 @@ const AudioPlayer = () => {
   const { featuredSongs, madeForYouSongs, trendingSongs } = useMusicStore();
 
   // State to track listen progress and prevent duplicate listens
-  const [listenProgress, setListenProgress] = useState(0);
   const [hasRecordedListen, setHasRecordedListen] = useState(false);
 
   // handle shuffle
@@ -81,7 +80,6 @@ const AudioPlayer = () => {
       prevSongRef.current = currentSong?.audioUrl;
 
       // Reset listen progress and recorded state
-      setListenProgress(0);
       setHasRecordedListen(false);
 
       if (isPlaying) {
@@ -112,7 +110,7 @@ const AudioPlayer = () => {
       if (!audio || !currentSong || !userId) return;
 
       const progress = (audio.currentTime / audio.duration) * 100;
-      setListenProgress(progress);
+      // setListenProgress(progress);
       // Record listen if progress exceeds 80% and hasn't been recorded yet
       if (progress >= 80 && !hasRecordedListen) {
         console.log('check progress: ', progress);
