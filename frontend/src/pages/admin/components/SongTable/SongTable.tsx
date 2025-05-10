@@ -24,8 +24,6 @@ const SongTable = () => {
     )
   }
 
-
-
   return (
     <>
       <Table>
@@ -34,6 +32,7 @@ const SongTable = () => {
             <TableHead className="w-[70px]"></TableHead>
             <TableHead>Title</TableHead>
             <TableHead>Artist</TableHead>
+            <TableHead>Plays</TableHead>
             <TableHead>Release Date</TableHead>
             <TableHead className="text-right">Action</TableHead>
           </TableRow>
@@ -46,6 +45,7 @@ const SongTable = () => {
               </TableCell>
               <TableCell className="font-medium">{song.title}</TableCell>
               <TableCell>{song.artist}</TableCell>
+              <TableCell>{song.totalListens}</TableCell>
               <TableCell>
                 <span className="inline-flex items-center gap-1 text-zinc-400">
                   <Calendar className="h-4 w-4" />

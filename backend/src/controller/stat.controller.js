@@ -2,7 +2,7 @@ import { Song } from "../models/song.model.js"
 import { Album } from "../models/album.model.js"
 import { User } from "../models/user.model.js"
 import { ListenHistory, LoginHistory } from "../models/History.model.js";
-import { startOfISOWeek, subWeeks, format, startOfMonth, subMonths } from "date-fns";
+import { startOfISOWeek, subWeeks, format, startOfMonth, subMonths, getMonth, differenceInCalendarWeeks } from "date-fns";
 
 export const getAllStat = async (req, res, next) => {
   try {
@@ -111,13 +111,16 @@ export const getDataAnalysts = async (req, res, next) => {
       // endDate = new Date(startOfWeek);
       // endDate.setDate(startOfWeek.getDate() - 1); //chủ nhật gần nhất
       // C2
-      const startOfThisWeek = startOfISOWeek(today);
-      endDate = new Date(startOfThisWeek);
-      endDate.setDate(endDate.getDate() - 1);
-      startDate = subWeeks(startOfThisWeek, 7);
+      const startOfLastMonth = startOfMonth(subMonths(today, 1));
+
+      startDate = startOfLastMonth;
+      endDate = today;
+      const startOfThisWeek = startOfISOWeek(today, { weekStartsOn: 1 });
+
+      const deffWeek = differenceInCalendarWeeks(endDate, startDate, { weekStartsOn: 1 });
 
       dateFormat = "%G-%V"; //theo chuẩn ISO
-      for (let i = 5; i >= 1; i--) {
+      for (let i = deffWeek; i >= 1; i--) {
         key.push(format(subWeeks(startOfThisWeek, i), 'RRRR-II'));
       }
 
@@ -127,11 +130,12 @@ export const getDataAnalysts = async (req, res, next) => {
       // startDate.setMonth(startOfThisMonth.getMonth() - 3);
 
       const startOfThisMonth = startOfMonth(today);
-      startDate = subMonths(startOfThisMonth, 7);
+      const currentMonthIndex = getMonth(today);
+      startDate = currentMonthIndex === 0 ? startOfThisMonth : subMonths(startOfThisMonth, currentMonthIndex);
       endDate = today;
       dateFormat = "%Y-%m";
 
-      for (let i = 3; i >= 1; i--) {
+      for (let i = currentMonthIndex; i >= 1; i--) {
         key.push(format(subMonths(startOfThisMonth, i), 'yyyy-MM'))
       }
     } else {
@@ -169,12 +173,19 @@ export const getDataAnalysts = async (req, res, next) => {
     // Total Login
     const Login = await getAggregateStats(LoginHistory, startDate, endDate, dateFormat, key, 'totalLogin');
     // Total Listen
-    const Listen = await getAggregateStats(ListenHistory, startDate, endDate, dateFormat, key, 'totalLogin');
+    const Listen = await getAggregateStats(ListenHistory, startDate, endDate, dateFormat, key, 'totalListen');
 
-    res.status(200).json({
-      Login,
-      Listen,
-    });
+    const data = Login.map(item => {
+      const listen = Listen.find(itemListen => itemListen._id === item._id);
+      // console.log(listen);
+      return {
+        _id: item._id,
+        totalLogin: item.totalLogin,
+        totalListen: listen.totalListen,
+      }
+    })
+
+    res.status(200).json(data);
   } catch (error) {
     next(error.message);
   }

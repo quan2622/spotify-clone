@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import { Song } from "../types";
 import { useChatStore } from "./useChatStore";
-import toast from "react-hot-toast";
 import { axiosIntance } from "../lib/axios";
 
 interface PlayerStore {
@@ -187,7 +186,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
     }));
   },
   recordListen: async (songId, userId) => {
-    const payload = { songId, userId, timestamp: Date.now() };
+    const payload = { songId, userId };
 
     try {
       const response = await axiosIntance.post("stats/recordListen", payload);

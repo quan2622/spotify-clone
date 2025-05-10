@@ -6,6 +6,7 @@ export interface Song {
   imageUrl: string,
   audioUrl: string,
   duration: number,
+  totalListens: number,
   createdAt: string,
   udpatedAt: string,
 }
@@ -54,4 +55,10 @@ export interface Message {
   content: string,
   createdAt: string,
   udpatedAt: string,
+}
+
+export interface dataAnalystType {
+  _id: string,
+  totalLogin: number,
+  totalListen: number
 }
