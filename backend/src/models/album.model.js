@@ -6,6 +6,9 @@ const albumSchema = new mongoose.Schema({
   imageUrl: { type: String, required: true },
   releaseYear: { type: Number, required: true },
   songs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Song' }],
+  owner: { type: String },
+  type: { type: String, enum: ['admin', 'user'], default: 'user' },
+  sharedWith: [{ type: String }]
 }, {
   timestamps: true,
 });
