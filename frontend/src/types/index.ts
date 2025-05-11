@@ -16,10 +16,14 @@ export interface Album {
   title: string,
   artist: string,
   imageUrl: string,
+  description: string,
   releaseYear: number,
   songs: Song[],
   createdAt: string,
   udpatedAt: string,
+  owner: string,
+  type: string,
+  sharedWith: string[],
 }
 export interface AlbumAdmin {
   _id: string,

@@ -5,6 +5,8 @@ import toast from "react-hot-toast";
 
 interface MusicStore {
   albums: Album[],
+  albumsAdmin: Album[],
+  albumsUser: Album[],
   songs: Song[],
   isLoading: boolean,
   error: string | null,
@@ -31,7 +33,9 @@ interface MusicStore {
   deleteAlbumAdmin: (albumId: string) => Promise<void>,
   getSongPaginate: (page?: string) => Promise<void>,
   updateSong: (data: any, songId: string) => Promise<void>,
-  getSongByID: (id: string) => Promise<void>
+  getSongByID: (id: string) => Promise<void>,
+  createAlbumUser: () => Promise<void>,
+  addSongToAlbumUser: (albumId: string, songs: Song[]) => Promise<void>,
 }
 
 export const useMusicStore = create<MusicStore>((set, get) => ({
@@ -55,7 +59,32 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
   isStatLoading: false,
   currentPage: 1,
   songById: null,
+  albumsAdmin: [],
+  albumsUser: [],
 
+  createAlbumUser: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const res = await axiosIntance.post("albums/createAlbum");
+      console.log(res.data);
+      toast.success("Add new album successed");
+      set((state) => ({ albumsUser: [res.data.dataNew, ...state.albumsUser] }))
+    } catch (error: any) {
+      set({ error: error.message });
+    } finally {
+      set({ isLoading: true });
+    }
+  },
+  addSongToAlbumUser: async (albumId, songs) => {
+    set({ isLoading: true, error: null });
+    try {
+
+    } catch (error: any) {
+      set({ error: error.message });
+    } finally {
+      set({ isLoading: true });
+    }
+  },
   getSongByID: async (id) => {
     set({ isLoading: true, error: null });
     try {
@@ -102,7 +131,12 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
     set({ isLoading: true, error: null, });
     try {
       const res = await axiosIntance.get('albums');
-      set({ albums: res.data });
+      console.log(res.data);
+      set({
+        albums: res.data,
+        albumsAdmin: res.data.adminAlbums,
+        albumsUser: res.data.userAlbums
+      });
     } catch (error: any) {
       set({ error: error.respone.data.message })
     } finally {

@@ -3,8 +3,9 @@ import { useParams } from "react-router-dom"
 import { useMusicStore } from "../../stores/useMusicStore";
 import { ScrollArea } from "../../components/ui/scroll-area";
 import { Button } from "../../components/ui/button";
-import { Clock, Pause, Play } from "lucide-react";
+import { Clock, Music, Pause, Play } from "lucide-react";
 import { usePlayerStore } from "../../stores/usePlayerStore";
+import UpdateAlbumUserDialog from "../../layout/components/UpdateAlbumUserDialog";
 
 export const formatDuraion = (duration: number) => {
   const minutes = Math.floor(duration / 60);
@@ -48,9 +49,21 @@ const AlbumPage = () => {
           {/* content */}
           <div className="relative z-10">
             <div className="flex p-6 gap-6 pb-8">
-              <img src={currentAlbum?.imageUrl} alt={currentAlbum?.title}
-                className="w-[240px] h-[240px] shadow-xl rounded"
-              />
+              <div className="w-[240px] h-[240px] shadow-xl rounded bg-stone-900/50 flex items-center justify-between group">
+                {currentAlbum?.imageUrl ? (
+                  <img
+                    src={currentAlbum.imageUrl}
+                    alt={currentAlbum.title}
+                    className="w-[240px] h-[240px] shadow-xl rounded group-hover:hidden"
+                  />
+                ) : (
+                  <Music className="size-20 m-auto text-stone-400 group-hover:hidden" />
+                )}
+
+                <div className="hidden group-hover:block mx-auto">
+                  <UpdateAlbumUserDialog albumId={albumId} currentAlbum={currentAlbum} />
+                </div>
+              </div>
               <div className="flex flex-col justify-end">
                 <p className="text-sm font-medium">Album</p>
                 <h1 className="text-7xl font-bold my-4">{currentAlbum?.title}</h1>
