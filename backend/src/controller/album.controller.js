@@ -1,3 +1,4 @@
+import { uploadToCloudinary } from "../helper/uploadToCloudinary.js";
 import { Album } from '../models/album.model.js'
 import { User } from "../models/user.model.js";
 
@@ -78,3 +79,34 @@ export const AddSongToAlbum = async (req, res, next) => {
     next(error.message);
   }
 }
+
+export const UpdateInfoAlbum = async (req, res, next) => {
+  try {
+    const { albumId } = req.params;
+    const { title, description } = req.body;
+    const image = req.files?.image;
+
+    const dataUpdate = {};
+    if (title) dataUpdate.title = title;
+    if (description) dataUpdate.description = description;
+
+    if (image) {
+      const imageUrl = await uploadToCloudinary(image);
+      dataUpdate.imageUrl = imageUrl;
+    }
+
+    const updatedAlbum = await Album.findByIdAndUpdate(albumId, dataUpdate, { new: true });
+
+    if (!updatedAlbum) {
+      return res.status(404).json({ error: "Album not found" });
+    }
+
+    return res.status(200).json({
+      message: "Album updated successfully",
+      newData: updatedAlbum,
+    });
+  } catch (error) {
+    console.error("Error updating album:", error);
+    next(error);
+  }
+};
