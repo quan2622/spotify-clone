@@ -5,7 +5,7 @@ export const getAllAlbums = async (req, res, next) => {
   try {
     const adminAlbums = await Album.find({ type: 'admin' });
 
-    const userAlbum = await Album.find({
+    const userAlbums = await Album.find({
       $or: [
         { owner: req.auth.userId },
         { sharedWith: { $in: [req.auth.userId] } }
@@ -14,7 +14,7 @@ export const getAllAlbums = async (req, res, next) => {
     })
 
     res.status(200).json({
-      adminAlbums, userAlbum
+      adminAlbums, userAlbums
     });
   } catch (error) {
     next(error);
@@ -39,21 +39,17 @@ export const createAlbumUser = async (req, res, next) => {
     const user = await User.findOne({ clerkId: req.auth.userId });
 
     const count = await Album.countDocuments({
-      owner: req.auth.id,
+      owner: req.auth.userId,
     })
 
     const dataNew = await Album.create({
       title: `Album new ${count + 1}`,
       artist: user.fullName,
       releaseYear: new Date().getFullYear(),
-      owner: req.auth.id,
+      owner: req.auth.userId,
       type: 'user',
-      imageUrl: '',
-      songs: [],
-      sharedWith: [],
     });
 
-    console.log("data create new:", dataNew);
     res.status(201).json(
       {
         success: true,
