@@ -49,24 +49,24 @@ const AlbumPage = () => {
           {/* content */}
           <div className="relative z-10">
             <div className="flex p-6 gap-6 pb-8">
-              <div className="w-[240px] h-[240px] shadow-xl rounded bg-stone-900/50 flex items-center justify-between group">
+              <div className="w-[240px] h-[240px] shadow-xl rounded bg-stone-900/50 flex items-center justify-between group relative">
                 {currentAlbum?.imageUrl ? (
                   <img
                     src={currentAlbum.imageUrl}
                     alt={currentAlbum.title}
-                    className="w-[240px] h-[240px] shadow-xl rounded group-hover:hidden"
+                    className="w-[240px] h-[240px] shadow-xl rounded "
                   />
                 ) : (
                   <Music className="size-20 m-auto text-stone-400 group-hover:hidden" />
                 )}
 
-                <div className="hidden group-hover:block mx-auto">
+                <div className="hidden group-hover:block mx-auto absolute w-full h-full bg-neutral-900 opacity-70">
                   <UpdateAlbumUserDialog albumId={albumId} currentAlbum={currentAlbum} />
                 </div>
               </div>
               <div className="flex flex-col justify-end">
                 <p className="text-sm font-medium">Album</p>
-                <h1 className="text-7xl font-bold my-4">{currentAlbum?.title}</h1>
+                <h1 className="text-7xl font-bold my-4 truncate">{currentAlbum?.title}</h1>
                 <div className="flex items-center gap-2 text-sm text-zinc-100">
                   <span className="font-medium text-white">{currentAlbum?.artist}</span>
                   <span>• {currentAlbum?.songs.length} songs</span>

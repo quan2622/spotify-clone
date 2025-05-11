@@ -89,7 +89,7 @@ const UpdateAlbumUserDialog = ({ albumId, currentAlbum }: { albumId?: string, cu
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
-        <div className="flex flex-col items-center hover:cursor-pointer">
+        <div className="flex flex-col items-center justify-between hover:cursor-pointer absolute top-[25%] left-[25%]">
           <Pen className="size-20  text-white " />
           <div >Update Album</div>
         </div>
