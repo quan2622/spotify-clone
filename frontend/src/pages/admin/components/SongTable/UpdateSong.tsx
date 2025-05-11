@@ -33,7 +33,7 @@ const urlToFile = async (url: string, filename: string, mimeType: string) => {
 }
 
 const UpdateSong = ({ song }: UpdateSong) => {
-  const { albums, getSongPaginate, updateSong } = useMusicStore();
+  const { albumsAdmin, getSongPaginate, updateSong } = useMusicStore();
   const [songDialogOpen, setSongDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -242,7 +242,7 @@ const UpdateSong = ({ song }: UpdateSong) => {
               </SelectTrigger>
               <SelectContent className="bg-zinc-800 border-zinc-700">
                 <SelectItem value="none">No Album (Single)</SelectItem>
-                {albums.map((album) => (
+                {albumsAdmin.map((album) => (
                   <SelectItem key={album._id} value={album._id}>{album.title}</SelectItem>
                 ))}
               </SelectContent>

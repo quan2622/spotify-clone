@@ -6,7 +6,7 @@ import { Button } from "../../../../components/ui/button";
 import UpdateAlbum from "./UpdateAlbum";
 
 const AlbumTable = () => {
-  const { albums, deleteAlbumAdmin, fetchAlbum, fetchSongAdmin } = useMusicStore();
+  const { albumsAdmin, deleteAlbumAdmin, fetchAlbum, fetchSongAdmin } = useMusicStore();
 
   useEffect(() => {
     fetchAlbum();
@@ -26,7 +26,7 @@ const AlbumTable = () => {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {albums.map((album) => (
+        {albumsAdmin.map((album) => (
           <TableRow key={album._id} className="hover:bg-zinc-800/50">
             <TableCell>
               <img src={album.imageUrl} alt={album.title} className="size-12 rounded object-cover" />

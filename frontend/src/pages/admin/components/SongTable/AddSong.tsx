@@ -11,7 +11,7 @@ import { axiosIntance } from "../../../../lib/axios";
 
 
 const AddSong = () => {
-  const { albums, getSongPaginate } = useMusicStore();
+  const { albumsAdmin, getSongPaginate } = useMusicStore();
   const [songDialogOpen, setSongDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -169,7 +169,7 @@ const AddSong = () => {
               </SelectTrigger>
               <SelectContent className="bg-zinc-800 border-zinc-700">
                 <SelectItem value="none">No Album (Single)</SelectItem>
-                {albums.map((album) => (
+                {albumsAdmin.map((album) => (
                   <SelectItem key={album._id} value={album._id}>{album.title}</SelectItem>
                 ))}
               </SelectContent>
