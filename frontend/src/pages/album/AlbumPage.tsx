@@ -6,6 +6,7 @@ import { Button } from "../../components/ui/button";
 import { Clock, Music, Pause, Play } from "lucide-react";
 import { usePlayerStore } from "../../stores/usePlayerStore";
 import UpdateAlbumUserDialog from "../../layout/components/UpdateAlbumUserDialog";
+import SuggestionAlbum_User from "./components/SuggestionAlbum_User";
 
 export const formatDuraion = (duration: number) => {
   const minutes = Math.floor(duration / 60);
@@ -15,7 +16,7 @@ export const formatDuraion = (duration: number) => {
 
 const AlbumPage = () => {
   const { albumId } = useParams();
-  const { isLoading, currentAlbum, fetchAlbumById } = useMusicStore();
+  const { isLoading, currentAlbum, fetchAlbumById, featuredSongs, fetchFeaturedSong } = useMusicStore();
 
   const { playAlbum, currentSong, isPlaying, togglePlay } = usePlayerStore();
 
@@ -23,6 +24,11 @@ const AlbumPage = () => {
     if (albumId) fetchAlbumById(albumId)
   }, [fetchAlbumById, albumId]);
 
+  useEffect(() => {
+    fetchFeaturedSong();
+  }, []);
+
+  console.log("check feature song: ", featuredSongs);
 
   const handlePlayAlbum = () => {
     if (!currentAlbum) return;
@@ -39,11 +45,13 @@ const AlbumPage = () => {
 
   if (isLoading) return null;
 
+
+
   return (
     <div className="h-full ">
       <ScrollArea className="h-full rounded-md">
         {/* Main content */}
-        <div className="relative h-[calc(100vh-16px)]">
+        <div className="relative h-[100%]">
           <div className="absolute inset-0 bg-gradient-to-b from-[#5038a0]/80 via-zinc-900/80 to-zinc-900 pointer-events-none" aria-hidden='true' />
 
           {/* content */}
@@ -136,10 +144,14 @@ const AlbumPage = () => {
                 </div>
               </div>
             </div>
+            {/* Suggestion */}
+            {currentAlbum?.type === "user" &&
+              <SuggestionAlbum_User album={currentAlbum} featuredSongs={featuredSongs} formatDuraion={formatDuraion} />
+            }
           </div>
         </div>
-      </ScrollArea>
-    </div>
+      </ScrollArea >
+    </div >
   )
 }
 export default AlbumPage

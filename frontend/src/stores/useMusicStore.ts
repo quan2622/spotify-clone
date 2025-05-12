@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { axiosIntance } from "../lib/axios";
 import { Album, Song, Stat } from "../types";
 import toast from "react-hot-toast";
+import _ from "lodash"
 
 interface MusicStore {
   albums: Album[],
@@ -35,7 +36,7 @@ interface MusicStore {
   updateSong: (data: any, songId: string) => Promise<void>,
   getSongByID: (id: string) => Promise<void>,
   createAlbumUser: () => Promise<void>,
-  addSongToAlbumUser: (albumId: string, songs: Song[]) => Promise<void>,
+  addSongToAlbumUser: (albumId: string, song: Song) => Promise<void>,
 }
 
 export const useMusicStore = create<MusicStore>((set, get) => ({
@@ -66,7 +67,7 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const res = await axiosIntance.post("albums/createAlbum");
-      console.log(res.data);
+      // console.log(res.data);
       toast.success("Add new album successed");
       set((state) => ({ albumsUser: [res.data.dataNew, ...state.albumsUser] }))
     } catch (error: any) {
@@ -75,14 +76,21 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
       set({ isLoading: true });
     }
   },
-  addSongToAlbumUser: async (albumId, songs) => {
+  addSongToAlbumUser: async (albumId, song) => {
     set({ isLoading: true, error: null });
     try {
+      console.log("check data add song: ", albumId, song);
+
+      const currentAlbum_clone = _.cloneDeep(get().currentAlbum);
+      currentAlbum_clone?.songs.push(song);
+      set({ currentAlbum: currentAlbum_clone });
+      const res = await axiosIntance.post("albums/addnew", { albumId, song });
+      console.log("check data API: ", res.data);
 
     } catch (error: any) {
       set({ error: error.message });
     } finally {
-      set({ isLoading: true });
+      set({ isLoading: false });
     }
   },
   getSongByID: async (id) => {

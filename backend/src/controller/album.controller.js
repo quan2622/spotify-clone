@@ -64,10 +64,11 @@ export const createAlbumUser = async (req, res, next) => {
 
 export const AddSongToAlbum = async (req, res, next) => {
   try {
-    const { songs, albumId } = req.body;
+    const { song, albumId } = req.body;
+    console.log(song, albumId)
     const new_data = await Album.findOneAndUpdate(
       { _id: albumId },
-      { $addToSet: { songs: { $each: songs } } },
+      { $push: { songs: song } },
       { new: true }
     )
     console.log("check songs add album: ", new_data);
