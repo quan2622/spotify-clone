@@ -5,6 +5,7 @@ import RightSide from "./components/RightSide";
 import AudioPlayer from "./components/AudioPlayer";
 import PlayBackControls from "./components/PlayBackControls";
 import { useEffect, useState } from "react";
+import { ScrollArea } from "../components/ui/scroll-area";
 
 
 const MainLayout = () => {
@@ -31,7 +32,11 @@ const MainLayout = () => {
         <ResizableHandle className="w-2 bg-black rounded-lg transition-colors" />
         {/* Main side */}
         <ResizablePanel defaultSize={isMobile ? 80 : 60}>
-          <Outlet />
+          {/* <Outlet />
+          <footer>đây la footer</footer> */}
+          <ScrollArea className="h-full flex flex-col overflow-auto rounded-md border">
+            <Outlet />
+          </ScrollArea>
         </ResizablePanel>
         {!isMobile &&
           <>

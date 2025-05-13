@@ -37,6 +37,7 @@ interface MusicStore {
   getSongByID: (id: string) => Promise<void>,
   createAlbumUser: () => Promise<void>,
   addSongToAlbumUser: (albumId: string, song: Song) => Promise<void>,
+  minusSongAlbumUser: (albumId: string, song: Song) => Promise<void>,
 }
 
 export const useMusicStore = create<MusicStore>((set, get) => ({
@@ -69,28 +70,99 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
       const res = await axiosIntance.post("albums/createAlbum");
       // console.log(res.data);
       toast.success("Add new album successed");
-      set((state) => ({ albumsUser: [res.data.dataNew, ...state.albumsUser] }))
-    } catch (error: any) {
-      set({ error: error.message });
-    } finally {
-      set({ isLoading: true });
-    }
-  },
-  addSongToAlbumUser: async (albumId, song) => {
-    set({ isLoading: true, error: null });
-    try {
-      console.log("check data add song: ", albumId, song);
-
-      const currentAlbum_clone = _.cloneDeep(get().currentAlbum);
-      currentAlbum_clone?.songs.push(song);
-      set({ currentAlbum: currentAlbum_clone });
-      const res = await axiosIntance.post("albums/addnew", { albumId, song });
-      console.log("check data API: ", res.data);
-
+      set((state) => ({ albumsUser: [...state.albumsUser, res.data.dataNew] }))
     } catch (error: any) {
       set({ error: error.message });
     } finally {
       set({ isLoading: false });
+    }
+  },
+  minusSongAlbumUser: async (albumId, song) => {
+    set({ isLoading: true, error: null });
+    const originalAlbum = _.cloneDeep(get().currentAlbum);
+
+    try {
+      const current = _.cloneDeep(get().currentAlbum);
+      if (current) {
+        const newDataSong = current.songs.filter(i => i._id !== song._id);
+        set({
+          currentAlbum: { ...current, songs: newDataSong },
+          isLoading: false,
+        });
+      }
+
+      try {
+        await axiosIntance.post("albums/deleteSong", { albumId, song });
+      } catch (error: any) {
+        set({
+          currentAlbum: originalAlbum,
+          error: error.message,
+        });
+        toast.error("Had error when delete song");
+      }
+    } catch (error: any) {
+      set({ error: error });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+  addSongToAlbumUser: async (albumId, song) => {
+    set({ isLoading: true, error: null });
+
+    // Cách 1 để xử lý rerender
+    // const udpateToDB = async () => {
+    //   try {
+    //     await axiosIntance.post("albums/addnew", { albumId, song });
+    //   } catch (error: any) {
+    //     toast.error("Had an error when save data");
+    //     console.error(error.message);
+    //   }
+    // };
+    // try {
+    //   const current = get().currentAlbum;
+    //   if (current) {
+    //     const newSongs = [...current.songs, song];
+    //     set({
+    //       currentAlbum: { ...current, songs: newSongs },
+    //       isLoading: false
+    //     });
+    //   }
+
+    //   udpateToDB();
+    // } catch (error: any) {
+    //   set({ error: error.message });
+    // } finally {
+    //   set({ isLoading: false })
+    // }
+    // ++++++++++++++++++++
+
+    // Cách 2 nhưng có bắt exception
+    const originalAlbum = _.cloneDeep(get().currentAlbum);
+    try {
+      const current = get().currentAlbum;
+      if (current) {
+        const newSongs = [...current.songs, song];
+        set({
+          currentAlbum: { ...current, songs: newSongs },
+          isLoading: false
+        });
+      }
+
+      // Call  API update data
+      try {
+        await axiosIntance.post("albums/addnew", { albumId, song });
+      } catch (apiError) {
+        set({
+          currentAlbum: originalAlbum,
+          error: "Had error when update data in DB"
+        });
+
+        toast.error("Had error when update data in Album");
+      }
+    } catch (error: any) {
+      set({ error: error.message });
+    } finally {
+      set({ isLoading: false })
     }
   },
   getSongByID: async (id) => {

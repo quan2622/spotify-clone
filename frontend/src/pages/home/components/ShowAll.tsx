@@ -11,8 +11,10 @@ import { formatDuraion } from "../../album/AlbumPage";
 
 import MadeOfYouImage from '/SectionGrid/MadeForYou.jpg';
 import TrendingImage from '/SectionGrid/viral_trending.jpg';
+import { useAuth } from "@clerk/clerk-react";
 
 const ShowAll = () => {
+  const { userId } = useAuth()
   const { page } = useParams();
   const { isLoading, trendingSongs, madeForYouSongs, fetchMadeForYouSong, fetchTrendingSong, sloganMadeForYou, sloganTrending } = useMusicStore();
   const { currentSong, isPlaying, togglePlay, playAlbum } = usePlayerStore()
@@ -65,7 +67,7 @@ const ShowAll = () => {
   if (isLoading) return null;
 
   return (
-    <div className="h-full ">
+    <div className="h-full">
       <ScrollArea className="h-full rounded-md">
         {/* Main content */}
         <div className="relative h-[100%]">
@@ -138,7 +140,7 @@ const ShowAll = () => {
                         </div>
                         <div className="flex items-center gap-3">
                           <img src={song.imageUrl} alt={song.title}
-                            className="size-10" />
+                            className="h-10 w-10 object-cover rounded" />
                           <div>
                             <div className="font-medium text-white">{song.title}</div>
                             <div>{song.artist}</div>
@@ -154,25 +156,27 @@ const ShowAll = () => {
             </div>
 
             {/* Suggestion */}
-            <div className="bg-zinc-900/80 p-8">
-              <h1 className="text-white text-lg font-bold mt-6 mb-4">Suggestion</h1>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-                {albumsAdmin.map(album => (
-                  <div key={album._id} className="group bg-zinc8700/40 rounded-md hover:bg-zinc-700/40 transition-all cursor-pointer p-4"
-                    onClick={() => navigate(`/albums/${album._id}`)}>
-                    <div className="relative">
-                      <div className="aspect-square rounded-md shadow-lg overflow-hidden">
-                        <img src={album.imageUrl} alt={album.title}
-                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                        />
+            {userId &&
+              <div className="bg-zinc-900/80 p-8">
+                <h1 className="text-white text-lg font-bold mt-6 mb-4">Suggestion</h1>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                  {albumsAdmin.map(album => (
+                    <div key={album._id} className="group bg-zinc8700/40 rounded-md hover:bg-zinc-700/40 transition-all cursor-pointer p-4"
+                      onClick={() => navigate(`/albums/${album._id}`)}>
+                      <div className="relative">
+                        <div className="aspect-square rounded-md shadow-lg overflow-hidden">
+                          <img src={album.imageUrl} alt={album.title}
+                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                          />
+                        </div>
                       </div>
+                      <h3 className="font-medium mb-1 mt-2 truncate">{album.title}</h3>
+                      <p className="text-sm text-zinc-400 mb-2">{album.artist}</p>
                     </div>
-                    <h3 className="font-medium mb-1 mt-2 truncate">{album.title}</h3>
-                    <p className="text-sm text-zinc-400 mb-2">{album.artist}</p>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
+            }
           </div>
         </div>
       </ScrollArea>

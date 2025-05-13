@@ -1,12 +1,24 @@
 import { useEffect } from "react";
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { useMusicStore } from "../../stores/useMusicStore";
 import { ScrollArea } from "../../components/ui/scroll-area";
 import { Button } from "../../components/ui/button";
-import { Clock, Music, Pause, Play } from "lucide-react";
+import { CircleEllipsis, CircleMinus, Clock, Music, Pause, Play } from "lucide-react";
 import { usePlayerStore } from "../../stores/usePlayerStore";
 import UpdateAlbumUserDialog from "../../layout/components/UpdateAlbumUserDialog";
 import SuggestionAlbum_User from "./components/SuggestionAlbum_User";
+import { Song } from "../../types";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../../components/ui/dropdown-menu";
+import { axiosIntance } from "../../lib/axios";
+import toast from "react-hot-toast";
 
 export const formatDuraion = (duration: number) => {
   const minutes = Math.floor(duration / 60);
@@ -16,7 +28,8 @@ export const formatDuraion = (duration: number) => {
 
 const AlbumPage = () => {
   const { albumId } = useParams();
-  const { isLoading, currentAlbum, fetchAlbumById, featuredSongs, fetchFeaturedSong } = useMusicStore();
+  const navigate = useNavigate();
+  const { isLoading, fetchAlbumById, currentAlbum, featuredSongs, fetchFeaturedSong, minusSongAlbumUser } = useMusicStore();
 
   const { playAlbum, currentSong, isPlaying, togglePlay } = usePlayerStore();
 
@@ -27,8 +40,6 @@ const AlbumPage = () => {
   useEffect(() => {
     fetchFeaturedSong();
   }, []);
-
-  console.log("check feature song: ", featuredSongs);
 
   const handlePlayAlbum = () => {
     if (!currentAlbum) return;
@@ -45,7 +56,28 @@ const AlbumPage = () => {
 
   if (isLoading) return null;
 
+  const handleDeleteSong = (e: any, song: Song) => {
+    e.stopPropagation();
+    if (isPlaying)
+      togglePlay();
+    if (albumId) {
+      minusSongAlbumUser(albumId, song);
+    }
+  }
 
+  const hanleDeleteAlbum = async () => {
+    const res = await axiosIntance.delete(`albums/delete/${albumId}`);
+    if (res.data && res.data.success) {
+      toast.success(res.data.message);
+      useMusicStore.setState((state) => ({
+        albumsUser: state.albumsUser.filter(a => a._id !== albumId),
+      }))
+      navigate('/');
+
+    } else {
+      toast.error("Had error when delete album");
+    }
+  }
 
   return (
     <div className="h-full ">
@@ -83,18 +115,35 @@ const AlbumPage = () => {
               </div>
             </div>
             {/* play button */}
-            <div className="px-6 pb-4 flex items-center gap-6">
+            <div className="px-6 pb-4 flex items-center gap-6 justify-between">
               <Button
                 size='icon'
                 className="w-14 h-14 rounded-full bg-green-500 hover:bg-green-400 hover:scale-105 transition-all"
                 onClick={handlePlayAlbum}
               >
-                {isPlaying && currentAlbum?.songs.some(song => currentSong?._id === song._id) ?
+                {isPlaying && currentAlbum?.songs?.some(song => currentSong?._id === song._id) ?
                   <Pause className="h-8 w-8 text-black" />
                   :
                   <Play className="h-8 w-8 text-black" />
                 }
               </Button>
+              <div className="">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <CircleEllipsis className="size-8 text-zinc-400 hover:text-white" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56 bg-stone-800">
+                    <DropdownMenuLabel>Choose Selection</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem className="hover:hover:bg-zinc-700 flex items-center" onClick={() => hanleDeleteAlbum()}>
+                        <CircleMinus />
+                        <span className="text-sm">Delete Album</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             </div>
             {/* Table section */}
             <div className="bg-black/20 backdrop-blur-sm">
@@ -110,7 +159,7 @@ const AlbumPage = () => {
               {/* song lists */}
               <div className="px-6">
                 <div className="space-y-2 py-4">
-                  {currentAlbum?.songs.map((song, index) => {
+                  {currentAlbum?.songs?.map((song, index) => {
                     const isCurrent = currentSong?._id === song._id;
                     return (
                       <div
@@ -130,14 +179,19 @@ const AlbumPage = () => {
                         </div>
                         <div className="flex items-center gap-3">
                           <img src={song.imageUrl} alt={song.title}
-                            className="size-10" />
+                            className="h-10 w-10 object-cover rounded" />
                           <div>
                             <div className="font-medium text-white">{song.title}</div>
                             <div>{song.artist}</div>
                           </div>
                         </div>
                         <div className="flex items-center">{song.createdAt.split('T')[0]}</div>
-                        <div className="flex items-center">{formatDuraion(song.duration)}</div>
+                        <div className="flex items-center">
+                          <span>
+                            {formatDuraion(song.duration)}
+                          </span>
+                          <CircleMinus className="ml-7 hidden group-hover:block" onClick={(e) => handleDeleteSong(e, song)} />
+                        </div>
                       </div>
                     )
                   })}

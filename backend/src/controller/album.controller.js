@@ -5,13 +5,14 @@ import { User } from "../models/user.model.js";
 export const getAllAlbums = async (req, res, next) => {
   try {
     const adminAlbums = await Album.find({ type: 'admin' });
-
     const userAlbums = await Album.find({
-      $or: [
-        { owner: req.auth.userId },
-        { sharedWith: { $in: [req.auth.userId] } }
-      ],
-      type: 'user',
+      $and: {
+        $or: [
+          { owner: req.auth.userId },
+          { sharedWith: { $in: [req.auth.userId] } }
+        ],
+        type: 'user',
+      }
     })
 
     res.status(200).json({
@@ -65,13 +66,32 @@ export const createAlbumUser = async (req, res, next) => {
 export const AddSongToAlbum = async (req, res, next) => {
   try {
     const { song, albumId } = req.body;
-    console.log(song, albumId)
+
     const new_data = await Album.findOneAndUpdate(
       { _id: albumId },
-      { $push: { songs: song } },
+      { $push: { songs: song._id } },
       { new: true }
     )
-    console.log("check songs add album: ", new_data);
+
+    res.status(200).json({
+      success: true,
+      new_data
+    })
+  } catch (error) {
+    next(error.message);
+  }
+}
+
+export const DeleteSongAlbum = async (req, res, next) => {
+
+  try {
+    const { song, albumId } = req.body;
+    const new_data = await Album.findOneAndUpdate(
+      { _id: albumId },
+      { $pull: { songs: song._id } },
+      { new: true }
+    )
+
     res.status(200).json({
       success: true,
       new_data
@@ -111,3 +131,16 @@ export const UpdateInfoAlbum = async (req, res, next) => {
     next(error);
   }
 };
+
+export const DeleteAlbumUser = async (req, res, next) => {
+  try {
+    const { albumId } = req.params;
+    await Album.findByIdAndDelete(albumId);
+    res.status(200).json({
+      success: true,
+      message: "Delete album success"
+    })
+  } catch (error) {
+    next(error);
+  }
+}

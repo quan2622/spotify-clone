@@ -2,7 +2,7 @@ import { HomeIcon, Library, MessageCircle, Music, Plus, Search } from "lucide-re
 import { Link } from "react-router-dom"
 import { cn } from "../../lib/utils"
 import { buttonVariants } from "../../components/ui/button"
-import { SignedIn } from "@clerk/clerk-react"
+import { SignedIn, useAuth } from "@clerk/clerk-react"
 import { ScrollArea } from "../../components/ui/scroll-area"
 import PlayListSkeleton from "../../components/skeleton/PlayListSkeleton"
 import { useMusicStore } from "../../stores/useMusicStore"
@@ -10,6 +10,7 @@ import { useEffect } from "react"
 
 const LeftSideBar = () => {
   const { albumsUser, fetchAlbum, isLoading, createAlbumUser } = useMusicStore();
+  const { userId } = useAuth();
 
   useEffect(() => {
     fetchAlbum();
@@ -52,12 +53,16 @@ const LeftSideBar = () => {
             <span className="hidden md:inline">Playlists</span>
           </div>
           <div className="flex items-center justify-between w-full px-3 mt-2">
-            <div>
-              <Search className="size-5" />
-            </div>
-            <div className="p-2 rounded-full bg-zinc-600/50 relative" onClick={handleCreateNew}>
-              <Plus className="size-5 " />
-            </div>
+            {userId &&
+              <>
+                <div>
+                  <Search className="size-5" />
+                </div>
+                <div className="p-2 rounded-full bg-zinc-600/50 relative" onClick={handleCreateNew}>
+                  <Plus className="size-5 " />
+                </div>
+              </>
+            }
           </div>
         </div>
 

@@ -1,7 +1,9 @@
 import { PlusCircle } from "lucide-react";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Album, Song } from "../../../types";
 import { useMusicStore } from "../../../stores/useMusicStore";
+import toast from "react-hot-toast";
+import { axiosIntance } from "../../../lib/axios";
 
 type SuggestionAlbum_User = {
   album: Album
@@ -12,9 +14,25 @@ type SuggestionAlbum_User = {
 const SuggestionAlbum_User = ({ album, featuredSongs, formatDuraion }: SuggestionAlbum_User) => {
   const { addSongToAlbumUser } = useMusicStore()
   const [songSelected, setSongSelected] = useState<string>('');
+  const [dataSuggest, setDataSuggest] = useState<Song[]>([]);
+
+  useEffect(() => {
+    setDataSuggest(featuredSongs);
+  }, []);
+
   const handleAddNewSong = async (song: Song) => {
-    // const song = 
     await addSongToAlbumUser(album._id, song);
+  }
+
+  const handleFetchData = async () => {
+    try {
+
+      const res = await axiosIntance.get('songs/featured');
+      if (res.data)
+        setDataSuggest(res.data)
+    } catch (error) {
+      toast.error("Had error when refresh new data");
+    }
   }
 
   return (
@@ -22,7 +40,7 @@ const SuggestionAlbum_User = ({ album, featuredSongs, formatDuraion }: Suggestio
       <h1 className="text-white text-lg font-bold mt-6 mb-4">Suggestion</h1>
       <div className="px-4">
         <div className="space-y-2 py-4">
-          {featuredSongs.map((song, index) => {
+          {dataSuggest.map((song, index) => {
             let isSelected = songSelected === song._id;
             const isExist = album.songs.some(s => s._id === song._id)
             if (!isExist)
@@ -51,9 +69,14 @@ const SuggestionAlbum_User = ({ album, featuredSongs, formatDuraion }: Suggestio
               )
           })}
         </div>
+        <div className="flex items-center justify-end">
+          <div className="text-xs md:text-sm text-white pr-20 hover:font-semibold cursor-pointer" onClick={handleFetchData}>
+            Refresh
+          </div>
+        </div>
       </div>
 
     </div>
   )
 }
-export default SuggestionAlbum_User
+export default React.memo(SuggestionAlbum_User);
