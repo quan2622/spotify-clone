@@ -11,13 +11,12 @@ import Analysts from "./components/Analysts/Analysts"
 
 const AdminPage = () => {
   const { isAdmin, isLoading } = useAuthStore()
-  const { fetchStat, getSongPaginate, fetchAlbum } = useMusicStore();
+  const { fetchStat, fetchAlbum } = useMusicStore();
 
   useEffect(() => {
     fetchAlbum();
     fetchStat();
-    getSongPaginate();
-  }, [fetchStat, fetchAlbum, getSongPaginate]);
+  }, [fetchStat, fetchAlbum]);
 
 
   if (!isAdmin && !isLoading) {

@@ -49,7 +49,7 @@ const SuggestionAlbum_User = ({ album, featuredSongs, formatDuraion }: Suggestio
                   onClick={() => setSongSelected(song._id)}>
                   <div className="flex items-center opacity-0">{index + 1}</div>
                   <div className="flex items-center">
-                    <img src={song.imageUrl} alt={song.title} className="size-10" />
+                    <img src={song.imageUrl} alt={song.title} className="h-10 w-10 object-cover rounded" />
                     <div className="ml-5">
                       <div className="text-sm text-white">{song.title}</div>
                       <div className="text-sm mt-1">{song.artist}</div>

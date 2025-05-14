@@ -5,16 +5,17 @@ import { User } from "../models/user.model.js";
 export const getAllAlbums = async (req, res, next) => {
   try {
     const adminAlbums = await Album.find({ type: 'admin' });
-    const userAlbums = await Album.find({
-      $and: {
+
+    let userAlbums = [];
+    if (req.auth.userId) {
+      userAlbums = await Album.find({
         $or: [
           { owner: req.auth.userId },
           { sharedWith: { $in: [req.auth.userId] } }
         ],
         type: 'user',
-      }
-    })
-
+      })
+    }
     res.status(200).json({
       adminAlbums, userAlbums
     });
@@ -86,6 +87,12 @@ export const DeleteSongAlbum = async (req, res, next) => {
 
   try {
     const { song, albumId } = req.body;
+    if (!song || !albumId) {
+      return res.status(200).json({
+        success: false,
+        errMess: "Missing required params",
+      })
+    }
     const new_data = await Album.findOneAndUpdate(
       { _id: albumId },
       { $pull: { songs: song._id } },

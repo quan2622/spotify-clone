@@ -108,35 +108,6 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
   },
   addSongToAlbumUser: async (albumId, song) => {
     set({ isLoading: true, error: null });
-
-    // Cách 1 để xử lý rerender
-    // const udpateToDB = async () => {
-    //   try {
-    //     await axiosIntance.post("albums/addnew", { albumId, song });
-    //   } catch (error: any) {
-    //     toast.error("Had an error when save data");
-    //     console.error(error.message);
-    //   }
-    // };
-    // try {
-    //   const current = get().currentAlbum;
-    //   if (current) {
-    //     const newSongs = [...current.songs, song];
-    //     set({
-    //       currentAlbum: { ...current, songs: newSongs },
-    //       isLoading: false
-    //     });
-    //   }
-
-    //   udpateToDB();
-    // } catch (error: any) {
-    //   set({ error: error.message });
-    // } finally {
-    //   set({ isLoading: false })
-    // }
-    // ++++++++++++++++++++
-
-    // Cách 2 nhưng có bắt exception
     const originalAlbum = _.cloneDeep(get().currentAlbum);
     try {
       const current = get().currentAlbum;

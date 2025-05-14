@@ -11,8 +11,8 @@ const PaginationTable = () => {
 
   // console.log('checl page size: ', pageSize);
 
-  const onPageChange = (page: any) => {
-    getSongPaginate(page);
+  const onPageChange = async (page: any) => {
+    await getSongPaginate(page);
   };
 
   return (

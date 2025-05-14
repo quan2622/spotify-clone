@@ -4,9 +4,14 @@ import { useMusicStore } from "../../../../stores/useMusicStore"
 import { Button } from "../../../../components/ui/button";
 import PaginationTable from "../Pagination/Pagination";
 import UpdateSong from "./UpdateSong";
+import { useEffect } from "react";
 
 const SongTable = () => {
-  const { songs, isLoading, error, deleteSongAdmin } = useMusicStore();
+  const { songs, isLoading, error, deleteSongAdmin, getSongPaginate } = useMusicStore();
+
+  useEffect(() => {
+    getSongPaginate();
+  }, []);
 
   if (isLoading) {
     return (

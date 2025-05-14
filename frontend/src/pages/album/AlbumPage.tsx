@@ -54,14 +54,13 @@ const AlbumPage = () => {
     playAlbum(currentAlbum?.songs, index);
   }
 
-  if (isLoading) return null;
 
-  const handleDeleteSong = (e: any, song: Song) => {
+  const handleDeleteSong = async (e: any, song: Song) => {
     e.stopPropagation();
     if (isPlaying)
       togglePlay();
     if (albumId) {
-      minusSongAlbumUser(albumId, song);
+      await minusSongAlbumUser(albumId, song);
     }
   }
 
@@ -78,6 +77,8 @@ const AlbumPage = () => {
       toast.error("Had error when delete album");
     }
   }
+
+  if (isLoading) return null;
 
   return (
     <div className="h-full ">
