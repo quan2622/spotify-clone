@@ -10,7 +10,8 @@ import { ScrollArea } from "../components/ui/scroll-area";
 
 const MainLayout = () => {
   const [isMobile, setIsMobile] = useState(false);
-
+  const [isCollapseLeft, setIsCollapseLeft] = useState(false);
+  const [isCollapseRight, setIsCollapseRight] = useState(false);
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768)
@@ -26,8 +27,9 @@ const MainLayout = () => {
       <ResizablePanelGroup direction="horizontal" className="flex flex-1 h-full overflow-hidden p-2">
         <AudioPlayer />
         {/* Left side */}
-        <ResizablePanel defaultSize={20} minSize={isMobile ? 0 : 10} maxSize={30}>
-          <LeftSideBar />
+        <ResizablePanel defaultSize={20} minSize={isMobile ? 0 : 10} maxSize={20} collapsedSize={6} collapsible
+          onCollapse={() => { setIsCollapseLeft(true); }} onExpand={() => setIsCollapseLeft(false)}>
+          <LeftSideBar isCollapseLeft={isCollapseLeft} />
         </ResizablePanel>
         <ResizableHandle className="w-2 bg-black rounded-lg transition-colors" />
         {/* Main side */}
@@ -42,8 +44,9 @@ const MainLayout = () => {
           <>
             <ResizableHandle className="w-2 bg-black rounded-lg transition-colors" />
             {/* Right side */}
-            <ResizablePanel defaultSize={20} minSize={0} maxSize={25} collapsedSize={0}>
-              <RightSide />
+            <ResizablePanel defaultSize={20} minSize={14} maxSize={25} collapsedSize={6} collapsible
+              onCollapse={() => { setIsCollapseRight(true); }} onExpand={() => setIsCollapseRight(false)}>
+              <RightSide isCollapseRight={isCollapseRight} />
             </ResizablePanel>
           </>
         }
