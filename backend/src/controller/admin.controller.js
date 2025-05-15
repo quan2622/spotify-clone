@@ -4,7 +4,11 @@ import { uploadToCloudinary } from "../helper/uploadToCloudinary.js";
 
 export const getAllSong = async (req, res, next) => {
   try {
-    const songs = await Song.find().sort({ createdAt: 'desc' });
+    let { page } = req.query;
+    const limit = 4;
+    let number_skip = (+page - 1) * limit
+
+    const songs = await Song.find().sort({ createdAt: "desc" }).skip(number_skip).limit(limit);
     res.status(200).json(songs);
   } catch (error) {
     next(error);
@@ -47,6 +51,37 @@ export const createSong = async (req, res, next) => {
     next(error);
   }
 };
+
+export const updateSong = async (req, res, next) => {
+  try {
+    const { songId } = req.params;
+    let audioUrl = '';
+    let imageUrl = '';
+    if (req.files) {
+      if (req.files.audioFile) {
+        audioUrl = await uploadToCloudinary(req.files.audioFile);
+      }
+      if (req.files.imageFile) {
+        imageUrl = await uploadToCloudinary(req.files.imageFile);
+      }
+    }
+
+    let data_update = {
+      ...req.body,
+    }
+    if (audioUrl !== '') data_update.audioUrl = audioUrl;
+    if (imageUrl !== '') data_update.imageUrl = imageUrl;
+
+    const song = await Song.findByIdAndUpdate({ _id: songId }, { ...data_update }, { new: true });
+
+    res.status(200).json({
+      song,
+      message: 'Update successed'
+    })
+  } catch (error) {
+    next(error);
+  }
+}
 
 export const deleteSong = async (req, res, next) => {
   try {

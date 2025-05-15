@@ -4,7 +4,9 @@ import { protectRoute, requireAdmin } from "../middleware/auth.middleware.js";
 
 const router = Router();
 
-router.get('/', protectRoute, requireAdmin, getAllStat);
+router.use(protectRoute, requireAdmin);
+
+router.get('/', getAllStat);
 router.post('/recordListen', recordListen);
 router.get('/statsHistory', getDataAnalysts);
 
