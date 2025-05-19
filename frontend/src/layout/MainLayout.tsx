@@ -31,12 +31,12 @@ const MainLayout = () => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const fuse = new Fuse(songsSearch, {
-    keys: ['title', 'artist'],
-    threshold: 0.4,
-    ignoreLocation: true,
-    includeScore: true,
-  });
+  // const fuse = new Fuse(songsSearch, {
+  //   keys: ['title', 'artist'],
+  //   threshold: 0.4,
+  //   ignoreLocation: true,
+  //   includeScore: true,
+  // });
 
 
   const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {

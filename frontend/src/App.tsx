@@ -10,7 +10,7 @@ import AdminPage from "./pages/admin/AdminPage";
 import { Toaster } from "react-hot-toast"
 import NotFoundPage from "./pages/404/NotFoundPage";
 import ShowAll from "./pages/home/components/ShowAll";
-import SearchPage from "./pages/search/searchPage";
+import SearchPage from "./pages/search/SearchPage";
 
 function App() {
   return (
