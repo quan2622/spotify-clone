@@ -1,26 +1,17 @@
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "../components/ui/resizable"
 import LeftSideBar from "./components/LeftSideBar";
 import RightSide from "./components/RightSide";
 import AudioPlayer from "./components/AudioPlayer";
 import PlayBackControls from "./components/PlayBackControls";
-import { ChangeEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ScrollArea } from "../components/ui/scroll-area";
-import Topbar from "../components/Topbar";
-import { useMusicStore } from "../stores/useMusicStore";
-import Fuse from "fuse.js";
 
 
 const MainLayout = () => {
-  const { songsSearch } = useMusicStore()
-
   const [isMobile, setIsMobile] = useState(false);
   const [isCollapseLeft, setIsCollapseLeft] = useState(false);
   const [isCollapseRight, setIsCollapseRight] = useState(false);
-  const [dataSearch, setDataSearch] = useState("");
-
-  const navigate = useNavigate();
-
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768)
@@ -30,22 +21,6 @@ const MainLayout = () => {
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
-
-  const fuse = new Fuse(songsSearch, {
-    keys: ['title', 'artist'],
-    threshold: 0.4,
-    ignoreLocation: true,
-    includeScore: true,
-  });
-
-
-  const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
-    const query_sr = event.target.value;
-    setDataSearch(event.target.value);
-    if (query_sr.length !== 0) {
-      navigate(`/search/${query_sr}`)
-    }
-  }
 
   return (
     <div className="h-screen bg-black text-white flex flex-col">
@@ -58,9 +33,10 @@ const MainLayout = () => {
         </ResizablePanel>
         <ResizableHandle className="w-2 bg-black rounded-lg transition-colors" />
         {/* Main side */}
-        <ResizablePanel defaultSize={isMobile ? 80 : 60} className="flex gap-2 flex-col">
-          <Topbar query={dataSearch} handleSearch={handleSearch} />
-          <ScrollArea className="h-full flex flex-col overflow-auto rounded-md border py-3 bg-gradient-to-b from-zinc-800 to-zinc-900/40">
+        <ResizablePanel defaultSize={isMobile ? 80 : 60}>
+          {/* <Outlet />
+          <footer>đây la footer</footer> */}
+          <ScrollArea className="h-full flex flex-col overflow-auto rounded-md border">
             <Outlet />
           </ScrollArea>
         </ResizablePanel>

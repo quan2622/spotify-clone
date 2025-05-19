@@ -22,7 +22,6 @@ interface MusicStore {
   songById: Song | null,
   sloganMadeForYou: string,
   sloganTrending: string,
-  songsSearch: Song[],
 
   fetchAlbum: () => Promise<void>,
   fetchAlbumById: (albumId: string) => Promise<void>
@@ -39,7 +38,6 @@ interface MusicStore {
   createAlbumUser: () => Promise<void>,
   addSongToAlbumUser: (albumId: string, song: Song) => Promise<void>,
   minusSongAlbumUser: (albumId: string, song: Song) => Promise<void>,
-  getAllSong: () => Promise<void>,
 }
 
 export const useMusicStore = create<MusicStore>((set, get) => ({
@@ -65,21 +63,7 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
   songById: null,
   albumsAdmin: [],
   albumsUser: [],
-  songsSearch: [],
 
-  getAllSong: async () => {
-    set({ isLoading: true, error: null });
-    try {
-      const res = await axiosIntance.get("songs/all");
-      if (res.data.EC === 0)
-        set({ songsSearch: res.data.songs });
-      else toast.error(res.data.EM)
-    } catch (error: any) {
-      set({ error: error.message })
-    } finally {
-      set({ isLoading: false })
-    }
-  },
   createAlbumUser: async () => {
     set({ isLoading: true, error: null });
     try {
@@ -166,8 +150,7 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
   updateSong: async (data, songId) => {
     set({ isLoading: true, error: null });
     try {
-      console.log("check store update song: ", songId, " - data: ", data);
-      const res = await axiosIntance.put(`admin/songs/${songId}`, data, {
+      const res = await axiosIntance.put(`songs/${songId}`, data, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       toast.success(res.data.message);
@@ -183,7 +166,7 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
   getSongPaginate: async (page = '1') => {
     set({ isLoading: true, error: null });
     try {
-      const res = await axiosIntance.get(`admin/songs?page=${page}`);
+      const res = await axiosIntance.get(`songs?page=${page}`);
       set({
         songs: res.data,
         currentPage: +page,

@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import Topbar from "../../components/Topbar"
 import { useMusicStore } from "../../stores/useMusicStore"
 import FeaturedSection from "./components/FeaturedSection";
 import { ScrollArea } from "../../components/ui/scroll-area";
@@ -19,8 +20,10 @@ const HomePage = () => {
     trendingSongs,
   } = useMusicStore();
 
-  const { userId } = useAuth();
+  const { userId } = useAuth()
+
   const { initializeQueue } = usePlayerStore();
+
 
   useEffect(() => {
     fetchFeaturedSong();
@@ -36,8 +39,13 @@ const HomePage = () => {
   }, [initializeQueue, featuredSongs, trendingSongs, madeForYouSongs]);
 
 
+  // console.log('featured: ', featuredSongs);
+  // console.log('made for you songs: ', madeForYouSongs);
+  // console.log('trending: ', trendingSongs);
+
   return (
-    <main className="h-full   rounded-md overflow-hidden">
+    <main className="h-full bg-gradient-to-b from-zinc-800 to-zinc-900  rounded-md overflow-hidden">
+      <Topbar />
       <ScrollArea className="h-[calc(100vh-178px)] pb-6">
         <div className="p-4 sm:p-6">
           <h1 className="text-2xl sm:text-3xl font-bold mb-6">

@@ -10,7 +10,6 @@ import AdminPage from "./pages/admin/AdminPage";
 import { Toaster } from "react-hot-toast"
 import NotFoundPage from "./pages/404/NotFoundPage";
 import ShowAll from "./pages/home/components/ShowAll";
-import SearchPage from "./pages/search/searchPage";
 
 function App() {
   return (
@@ -29,7 +28,6 @@ function App() {
           <Route path="/:page" element={<ShowAll />} />
           <Route path="/chats" element={<ChatPage />} />
           <Route path="/albums/:albumId" element={<AlbumPage />} />
-          <Route path="/search" element={<SearchPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>
