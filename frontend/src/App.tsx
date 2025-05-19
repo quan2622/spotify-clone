@@ -29,7 +29,6 @@ function App() {
           <Route path="/:page" element={<ShowAll />} />
           <Route path="/chats" element={<ChatPage />} />
           <Route path="/albums/:albumId" element={<AlbumPage />} />
-          <Route path="/search" element={<SearchPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>
