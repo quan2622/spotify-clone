@@ -3,6 +3,7 @@ import { axiosIntance } from "../lib/axios";
 import { Album, Song, Stat } from "../types";
 import toast from "react-hot-toast";
 import _ from "lodash"
+import Fuse from "fuse.js";
 
 interface MusicStore {
   albums: Album[],
@@ -23,6 +24,7 @@ interface MusicStore {
   sloganMadeForYou: string,
   sloganTrending: string,
   songsSearch: Song[],
+  resultSearch: Song[],
 
   fetchAlbum: () => Promise<void>,
   fetchAlbumById: (albumId: string) => Promise<void>
@@ -40,6 +42,7 @@ interface MusicStore {
   addSongToAlbumUser: (albumId: string, song: Song) => Promise<void>,
   minusSongAlbumUser: (albumId: string, song: Song) => Promise<void>,
   getAllSong: () => Promise<void>,
+  handleSearch: (query: string) => void,
 }
 
 export const useMusicStore = create<MusicStore>((set, get) => ({
@@ -66,7 +69,23 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
   albumsAdmin: [],
   albumsUser: [],
   songsSearch: [],
+  resultSearch: [],
 
+  handleSearch: (query) => {
+    if (!query) return { EC: 1, EM: "Missing search query. Please try again!", }
+    const songs = get().songsSearch;
+    const fuse = new Fuse(songs, {
+      keys: ['title', 'artist'],
+      threshold: 0.5,
+      ignoreLocation: true,
+      includeScore: true,
+    });
+
+    const results = fuse.search(query).slice(0, 10).map(result => result.item);
+    set({ resultSearch: results });
+    return { EC: 0, EM: "Success!" };
+
+  },
   getAllSong: async () => {
     set({ isLoading: true, error: null });
     try {
