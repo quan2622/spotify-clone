@@ -5,7 +5,7 @@ import { Loader } from "lucide-react";
 import { useAuthStore } from "../stores/useAuthStore";
 import { useChatStore } from "../stores/useChatStore";
 
-const updateApiToken = (token: String | null) => {
+const updateApiToken = (token: string | null) => {
   if (token) axiosIntance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
   else delete axiosIntance.defaults.headers.common['Authorization'];
 }

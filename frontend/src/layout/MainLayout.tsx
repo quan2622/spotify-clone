@@ -1,25 +1,41 @@
-import { Outlet, useNavigate } from "react-router-dom";
+import { matchPath, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "../components/ui/resizable"
 import LeftSideBar from "./components/LeftSideBar";
 import RightSide from "./components/RightSide";
 import AudioPlayer from "./components/AudioPlayer";
 import PlayBackControls from "./components/PlayBackControls";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { ScrollArea } from "../components/ui/scroll-area";
 import Topbar from "../components/Topbar";
-import { useMusicStore } from "../stores/useMusicStore";
-import Fuse from "fuse.js";
+import { useSearchStore } from "../stores/useSearchStore";
 
 
 const MainLayout = () => {
-  const { songsSearch } = useMusicStore()
-
+  const [isFisrt, setIsFirst] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [isCollapseLeft, setIsCollapseLeft] = useState(false);
   const [isCollapseRight, setIsCollapseRight] = useState(false);
-  const [dataSearch, setDataSearch] = useState("");
-
+  const [dataSearch, setDataSearch] = useState<string>("");
   const navigate = useNavigate();
+  const location = useLocation();
+  const prevPath = useRef(location.pathname);
+  const { dataSearch: searchKey } = useSearchStore();
+
+  useEffect(() => {
+    if (!searchKey) return;
+    setDataSearch(encodeURIComponent(searchKey));
+    useSearchStore.setState({ dataSearch: "" });
+  }, []);
+
+  useEffect(() => {
+    if (isFisrt) {
+      return setIsFirst(false);
+    }
+    if (dataSearch) {
+      useSearchStore.setState({ dataSearch: dataSearch });
+      navigate(`/search/${dataSearch}`);
+    }
+  }, [dataSearch]);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -31,20 +47,32 @@ const MainLayout = () => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // const fuse = new Fuse(songsSearch, {
-  //   keys: ['title', 'artist'],
-  //   threshold: 0.4,
-  //   ignoreLocation: true,
-  //   includeScore: true,
-  // });
+  useEffect(() => {
+    const wasSearchDetail = matchPath("/search/:dataSearch", prevPath.current);
+    const isSearchDetail = matchPath("/search/:dataSearch", location.pathname);
 
+    if (wasSearchDetail && !isSearchDetail) {
+      setDataSearch("");
+      useSearchStore.setState({ dataSearch: "" });
+    }
+
+    prevPath.current = location.pathname;
+  }, [location]);
+
+
+  useEffect(() => {
+    const isSearchDetail = matchPath("/search/:dataSearch", location.pathname);
+    if (!dataSearch && isSearchDetail) {
+      navigate("/search");
+    }
+  }, [dataSearch]);
 
   const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
-    const query_sr = event.target.value;
+    // const query_sr = event.target.value;
     setDataSearch(event.target.value);
-    if (query_sr.length !== 0) {
-      navigate(`/search/${query_sr}`)
-    }
+    // if (query_sr.length !== 0) {
+    //   navigate(`/search/${query_sr}`)
+    // }
   }
 
   return (

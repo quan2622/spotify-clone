@@ -23,7 +23,7 @@ const LeftSideBar = ({ isCollapseLeft }: { isCollapseLeft: boolean }) => {
   useEffect(() => {
     setAlbum_rd(albumsUser);
   }, [albumsUser]);
-  // console.log('>> check album', { albums }, 'status: ', isLoading);
+
   const handleCreateNew = async () => {
     await createAlbumUser();
   }
@@ -45,9 +45,8 @@ const LeftSideBar = ({ isCollapseLeft }: { isCollapseLeft: boolean }) => {
     } else {
       setAlbum_rd(albumsUser);
     }
-
   }
-  console.log("check left:", isCollapseLeft);
+
   return (
     <div className="h-full flex flex-col gap-2">
       {/* Navigation menu */}
@@ -80,26 +79,6 @@ const LeftSideBar = ({ isCollapseLeft }: { isCollapseLeft: boolean }) => {
           </SignedIn>
 
         </div>
-
-        {/* <div className="space-y-2">
-          <Link to={'/'} className={cn(buttonVariants({
-            variant: "ghost",
-            className: "w-full text-white hover: bg-zinc-800 flex items-center justify-center"
-          }))}>
-            <HomeIcon className="size-5" />
-            {!isCollapseLeft && <span className="hidden md:inline">Home</span>}
-          </Link>
-
-          <SignedIn>
-            <Link to={'/chats'} className={cn(buttonVariants({
-              variant: "ghost",
-              className: "w-full text-white hover: bg-zinc-800 flex items-center justify-center"
-            }))}>
-              <MessageCircle className="size-5" />
-              {!isCollapseLeft && <span className="hidden md:inline">Message</span>}
-            </Link>
-          </SignedIn>
-        </div> */}
 
       </div>
       {/* Library section */}

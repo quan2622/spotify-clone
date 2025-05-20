@@ -6,7 +6,7 @@ interface SearchStore {
 }
 
 export const useSearchStore = create(
-  persist<SearchStore>((set, get) => ({
+  persist<SearchStore>(() => ({
     dataSearch: "",
   }), {
     name: "search-store",
