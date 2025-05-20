@@ -54,8 +54,9 @@ const ShowAll = () => {
   const handlePlayAlbum = () => {
     if (!songs) return;
 
-    const isCurrentAlbumPLaying = songs.some(song => song._id === currentSong?._id);
-    if (isCurrentAlbumPLaying) return togglePlay();
+    const isCurrentAlbumPLaying = songs.some(song => song._id !== currentSong?._id);
+    console.log("check isCurrentAlbumPLaying: ", isCurrentAlbumPLaying, " - ", songs);
+    if (!isCurrentAlbumPLaying) return togglePlay();
     else playAlbum(songs);
   }
 
