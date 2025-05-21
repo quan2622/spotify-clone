@@ -9,7 +9,8 @@ const albumSchema = new mongoose.Schema({
   songs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Song' }],
   owner: { type: String },
   type: { type: String, enum: ['admin', 'user'], default: 'user' },
-  sharedWith: [{ type: String }]
+  sharedWith: [{ type: String }],
+  genreId: { type: mongoose.Schema.Types.ObjectId, ref: 'Genre' },
 }, {
   timestamps: true,
 });

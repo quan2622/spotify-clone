@@ -8,6 +8,8 @@ const songSchema = new mongoose.Schema({
   duration: { type: Number, required: true },
   albumId: { type: mongoose.Schema.Types.ObjectId, ref: 'Album', required: false },
   totalListens: { type: Number, default: 0 },
+  genreId: { type: mongoose.Schema.Types.ObjectId, ref: 'Genre' },
+  artistId: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Artist' }],
 }, {
   timestamps: true,
 });
