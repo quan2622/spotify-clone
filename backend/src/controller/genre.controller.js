@@ -46,7 +46,7 @@ class genreController {
   }
 
   // GET api/genre/detail/:genreId
-  getDetailGenre = async (req, res, next) => {
+  GetDetailGenre = async (req, res, next) => {
     try {
       if (!req.params) return res.status(400).json({ EC: 1, EM: "Missing required params" });
 
@@ -61,6 +61,48 @@ class genreController {
     } catch (error) {
       console.log("Error when get detail genre: ", error);
       next(error);
+    }
+  }
+
+  // PUT api/genre/update-genre/:genreId
+  UpdateGenre = async (req, res, next) => {
+    try {
+      const { genreId } = req.params;
+      if (!req.body || Object.keys(req.body).length === 0)
+        return res.status(200).json({
+          EC: 1,
+          EM: "Data in body is empty",
+        })
+      const data = await Genre.findByIdAndUpdate(genreId, req.body, { new: true });
+      if (!data) {
+        return res.status(404).json({
+          EC: 2,
+          EM: `Cannot find genre by id: ${genreId}`
+        })
+      }
+      return res.status(200).json({
+        EC: 0,
+        EM: "Update data success",
+        new_data: data,
+      })
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // Delete api/genre/delete/:genreId
+  DeleteGenre = async (req, res, next) => {
+    try {
+      const { genreId } = req.params;
+      if (!genreId) return res.status(400).json({ EC: 1, EM: "Missing required params" });
+      const data = await Genre.findByIdAndDelete(genreId);
+      if (!data) return res.status(404).json({ EC: 2, EM: `Cannot found genre by id: ${genreId}` });
+      return res.status(200).json({
+        EC: 0,
+        EM: "Delete success",
+      })
+    } catch (error) {
+      next(error)
     }
   }
 
