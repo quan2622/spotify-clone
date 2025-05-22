@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import { Button } from "../../../../components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../../../../components/ui/dialog"
@@ -22,11 +24,12 @@ const UpdateAlbum = ({ album }: UpdateAlbum) => {
   const [availableSongs, setAvailableSongs] = useState<Song[]>([]);
   const [albumSongs, setAlbumSongs] = useState<Song[]>([]);
 
-  // console.log('check songs admin: ', songs, availableSongs);
+  console.log('check songs admin: ', songs);
 
   useEffect(() => {
     fetchAlbumById(album._id);
   }, [albumDialog]);
+
   useEffect(() => {
     // console.log('Check current album: ', currentAlbum);
     if (currentAlbum?._id !== album._id) return;
@@ -36,7 +39,7 @@ const UpdateAlbum = ({ album }: UpdateAlbum) => {
     ));
 
     setAlbumSongs([...currentAlbum.songs]);
-  }, [currentAlbum]);
+  }, [currentAlbum, songs]);
 
   const fuse = new Fuse(songs, {
     keys: ['title', 'artist'],
@@ -45,6 +48,7 @@ const UpdateAlbum = ({ album }: UpdateAlbum) => {
     includeScore: true,
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleSearch = (e: any) => {
     const sr_query = e.target.value;
     setQuery(sr_query);

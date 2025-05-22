@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { create } from 'zustand'
 import { axiosIntance } from "../lib/axios";
 import { Album, Song, Stat } from "../types";
@@ -157,6 +158,7 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
       // Call  API update data
       try {
         await axiosIntance.post("albums/addnew", { albumId, song });
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (apiError) {
         set({
           currentAlbum: originalAlbum,
@@ -288,8 +290,8 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
   fetchSongAdmin: async () => {
     set({ isSongLoading: true, error: null });
     try {
-      const res = await axiosIntance.get('admin/songs');
-      set({ songs: res.data })
+      const res = await axiosIntance.get('songs/all');
+      set({ songs: res.data.songs })
     } catch (error: any) {
       set({ error: error.message });
     } finally {
@@ -299,7 +301,7 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
   deleteSongAdmin: async (songId) => {
     set({ isLoading: true, error: null });
     try {
-      console.log('song Id: ', songId);
+      // console.log('song Id: ', songId);
       const res = await axiosIntance.delete(`admin/songs/${songId}`);
       get().getSongPaginate((get().currentPage).toString());
       set(state => ({
