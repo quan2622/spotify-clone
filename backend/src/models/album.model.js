@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 
 const albumSchema = new mongoose.Schema({
   title: { type: String, required: true },
-  artist: { type: String, required: true },
   imageUrl: { type: String },
   description: { type: String },
   releaseYear: { type: Number, required: true },
@@ -11,6 +10,7 @@ const albumSchema = new mongoose.Schema({
   type: { type: String, enum: ['admin', 'user'], default: 'user' },
   sharedWith: [{ type: String }],
   genreId: { type: mongoose.Schema.Types.ObjectId, ref: 'Genre' },
+  artistId: { type: mongoose.Schema.Types.ObjectId, ref: 'Artist' },
 }, {
   timestamps: true,
 });

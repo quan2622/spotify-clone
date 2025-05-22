@@ -5,6 +5,7 @@ import songRoutes from './song.route.js';
 import albumRoutes from './album.route.js';
 import statRoutes from './stat.route.js';
 import genreRoutes from './genre.route.js'
+import artistRoutes from './artist.route.js'
 
 export default (app) => {
   app.use('/api/users', userRoutes);
@@ -13,5 +14,6 @@ export default (app) => {
   app.use('/api/songs', songRoutes);
   app.use('/api/albums', albumRoutes);
   app.use('/api/stats', statRoutes);
-  app.use('/api/genre', genreRoutes)
+  app.use('/api/genre', genreRoutes);
+  app.use('/api/artist', artistRoutes);
 };
