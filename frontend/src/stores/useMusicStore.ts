@@ -220,14 +220,14 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
     set({ isLoading: true, error: null, });
     try {
       const res = await axiosIntance.get('albums');
-      console.log(res.data);
+      // console.log("Check album admin store", res.data);
       set({
         albums: res.data,
         albumsAdmin: res.data.adminAlbums,
         albumsUser: res.data.userAlbums
       });
     } catch (error: any) {
-      set({ error: error.respone.data.message })
+      set({ error: error.respone })
     } finally {
       set({ isLoading: false });
     }

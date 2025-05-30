@@ -1,7 +1,6 @@
 export interface Song {
   _id: string,
   title: string,
-  artist: string,
   albumId: string | null,
   imageUrl: string,
   audioUrl: string,
@@ -9,12 +8,13 @@ export interface Song {
   totalListens: number,
   createdAt: string,
   udpatedAt: string,
+  genreId: Genre,
+  artistId: Artist[],
 }
 
 export interface Album {
   _id: string,
   title: string,
-  artist: string,
   imageUrl: string,
   description: string,
   releaseYear: number,
@@ -24,6 +24,25 @@ export interface Album {
   owner: string,
   type: string,
   sharedWith: string[],
+  artistId: Artist,
+  genreId: Genre
+}
+
+export interface Artist {
+  _id: string,
+  name: string,
+  realName: string,
+  genres: Genre[],
+  country: string,
+  imageUrl: string,
+  followerCount: number,
+}
+
+export interface Genre {
+  _id: string,
+  name: string,
+  description: string,
+  imageUrl: string
 }
 export interface AlbumAdmin {
   _id: string,

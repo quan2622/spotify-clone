@@ -38,7 +38,6 @@ const Analysts = () => {
     await getDataAnalyst(type);
   }
 
-  console.log(typeAnalyst);
   return (
     <div className="w-full">
       <div className="">

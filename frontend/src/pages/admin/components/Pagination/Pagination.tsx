@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Pagination from 'rc-pagination';
 import "./Pagination.css"
 import { ChevronLeft, ChevronRight } from "lucide-react";
