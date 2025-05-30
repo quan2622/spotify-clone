@@ -4,8 +4,7 @@ import { User } from "../models/user.model.js";
 
 export const getAllAlbums = async (req, res, next) => {
   try {
-    const adminAlbums = await Album.find({ type: 'admin' });
-
+    const adminAlbums = await Album.find({ type: 'admin' }).populate("artistId");
     let userAlbums = [];
     if (req.auth.userId) {
       userAlbums = await Album.find({
@@ -40,25 +39,26 @@ export const getAllAlbumById = async (req, res, next) => {
 export const createAlbumUser = async (req, res, next) => {
   try {
     const user = await User.findOne({ clerkId: req.auth.userId });
+    if (!user) {
+      const count = await Album.countDocuments({
+        owner: req.auth.userId,
+      })
 
-    const count = await Album.countDocuments({
-      owner: req.auth.userId,
-    })
+      const dataNew = await Album.create({
+        title: `Album new ${count + 1}`,
+        artist: user.fullName,
+        releaseYear: new Date().getFullYear(),
+        owner: req.auth.userId,
+        type: 'user',
+      });
 
-    const dataNew = await Album.create({
-      title: `Album new ${count + 1}`,
-      artist: user.fullName,
-      releaseYear: new Date().getFullYear(),
-      owner: req.auth.userId,
-      type: 'user',
-    });
-
-    res.status(201).json(
-      {
-        success: true,
-        dataNew,
-      }
-    )
+      res.status(201).json(
+        {
+          success: true,
+          dataNew,
+        }
+      )
+    } else return res.status(404).json({ EC: 1, EM: "Cannot find user" });
   } catch (error) {
     next(error.message);
   }

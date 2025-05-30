@@ -29,7 +29,10 @@ class artistController {
           path: "genres",
           select: "name description",
         }]);
-
+      if (!data) return res.status(500).json({
+        EC: 1,
+        EM: "Cannot get data form DB",
+      })
       return res.status(200).json({
         EC: 0,
         EM: "Get data success",

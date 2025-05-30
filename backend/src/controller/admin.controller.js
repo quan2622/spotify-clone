@@ -107,15 +107,20 @@ export const createAlbum = async (req, res, next) => {
       return res.status(400).json({ message: 'Please upload image album' });
     }
 
-    const { title, artist, releaseYear } = req.body;
+    const { title, artistId, releaseYear, type } = req.body;
+
+    console.log("admin album: ", req.body);
+
     const { imageFile } = req.files;
+    let data = {
+      ...req.body
+    }
+    if (type === 'admin') data.owner = artistId;
 
     const imageUrl = await uploadToCloudinary(imageFile);
+    data.imageUrl = imageUrl;
     const album = new Album({
-      title,
-      artist,
-      releaseYear,
-      imageUrl,
+      ...data
     });
     await album.save();
     res.status(200).json(album);

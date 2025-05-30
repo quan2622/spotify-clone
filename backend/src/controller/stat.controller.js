@@ -56,13 +56,11 @@ export const recordListen = async (req, res, next) => {
     const start = startOfDay(today);
     const end = endOfDay(today);
 
-    const countListenToday = await ListenHistory.find({
+    const countListenToday = await ListenHistory.countDocuments({
       songId,
       userId,
       date: { $gte: start, $lte: end },
     });
-
-    // console.log('check count: ', countListenToday);
 
     if (countListenToday.length > 0) {
       if (countListenToday[0].count >= 20) {
