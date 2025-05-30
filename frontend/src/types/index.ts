@@ -29,13 +29,14 @@ export interface Album {
 }
 
 export interface Artist {
-  _id: string,
+  _id?: string,
   name: string,
   realName: string,
   genres: Genre[],
   country: string,
-  imageUrl: string,
-  followerCount: number,
+  imageUrl?: string,
+  imageFile?: File,
+  followerCount?: number,
 }
 
 export interface Genre {
