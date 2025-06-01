@@ -8,7 +8,7 @@ export const getAllSong = async (req, res, next) => {
     const limit = 4;
     let number_skip = (+page - 1) * limit
 
-    const songs = await Song.find().sort({ createdAt: "desc" }).skip(number_skip).limit(limit);
+    const songs = await Song.find().populate({ path: "artistId", select: "name" }).sort({ createdAt: "desc" }).skip(number_skip).limit(limit);
     res.status(200).json(songs);
   } catch (error) {
     next(error);
@@ -21,7 +21,7 @@ export const createSong = async (req, res, next) => {
       return res.status(400).json({ message: 'Please upload all files' });
     }
 
-    const { title, artist, albumId, duration } = req.body;
+    const { title, artistId, albumId, duration } = req.body;
     const audioFile = req.files.audioFile;
     const imageFile = req.files.imageFile;
 
@@ -30,13 +30,12 @@ export const createSong = async (req, res, next) => {
 
     const song = new Song({
       title,
-      artist,
+      artistId: JSON.parse(artistId),
       audioUrl,
       imageUrl,
       duration,
       albumId: albumId || null
     });
-
     await song.save();
 
     // if song belongs to an album, update the album's song array

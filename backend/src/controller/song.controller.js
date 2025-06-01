@@ -95,7 +95,7 @@ export const getSongById = async (req, res, next) => {
 
 export const getAllSong = async (req, res, next) => {
   try {
-    const data = await Song.find();
+    const data = await Song.find().populate('artistId');
     if (data) {
       return res.status(200).json({
         songs: data,
