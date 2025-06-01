@@ -25,7 +25,14 @@ export const getAllAlbums = async (req, res, next) => {
 
 export const getAllAlbumById = async (req, res, next) => {
   try {
-    const album = await Album.findById(req.params.albumId).populate("songs");
+    const album = await Album.findById(req.params.albumId).populate({
+      path: "songs",
+      populate: {
+        path: "artistId",
+        select: ['name']
+      },
+    }
+    );
     // populate -> specific path and return document in model had been ref
     if (!album) {
       return res.status(404).json({ message: 'Album not found' });

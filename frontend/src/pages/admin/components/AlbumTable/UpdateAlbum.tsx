@@ -24,7 +24,7 @@ const UpdateAlbum = ({ album }: UpdateAlbum) => {
   const [availableSongs, setAvailableSongs] = useState<Song[]>([]);
   const [albumSongs, setAlbumSongs] = useState<Song[]>([]);
 
-  console.log('check songs admin: ', songs);
+  // console.log('check songs admin: ', songs);
 
   useEffect(() => {
     fetchAlbumById(album._id);
@@ -48,7 +48,7 @@ const UpdateAlbum = ({ album }: UpdateAlbum) => {
     includeScore: true,
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   const handleSearch = (e: any) => {
     const sr_query = e.target.value;
     setQuery(sr_query);
@@ -116,10 +116,15 @@ const UpdateAlbum = ({ album }: UpdateAlbum) => {
                   {availableSongs.map((song) => (
                     <li
                       key={song._id}
-                      className="flex justify-between items-center p-2 hover:bg-zinc-500 rounded-md"
+                      className="flex justify-between items-center py-2 px-3 hover:bg-zinc-500 rounded-md"
                     >
-                      <span className="flex-1 pr-4 text-sm break-words">
-                        {song.title} - {song.artist}
+                      <span className="flex-1 pr-4 text-sm break-words flex flex-col gap-1">
+                        <span>
+                          {song.title}
+                        </span>
+                        <span className="text-xs text-zinc-400">
+                          {song.artistId.map(item => item.name).join(" - ")}
+                        </span>
                       </span>
                       <Button size={'icon'}
                         onClick={() => addToAlbum(song)}
@@ -148,8 +153,13 @@ const UpdateAlbum = ({ album }: UpdateAlbum) => {
                         key={`${song._id}-album`}
                         className="flex justify-between items-center p-2 hover:bg-zinc-500 rounded-md"
                       >
-                        <span className="flex-1 pr-4 text-sm break-words">
-                          {song.title} - {song.artist}
+                        <span className="flex-1 pr-4 text-sm break-words flex flex-col gap-1">
+                          <span>
+                            {song.title}
+                          </span>
+                          <span className="text-xs text-zinc-400">
+                            {song.artistId.map(item => item.name).join(" - ")}
+                          </span>
                         </span>
                         <Button size={'icon'}
                           onClick={() => removeFromAlbum(song)}
@@ -171,7 +181,7 @@ const UpdateAlbum = ({ album }: UpdateAlbum) => {
           <Button variant={"outline"} onClick={() => setAlbumDialog(false)}
             disabled={isLoading}>Cancel</Button>
           <Button onClick={handleUpdate} disabled={isLoading}>
-            {isLoading ? 'Uploading ...' : 'Add Album'}
+            {isLoading ? 'Uploading ...' : 'Save Change'}
           </Button>
         </DialogFooter>
       </DialogContent>
