@@ -13,6 +13,8 @@ const AlbumTable = () => {
     fetchSongAdmin();
   }, [fetchAlbum, fetchSongAdmin]);
 
+  // console.log("check album admin: ", albumsAdmin);
+
   return (
     <Table>
       <TableHeader>
@@ -32,7 +34,7 @@ const AlbumTable = () => {
               <img src={album.imageUrl} alt={album.title} className="size-12 rounded object-cover" />
             </TableCell>
             <TableCell className="font-medium">{album.title}</TableCell>
-            <TableCell>{album.artist}</TableCell>
+            <TableCell>{album.artistId?.name}</TableCell>
             <TableCell>
               <span className="inline-flex items-center gap-1 text-zinc-400">
                 <Calendar className="h-4 w-4" />
