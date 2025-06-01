@@ -8,6 +8,9 @@ import { Input } from "../../../../components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../../components/ui/select";
 import toast from "react-hot-toast";
 import { Song } from "../../../../types";
+import { useArtistStore } from "../../../../stores/artistStore";
+import { CommandDialog, CommandEmpty, CommandInput, CommandItem, CommandList } from "../../../../components/ui/command";
+import { ScrollArea } from "../../../../components/ui/scroll-area";
 
 type UpdateSong = {
   song: Song,
@@ -15,7 +18,7 @@ type UpdateSong = {
 
 type newSong = {
   title: string,
-  artist: string,
+  artist: string[],
   album: string | undefined,
   duration: string
 }
@@ -33,13 +36,15 @@ const urlToFile = async (url: string, filename: string, mimeType: string) => {
 }
 
 const UpdateSong = ({ song }: UpdateSong) => {
+  const { artists, getAllArtist } = useArtistStore();
   const { albumsAdmin, getSongPaginate, updateSong } = useMusicStore();
   const [songDialogOpen, setSongDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isOpenArtist, setIsOpenArtist] = useState(false);
 
   const [newSong, setNewSong] = useState<newSong>({
     title: '',
-    artist: '',
+    artist: [],
     album: '',
     duration: '0',
   });
@@ -61,6 +66,9 @@ const UpdateSong = ({ song }: UpdateSong) => {
   const audioInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    getAllArtist();
+  }, [getAllArtist]);
 
   useEffect(() => {
     if (!song) return
@@ -74,7 +82,7 @@ const UpdateSong = ({ song }: UpdateSong) => {
       }));
       setNewSong({
         title: song.title,
-        artist: song.artist,
+        artist: song.artistId.map(item => item._id),
         album: song.albumId ?? undefined,
         duration: '',
       });
@@ -97,6 +105,11 @@ const UpdateSong = ({ song }: UpdateSong) => {
     });
   }
 
+  const handleSelectArtist = (value: string) => {
+    setNewSong((prev) => prev.artist.includes(value) ?
+      { ...prev, artist: prev.artist.filter(v => v !== value) } : { ...prev, artist: [...prev.artist, value] })
+  }
+
   const handleSubmitUpdate = async () => {
     setIsLoading(true);
     try {
@@ -108,7 +121,7 @@ const UpdateSong = ({ song }: UpdateSong) => {
       if (isChange.cTitle)
         formData.append('title', newSong.title);
       if (isChange.cArtist)
-        formData.append('artist', newSong.artist);
+        formData.append('artistId', JSON.stringify(newSong.artist));
       if (isChange.cDuration)
         formData.append('duration', newSong.duration);
       if (newSong && newSong.album !== 'none' && isChange.cAlbum) {
@@ -121,14 +134,17 @@ const UpdateSong = ({ song }: UpdateSong) => {
       if (isChange.cImage)
         formData.append('imageFile', files.image);
 
-      for (let pair of formData.entries()) {
-        console.log(`${pair[0]}:`, pair[1]);
-      }
-
+      // for (const pair of formData.entries()) {
+      //   console.log(`${pair[0]}:`, pair[1]);
+      // }
       await updateSong(formData, song._id)
       await getSongPaginate();
-    } catch (error: any) {
-      toast.error('Failed to update song: ' + error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error('Failed to update song: ' + error.message);
+      } else {
+        toast.error('Failed to update song: Unknown error');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -214,21 +230,45 @@ const UpdateSong = ({ song }: UpdateSong) => {
               className="bg-zinc-800 border-zinc-700"
             />
           </div>
-          <div className="space-y-2">
-            <label className="font-medium text-sm">Artist</label>
-            <Input value={newSong.artist} onChange={(e) => {
-              setNewSong({ ...newSong, artist: e.target.value })
-              setIsChange({ ...isChange, cArtist: true })
-            }}
-              className="bg-zinc-800 border-zinc-700"
-            />
-          </div>
-          <div className="space-y-2">
-            <label className="font-medium text-sm">Duration (seconds)</label>
-            <Input type="number" min={0} value={newSong.duration} disabled
-              onChange={(e) => setNewSong({ ...newSong, duration: e.target.value || "0" })}
-              className="bg-zinc-800 border-zinc-700"
-            />
+          <div className="flex item-center">
+            <div className="w-2/5 space-y-2 mt-[6px]">
+              <label className="font-medium text-sm">Artist</label>
+              <Button className="ml-2" size={'default'} variant={'outline'}
+                onClick={() => setIsOpenArtist(true)}>
+                Select {newSong.artist.length} artists
+              </Button>
+              <CommandDialog open={isOpenArtist} onOpenChange={setIsOpenArtist}>
+                <DialogTitle></DialogTitle>
+                <CommandInput placeholder="Type a command or search..." />
+
+                <CommandList>
+                  <ScrollArea className="h-72 rounded-md border py-2 px-3">
+                    <CommandEmpty>No results found.</CommandEmpty>
+                    {artists && artists.length > 0 && artists.map(item => {
+                      const isSelected = newSong.artist.includes(item._id);
+                      return (
+                        <CommandItem key={item._id} onSelect={() => {
+                          handleSelectArtist(item._id)
+                          setIsChange({ ...isChange, cArtist: true });
+                        }}
+                          className={isSelected ? 'bg-emerald-600' : ''}
+                        >{item.name}</CommandItem>
+                      )
+                    })}
+                  </ScrollArea>
+                </CommandList>
+              </CommandDialog>
+            </div>
+            <div className="w-3/5 space-y-2">
+              <label className="font-medium text-sm">Duration (seconds)</label>
+              <Input type="number" min={0} value={newSong.duration} disabled
+                onChange={(e) => {
+                  setNewSong({ ...newSong, duration: e.target.value || "0" })
+                  setIsChange({ ...isChange, cDuration: true })
+                }}
+                className="bg-zinc-800 border-zinc-700"
+              />
+            </div>
           </div>
 
           <div className="space-y-2">

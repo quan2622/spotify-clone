@@ -64,7 +64,9 @@ export const updateSong = async (req, res, next) => {
         imageUrl = await uploadToCloudinary(req.files.imageFile);
       }
     }
-
+    if (req.body.artistId) {
+      req.body.artistId = JSON.parse(req.body.artistId);
+    }
     let data_update = {
       ...req.body,
     }
