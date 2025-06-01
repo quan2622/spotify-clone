@@ -29,6 +29,7 @@ const SongTable = () => {
     )
   }
 
+
   return (
     <>
       <Table>
@@ -49,7 +50,7 @@ const SongTable = () => {
                 <img src={song.imageUrl} alt={song.title} className="size-12 rounded object-cover" />
               </TableCell>
               <TableCell className="font-medium">{song.title}</TableCell>
-              <TableCell>{song.artist}</TableCell>
+              <TableCell>{song.artistId.map(item => item.name).join(" - ")}</TableCell>
               <TableCell>{song.totalListens}</TableCell>
               <TableCell>
                 <span className="inline-flex items-center gap-1 text-zinc-400">
