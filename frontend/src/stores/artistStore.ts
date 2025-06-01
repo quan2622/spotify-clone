@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { create } from "zustand";
-import { Album, Artist, Song } from "../types";
+import { Album, Artist, newArtist, Song } from "../types";
 import artistService from "../services/artist.service";
 import toast from "react-hot-toast";
 
@@ -13,10 +13,10 @@ interface ArtistStore {
   totalPage: number,
 
   getAllArtist: () => Promise<void>,
-  CreateNewArtist: (data: Artist) => Promise<void>,
+  CreateNewArtist: (data: newArtist) => Promise<void>,
   getArtistSong: (artistId: string, page: number) => Promise<void>,
   getArtistAlbum: (artistId: string) => Promise<void>,
-  updateArtist: (artistId: string, data: Artist) => Promise<void>,
+  updateArtist: (artistId: string, data: newArtist) => Promise<void>,
   deleteArtist: (artistId: string) => Promise<void>
 }
 

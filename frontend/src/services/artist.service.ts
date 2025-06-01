@@ -1,5 +1,5 @@
 import { axiosIntance } from "../lib/axios";
-import { Artist } from "../types";
+import { newArtist } from "../types";
 
 const getAllArtist = () => {
   try {
@@ -24,7 +24,7 @@ const getArtistSong = (artistId: string, page: number, hasPageInfo: boolean) => 
     console.log("Had error when get songs artist: ", error)
   }
 }
-const CreateNewArtist = (payload: Artist) => {
+const CreateNewArtist = (payload: newArtist) => {
   try {
     return axiosIntance.post('artist/create', payload)
   } catch (error) {
@@ -32,7 +32,7 @@ const CreateNewArtist = (payload: Artist) => {
   }
 }
 
-const updateDataArtist = (artistId: string, data: Artist) => {
+const updateDataArtist = (artistId: string, data: newArtist) => {
   try {
     return axiosIntance.put(`api/artist/${artistId}`, data);
   } catch (error) {

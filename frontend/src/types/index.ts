@@ -28,15 +28,18 @@ export interface Album {
   genreId: Genre
 }
 
-export interface Artist {
-  _id?: string,
+export interface newArtist {
   name: string,
   realName: string,
   genres: Genre[],
   country: string,
   imageUrl?: string,
   imageFile?: File,
-  followerCount?: number,
+}
+
+export interface Artist extends newArtist {
+  _id: string,
+  followerCount: number,
 }
 
 export interface Genre {
