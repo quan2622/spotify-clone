@@ -38,14 +38,14 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
     set({ isLoop: !get().isLoop });
   },
   shuffle: (songs) => {
-    let song_clone = songs.filter(song => song._id !== get().currentSong?._id);
+    const song_clone = songs.filter(song => song._id !== get().currentSong?._id);
     if (!get().isShuffle) {
       return set({ queue: song_clone });
     }
-    let flag = song_clone;
+    const flag = song_clone;
     do {
       for (let i = song_clone.length - 1; i >= 0; i--) {
-        let j = Math.floor(Math.random() * (i + 1));
+        const j = Math.floor(Math.random() * (i + 1));
         [song_clone[i], song_clone[j]] = [song_clone[j], song_clone[i]];
       }
     } while (flag.length === song_clone.length && song_clone.every((item, index) => item === flag[index]));
@@ -69,7 +69,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
     if (socket.auth) {
       socket.emit('update_activity', {
         userId: socket.auth.userId,
-        activity: `Playing ${song.title} by ${song.artist}`
+        activity: `Playing ${song.title} by ${song.artistId.map(item => item.name).join(" • ")}`
       })
     }
 
@@ -87,7 +87,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
     if (socket.auth) {
       socket.emit('update_activity', {
         userId: socket.auth.userId,
-        activity: `Playing ${song.title} by ${song.artist}`
+        activity: `Playing ${song.title} by ${song.artistId.map(item => item.name).join(" • ")}`
       })
     };
 
@@ -106,7 +106,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
     if (socket.auth) {
       socket.emit('update_activity', {
         userId: socket.auth.userId,
-        activity: isPlaying && currentSong ? `Playing ${currentSong.title} by ${currentSong.artist}` : 'Idle'
+        activity: isPlaying && currentSong ? `Playing ${currentSong.title} by ${currentSong.artistId.map(item => item.name).join(" • ")}` : 'Idle'
       })
     }
 
@@ -123,7 +123,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
       if (socket.auth) {
         socket.emit('update_activity', {
           userId: socket.auth.userId,
-          activity: `Playing ${nextSong.title} by ${nextSong.artist}`,
+          activity: `Playing ${nextSong.title} by ${nextSong.artistId.map(item => item.name).join(" • ")}`,
         })
       }
 
@@ -153,7 +153,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
       if (socket.auth) {
         socket.emit('update_activity', {
           userId: socket.auth.userId,
-          activity: `Playing ${prevSong.title} by ${prevSong.artist}`,
+          activity: `Playing ${prevSong.title} by ${prevSong.artistId.map(item => item.name).join(" • ")}`,
         })
       }
 
