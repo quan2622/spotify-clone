@@ -8,12 +8,26 @@ export const getFeatureSong = async (req, res, next) => {
     const songs = await Song.aggregate([
       {
         $sample: { size: 6 },
-      },
-      {
+      }, {
+        $lookup: {
+          from: 'artists',
+          let: { artistIds: "$artistId" },
+          pipeline: [
+            { $match: { $expr: { $in: ["$_id", "$$artistIds"] } } },
+            {
+              $project: {
+                _id: 1,
+                name: 1
+              }
+            }
+          ],
+          as: 'artistId',
+        }
+      }, {
         $project: {
           _id: 1,
           title: 1,
-          artist: 1,
+          artistId: 1,
           imageUrl: 1,
           audioUrl: 1,
           createdAt: 1,
@@ -31,11 +45,10 @@ export const getMadeForYou = async (req, res, next) => {
   try {
     // fetch random 4 songs using mongodb's aggregation pipeline
     const userId = req.auth.userId;
-
+    console.log("Check userId: ", userId);
     const songs = await ListenHistory.aggregate([
+      { $match: { userId }, },
       {
-        $match: { userId },
-      }, {
         $group: {
           _id: '$songId',
           totalListens: { $sum: '$count' },
@@ -53,11 +66,26 @@ export const getMadeForYou = async (req, res, next) => {
       },
       { $unwind: '$song_info' },
       {
+        $lookup: {
+          from: 'artists',
+          let: { artistIds: "$song_info.artistId" },
+          pipeline: [
+            { $match: { $expr: { $in: ["$_id", "$$artistIds"] } } },
+            {
+              $project: {
+                _id: 1,
+                name: 1
+              }
+            }
+          ],
+          as: 'artistId',
+        }
+      }, {
         $project: {
-          _id: '$_id',
+          _id: 1,
           totalListens: 1,
+          artistId: 1,
           title: '$song_info.title',
-          artist: '$song_info.artist',
           imageUrl: '$song_info.imageUrl',
           audioUrl: '$song_info.audioUrl',
           duration: '$song_info.duration',
@@ -65,7 +93,7 @@ export const getMadeForYou = async (req, res, next) => {
         }
       }
     ]);
-    // console.log(songs);
+
     res.status(200).json(songs);
   } catch (error) {
     next(error);
@@ -75,7 +103,7 @@ export const getMadeForYou = async (req, res, next) => {
 export const getTrending = async (req, res, next) => {
   try {
     // fetch random 4 songs using mongodb's aggregation pipeline
-    const songs = await Song.find().sort({ totalListens: -1 }).limit(20);
+    const songs = await Song.find().sort({ totalListens: -1 }).limit(20).populate({ path: "artistId", select: "name" });
     res.status(200).json(songs);
   } catch (error) {
     next(error);
