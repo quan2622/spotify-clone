@@ -45,7 +45,7 @@ export const getMadeForYou = async (req, res, next) => {
   try {
     // fetch random 4 songs using mongodb's aggregation pipeline
     const userId = req.auth.userId;
-    console.log("Check userId: ", userId);
+
     const songs = await ListenHistory.aggregate([
       { $match: { userId }, },
       {
@@ -113,7 +113,7 @@ export const getTrending = async (req, res, next) => {
 export const getSongById = async (req, res, next) => {
   try {
     const { songId } = req.params;
-    const song = await Song.findById(songId);
+    const song = await Song.findById(songId).populate({ path: 'artistId', select: 'name' });
 
     res.status(200).json(song);
   } catch (error) {
@@ -123,7 +123,7 @@ export const getSongById = async (req, res, next) => {
 
 export const getAllSong = async (req, res, next) => {
   try {
-    const data = await Song.find().populate('artistId');
+    const data = await Song.find().populate({ path: 'artistId', select: 'name' });
     if (data) {
       return res.status(200).json({
         songs: data,

@@ -4,7 +4,7 @@ import { User } from "../models/user.model.js";
 
 export const getAllAlbums = async (req, res, next) => {
   try {
-    const adminAlbums = await Album.find({ type: 'admin' }).populate("artistId");
+    const adminAlbums = await Album.find({ type: 'admin' }).populate({ path: "artistId", select: 'name' });
     let userAlbums = [];
     if (req.auth.userId) {
       userAlbums = await Album.find({
@@ -13,7 +13,7 @@ export const getAllAlbums = async (req, res, next) => {
           { sharedWith: { $in: [req.auth.userId] } }
         ],
         type: 'user',
-      })
+      }).populate({ path: "artistId", select: 'name' });
     }
     res.status(200).json({
       adminAlbums, userAlbums
@@ -25,13 +25,16 @@ export const getAllAlbums = async (req, res, next) => {
 
 export const getAllAlbumById = async (req, res, next) => {
   try {
-    const album = await Album.findById(req.params.albumId).populate({
-      path: "songs",
-      populate: {
-        path: "artistId",
-        select: ['name']
+    const album = await Album.findById(req.params.albumId).populate([
+      {
+        path: "songs",
+        populate: {
+          path: "artistId",
+          select: ['name']
+        },
       },
-    }
+      { path: "artistId", select: "name" }
+    ]
     );
     // populate -> specific path and return document in model had been ref
     if (!album) {
