@@ -88,7 +88,7 @@ const MainLayout = () => {
         {/* Main side */}
         <ResizablePanel defaultSize={isMobile ? 80 : 60} className="flex gap-2 flex-col">
           <Topbar query={dataSearch} handleSearch={handleSearch} />
-          <ScrollArea className="h-full flex flex-col overflow-auto rounded-md border py-3 bg-gradient-to-b from-zinc-800 to-zinc-900/40">
+          <ScrollArea className="h-full flex flex-col overflow-auto rounded-md border bg-gradient-to-b from-zinc-800 to-zinc-900/40">
             <Outlet />
           </ScrollArea>
         </ResizablePanel>

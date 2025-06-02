@@ -48,7 +48,7 @@ const SearchPage = () => {
           </div>
           <div className="w-[50%] p-4">
             <div className="font-bold text-3xl">{resultSearch[0].title}</div>
-            <div className="font-medium py-3"> Song • {resultSearch[0].artist}</div>
+            <div className="font-medium py-3"> Song • {resultSearch[0].artistId.map(item => item.name).join(" • ")}</div>
             <div className="text-sm pt-1 pb-5">May 19,2025 - <span>Duration: {resultSearch[0].duration} minutes</span> </div>
             <div className="flex gap-4 items-center">
               <Button size={"lg"} className="text-white font-semibold" onClick={() => handlePlaySong(resultSearch[0])}>

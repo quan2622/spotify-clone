@@ -55,7 +55,7 @@ const ShowAll = () => {
     if (!songs) return;
 
     const isCurrentAlbumPLaying = songs.some(song => song._id !== currentSong?._id);
-    console.log("check isCurrentAlbumPLaying: ", isCurrentAlbumPLaying, " - ", songs);
+    // console.log("check isCurrentAlbumPLaying: ", isCurrentAlbumPLaying, " - ", songs);
     if (!isCurrentAlbumPLaying) return togglePlay();
     else playAlbum(songs);
   }
@@ -144,7 +144,7 @@ const ShowAll = () => {
                             className="h-10 w-10 object-cover rounded" />
                           <div>
                             <div className="font-medium text-white">{song.title}</div>
-                            <div>{song.artist}</div>
+                            <div className="max-w-full overflow-hidden truncate">{song.artistId.map(item => item.name).join(" • ")}</div>
                           </div>
                         </div>
                         <div className="flex items-center">{song.createdAt.split('T')[0]}</div>
@@ -172,7 +172,7 @@ const ShowAll = () => {
                         </div>
                       </div>
                       <h3 className="font-medium mb-1 mt-2 truncate">{album.title}</h3>
-                      <p className="text-sm text-zinc-400 mb-2">{album.artist}</p>
+                      <p className="text-sm text-zinc-400 mb-2">{album.artistId.name}</p>
                     </div>
                   ))}
                 </div>

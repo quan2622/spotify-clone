@@ -15,9 +15,14 @@ export default {
 					'60%': { transform: 'translateX(-2px)' },
 					'80%': { transform: 'translateX(2px)' },
 				},
+				marquee: {
+					'0%': { transform: 'translateX(0%)' },
+					'100%': { transform: 'translateX(-10%)' },
+				}
 			},
 			animation: {
 				shake: 'shake 0.4s ease-in-out',
+				marquee: 'marquee 4s linear infinite'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

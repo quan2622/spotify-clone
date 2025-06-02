@@ -2,7 +2,7 @@ import { HomeIcon, Library, MessageCircle, Music, Plus, Search } from "lucide-re
 import { Link } from "react-router-dom"
 import { cn } from "../../lib/utils"
 import { buttonVariants } from "../../components/ui/button"
-import { SignedIn, useAuth } from "@clerk/clerk-react"
+import { SignedIn, useAuth, useUser } from "@clerk/clerk-react"
 import { ScrollArea } from "../../components/ui/scroll-area"
 import PlayListSkeleton from "../../components/skeleton/PlayListSkeleton"
 import { useMusicStore } from "../../stores/useMusicStore"
@@ -11,6 +11,7 @@ import Fuse from "fuse.js"
 import { Album } from "../../types"
 
 const LeftSideBar = ({ isCollapseLeft }: { isCollapseLeft: boolean }) => {
+  const { user } = useUser();
   const { albumsUser, fetchAlbum, isLoading, createAlbumUser } = useMusicStore();
   const { userId } = useAuth();
   const [album_rd, setAlbum_rd] = useState<Album[] | null>(null);
@@ -35,7 +36,7 @@ const LeftSideBar = ({ isCollapseLeft }: { isCollapseLeft: boolean }) => {
     includeScore: true,
   });
 
-  const handleSearch = (e: any) => {
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const query_sr = e.target.value;
     setQuery(query_sr);
 
@@ -139,7 +140,7 @@ const LeftSideBar = ({ isCollapseLeft }: { isCollapseLeft: boolean }) => {
                         {album.title}
                       </p>
                       <p className="text-sm text-zinc-400 truncate">
-                        Album • {album.artist}
+                        Album • {`${user?.lastName} ${user?.firstName}`}
                       </p>
                     </div>
                   }

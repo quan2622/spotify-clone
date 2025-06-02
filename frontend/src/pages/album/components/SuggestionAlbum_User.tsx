@@ -18,7 +18,7 @@ const SuggestionAlbum_User = ({ album, featuredSongs, formatDuraion }: Suggestio
 
   useEffect(() => {
     setDataSuggest(featuredSongs);
-  }, []);
+  }, [setDataSuggest, featuredSongs]);
 
   const handleAddNewSong = async (song: Song) => {
     await addSongToAlbumUser(album._id, song);
@@ -30,7 +30,7 @@ const SuggestionAlbum_User = ({ album, featuredSongs, formatDuraion }: Suggestio
       const res = await axiosIntance.get('songs/featured');
       if (res.data)
         setDataSuggest(res.data)
-    } catch (error) {
+    } catch {
       toast.error("Had error when refresh new data");
     }
   }
@@ -41,7 +41,7 @@ const SuggestionAlbum_User = ({ album, featuredSongs, formatDuraion }: Suggestio
       <div className="px-4">
         <div className="space-y-2 py-4">
           {dataSuggest.map((song, index) => {
-            let isSelected = songSelected === song._id;
+            const isSelected = songSelected === song._id;
             const isExist = album.songs.some(s => s._id === song._id)
             if (!isExist)
               return (
@@ -52,7 +52,7 @@ const SuggestionAlbum_User = ({ album, featuredSongs, formatDuraion }: Suggestio
                     <img src={song.imageUrl} alt={song.title} className="h-10 w-10 object-cover rounded" />
                     <div className="ml-5">
                       <div className="text-sm text-white">{song.title}</div>
-                      <div className="text-sm mt-1">{song.artist}</div>
+                      <div className="text-sm mt-1">{song.artistId.map(item => item.name).join(" • ")}</div>
                     </div>
                   </div>
                   <div className="flex items-center">

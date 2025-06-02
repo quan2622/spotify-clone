@@ -38,7 +38,7 @@ const HomePage = () => {
 
   return (
     <main className="h-full   rounded-md overflow-hidden">
-      <ScrollArea className="h-[calc(100vh-178px)] pb-6">
+      <ScrollArea className="h-[calc(100vh-178px)] pb-6 pt-2">
         <div className="p-4 sm:p-6">
           <h1 className="text-2xl sm:text-3xl font-bold mb-6">
             Good Afternoon

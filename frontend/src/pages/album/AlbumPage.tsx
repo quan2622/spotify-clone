@@ -19,6 +19,7 @@ import {
 } from "../../components/ui/dropdown-menu";
 import { axiosIntance } from "../../lib/axios";
 import toast from "react-hot-toast";
+import { useUser } from "@clerk/clerk-react";
 
 export const formatDuraion = (duration: number) => {
   const minutes = Math.floor(duration / 60);
@@ -27,6 +28,7 @@ export const formatDuraion = (duration: number) => {
 }
 
 const AlbumPage = () => {
+  const { user } = useUser();
   const { albumId } = useParams();
   const navigate = useNavigate();
   const { isLoading, fetchAlbumById, currentAlbum, featuredSongs, fetchFeaturedSong, minusSongAlbumUser } = useMusicStore();
@@ -39,7 +41,7 @@ const AlbumPage = () => {
 
   useEffect(() => {
     fetchFeaturedSong();
-  }, []);
+  }, [fetchFeaturedSong]);
 
   const handlePlayAlbum = () => {
     if (!currentAlbum) return;
@@ -55,7 +57,7 @@ const AlbumPage = () => {
   }
 
 
-  const handleDeleteSong = async (e: any, song: Song) => {
+  const handleDeleteSong = async (e: React.MouseEvent, song: Song) => {
     e.stopPropagation();
     if (isPlaying)
       togglePlay();
@@ -79,7 +81,7 @@ const AlbumPage = () => {
   }
 
   if (isLoading) return null;
-
+  console.log("check current album: ", currentAlbum);
   return (
     <div className="h-full ">
       <ScrollArea className="h-full rounded-md">
@@ -109,7 +111,7 @@ const AlbumPage = () => {
                 <p className="text-sm font-medium">Album</p>
                 <h1 className="text-7xl font-bold my-4 truncate">{currentAlbum?.title}</h1>
                 <div className="flex items-center gap-2 text-sm text-zinc-100">
-                  <span className="font-medium text-white">{currentAlbum?.artist}</span>
+                  <span className="font-medium text-white">{currentAlbum?.type === "user" ? `${user?.lastName} ${user?.firstName}` : currentAlbum?.artistId.name}</span>
                   <span>• {currentAlbum?.songs.length} songs</span>
                   <span>• {currentAlbum?.releaseYear}</span>
                 </div>
@@ -183,7 +185,7 @@ const AlbumPage = () => {
                             className="h-10 w-10 object-cover rounded" />
                           <div>
                             <div className="font-medium text-white">{song.title}</div>
-                            <div>{song.artist}</div>
+                            <div>{song.artistId.map(item => item.name).join(" • ")}</div>
                           </div>
                         </div>
                         <div className="flex items-center">{song.createdAt.split('T')[0]}</div>

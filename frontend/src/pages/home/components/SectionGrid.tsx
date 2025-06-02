@@ -33,7 +33,7 @@ const SectionGrid = ({ songs, title, isLoading }: SectionGrid) => {
               <PlayButton song={song} />
             </div>
             <h3 className="font-medium mb-1 truncate">{song.title}</h3>
-            <p className="text-sm text-zinc-400 mb-2">{song.artist}</p>
+            <p className="text-sm text-zinc-400 mb-2">{song.artistId.map(item => item.name).join(" • ")}</p>
           </div>
         ))}
       </div>

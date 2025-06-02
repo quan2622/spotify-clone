@@ -23,7 +23,7 @@ export function DataTable({ data, }: DataTableProps) {
 
   useEffect(() => {
     if (!currentSong) return;
-    let index = data.findIndex(song => song._id === currentSong._id);
+    const index = data.findIndex(song => song._id === currentSong._id);
     setSongSelected(index);
   }, [currentSong]);
 
@@ -39,7 +39,7 @@ export function DataTable({ data, }: DataTableProps) {
         <div className="px-2">
           <div className="space-y-2 py-4">
             {data.map((song, index) => {
-              let isCurrentSong = song._id === currentSong?._id;
+              const isCurrentSong = song._id === currentSong?._id;
               return (
                 <div key={song._id} className={`grid grid-cols-[16px_4fr_2fr] gap-4 px-4 py-2 group  hover:bg-white/5 rounded-md group cursor-pointer ${songSelected === index ? "bg-emerald-600 text-white" : "text-zinc-400"}`} onClick={() => setSongSelected(index)}>
                   <div className="flex items-center justify-center">
@@ -61,7 +61,7 @@ export function DataTable({ data, }: DataTableProps) {
                     <img src={song.imageUrl} alt="" className="size-12 object-cover object-center" />
                     <div>
                       <div className="font-medium text-sm mb-1">{song.title}</div>
-                      <div className="text-xs">{song.artist}</div>
+                      <div className="text-xs">{song.artistId.map(item => item.name).join(" • ")}</div>
                     </div>
                   </div>
                   <div className="flex justify-end gap-10 items-center pr-3">

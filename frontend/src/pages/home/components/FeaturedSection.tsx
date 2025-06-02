@@ -18,7 +18,9 @@ const FeaturedSection = () => {
             className="w-16 sm:w-20 h16 sm:h-20 object-cover flex-shrink-0" />
           <div className="flex flex-col p-4">
             <p className="font-medium truncate w-[160px]">{song.title}</p>
-            <p className="text-sm text-zinc-400 truncate">{song.artist}</p>
+            <div className="w-full overflow-hidden">
+              <p className="text-sm text-zinc-400 truncate">{song.artistId.map(item => item.name).join(" • ")}</p>
+            </div>
           </div>
           <PlayButton song={song} />
         </div>
