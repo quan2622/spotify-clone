@@ -33,7 +33,21 @@ class genreController {
   // GET api/genre/all
   GetALlGenre = async (req, res, next) => {
     try {
-      const list_genre = await Genre.find();
+      const list_genre = await Genre.aggregate([
+        {
+          $lookup: {
+            from: "songs",
+            localField: "_id",
+            foreignField: "genreId",
+            as: "songs"
+          }
+        }, {
+          $addFields: {
+            numberOfSong: { $size: "$songs" }
+          }
+        }, { $project: { songs: 0, } }
+      ]);
+
       res.status(200).json({
         EC: 0,
         EM: "All genre had been get",
