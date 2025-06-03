@@ -46,7 +46,9 @@ export interface Genre {
   _id: string,
   name: string,
   description: string,
-  imageUrl: string
+  imageUrl: string,
+  updatedAt: string,
+  numberOfSong?: number,
 }
 export interface AlbumAdmin {
   _id: string,

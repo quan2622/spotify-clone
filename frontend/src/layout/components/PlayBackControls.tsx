@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { usePlayerStore } from "../../stores/usePlayerStore"
 import { Button } from "../../components/ui/button";
 import { Laptop2, ListMusic, Mic2, Pause, Play, Repeat, Shuffle, SkipBack, SkipForward, Volume1, Volume2, VolumeOff } from "lucide-react";
 import { Slider } from "../../components/ui/slider";
+import { Link } from "react-router-dom";
 
 const formatTime = (seconds: number) => {
   const minutes = Math.floor(seconds / 60);
@@ -54,9 +55,16 @@ const PlayBackControls = () => {
               <img src={currentSong.imageUrl} alt={currentSong.title} className="w-14 h-14 object-cover rounded-md" />
               <div className="flex-1 min-w-0">
                 <div className="font-medium truncate hover:underline cursor-pointer">{currentSong.title}</div>
-                <div className="text-sm text-zinc-400 truncate hover:underline cursor-pointer">{currentSong.artistId.map(item => item.name).join(
-                  " • "
-                )}</div>
+                <div className="text-sm text-zinc-400 truncate ">
+                  {
+                    currentSong.artistId.map((item, index) => (
+                      <>
+                        <Link to={`artist/${item._id}`} className="inline-block cursor-pointer hover:underline">{item.name}</Link>
+                        {index < currentSong.artistId.length - 1 && ` | `}
+                      </>
+                    ))
+                  }
+                </div>
               </div>
             </>
           }

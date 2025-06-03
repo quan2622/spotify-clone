@@ -19,6 +19,7 @@ const GetAllGenre = () => {
 
 const UpdateGenre = (payload: any, genreId: string) => {
   try {
+    console.log("Check service: ", payload);
     return axiosIntance.put(`genre/update-genre/${genreId}`, payload);
   } catch (error) {
     console.log("Had error when update data genre: ", error);
@@ -27,7 +28,7 @@ const UpdateGenre = (payload: any, genreId: string) => {
 
 const DeleteGenre = (genreId: string) => {
   try {
-    return axiosIntance.delete(` genre/delete/${genreId}`)
+    return axiosIntance.delete(`genre/delete/${genreId}`)
   } catch (error) {
     console.log("Had error when delete genre: ", error);
   }

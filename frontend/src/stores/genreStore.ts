@@ -6,6 +6,7 @@ import toast from "react-hot-toast"
 import genreService from "../services/genre.service"
 
 interface GenreStore {
+  isLoading: boolean,
   genres: Genre[],
   error: string | null,
   albumGenre: Album[],
@@ -18,7 +19,8 @@ interface GenreStore {
   createNewGenre: (payload: any) => Promise<void>,
 }
 
-export const useGenreStore = create<GenreStore>((set) => ({
+export const useGenreStore = create<GenreStore>((set, get) => ({
+  isLoading: false,
   genres: [],
   error: null,
   albumGenre: [],
@@ -68,6 +70,7 @@ export const useGenreStore = create<GenreStore>((set) => ({
     }
   },
   updateDataGenre: async (payload, genreId) => {
+    set({ isLoading: true, error: null });
     try {
       const res = await genreService.UpdateGenre(payload, genreId);
       if (!res) {
@@ -76,12 +79,15 @@ export const useGenreStore = create<GenreStore>((set) => ({
         if (res.data.EC !== 0) {
           toast.error(res.data.EM);
         } else {
-          console.log("New data updata: ", res.data.new_data);
           toast.success(res.data.EM);
+          const new_genre = get().genres.map(item => item._id === genreId ? res.data.new_data : item);
+          set({ genres: new_genre });
         }
       }
     } catch (error: any) {
       set({ error: error.message })
+    } finally {
+      set({ isLoading: false })
     }
   },
   deleteGenre: async (genreId) => {
@@ -99,6 +105,8 @@ export const useGenreStore = create<GenreStore>((set) => ({
           toast.error(res.data.EM);
         } else {
           toast.success(res.data.EM);
+          const new_genre = get().genres.filter(item => item._id !== genreId)
+          set({ genres: new_genre });
         }
       }
     } catch (error: any) {
@@ -106,7 +114,7 @@ export const useGenreStore = create<GenreStore>((set) => ({
     }
   },
   createNewGenre: async (payload) => {
-    set({ error: null });
+    set({ isLoading: true, error: null });
     try {
       const res = await genreService.CreateNew(payload);
       if (!res) {
@@ -120,6 +128,8 @@ export const useGenreStore = create<GenreStore>((set) => ({
       }
     } catch (error: any) {
       set({ error: error.message })
+    } finally {
+      set({ isLoading: false })
     }
   }
 }))

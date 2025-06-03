@@ -12,6 +12,7 @@ import NotFoundPage from "./pages/404/NotFoundPage";
 import ShowAll from "./pages/home/components/ShowAll";
 import SearchPage from "./pages/search/SearchPage";
 import BrownseAll from "./pages/search/BrownseAll";
+import DetailArtist from "./pages/home/components/DetailArtist";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
 
         <Route element={<MainLayout />}>
           <Route path="/" element={<HomePage />} />
+          <Route path="/artist/:artistId" element={<DetailArtist />} />
           <Route path="/:page" element={<ShowAll />} />
           <Route path="/chats" element={<ChatPage />} />
           <Route path="/albums/:albumId" element={<AlbumPage />} />
