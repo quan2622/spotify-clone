@@ -1,6 +1,7 @@
 import { Song } from "../models/song.model.js";
 import { Album } from "../models/album.model.js";
 import { uploadToCloudinary } from "../helper/uploadToCloudinary.js";
+import albumService from "../services/album.service.js";
 
 export const getAllSong = async (req, res, next) => {
   try {
@@ -102,6 +103,16 @@ export const deleteSong = async (req, res, next) => {
   }
 }
 
+// GET /api/admin/albums/
+export const getAllAlbums = async (req, res, next) => {
+  try {
+    const response = await albumService.getAllAlbums(req.auth.userId, "ADMIN");
+    return res.status(200).json({ ...response });
+  } catch (error) {
+    next(error);
+  }
+}
+
 export const createAlbum = async (req, res, next) => {
   try {
     if (!req.files || !req.files.imageFile) {
@@ -133,12 +144,11 @@ export const createAlbum = async (req, res, next) => {
 
 export const deleteAlbum = async (req, res, next) => {
   try {
-    const { id } = req.params;
-    await Song.deleteMany({ albumId: id });
-    await Album.findByIdAndUpdate(id);
-    res.status(200).json({ message: 'Album deleted successfully' });
+    const { albumId } = req.params;
+    const response = await albumService.DeleteAlbum(albumId);
+    res.status(200).json({ ...response })
   } catch (error) {
-    console.log('Error delete album', error);
+    console.error("Error deleting album:", error);
     next(error);
   }
 }

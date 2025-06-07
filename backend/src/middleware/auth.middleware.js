@@ -4,7 +4,7 @@ export const protectRoute = async (req, res, next) => {
   if (!req.auth.userId) { //set up app.use(clerkMiddleware()) in index.js to get data in req.auth
     console.log("-------------------------------------------");
     console.log(">> Check protectRoute:", req.auth)
-    console.log(">> Check protectRoute:", req.auth.userId)
+    console.log(">> Check userId:", req.auth.userId)
     console.log("-------------------------------------------");
     return res.status(401).json({ message: 'Unauthorized - you must log in' });
   }
