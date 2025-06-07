@@ -9,7 +9,7 @@ const AlbumTable = () => {
   const { albumsAdmin, deleteAlbumAdmin, fetchAlbum, fetchSongAdmin } = useMusicStore();
 
   useEffect(() => {
-    fetchAlbum();
+    fetchAlbum("ADMIN");
     fetchSongAdmin();
   }, [fetchAlbum, fetchSongAdmin]);
 

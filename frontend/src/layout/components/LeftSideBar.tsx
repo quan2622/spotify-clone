@@ -18,7 +18,7 @@ const LeftSideBar = ({ isCollapseLeft }: { isCollapseLeft: boolean }) => {
   const [query, setQuery] = useState("");
 
   useEffect(() => {
-    fetchAlbum();
+    fetchAlbum("USER");
   }, [fetchAlbum]);
 
   useEffect(() => {

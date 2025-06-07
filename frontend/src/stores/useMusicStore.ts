@@ -27,7 +27,7 @@ interface MusicStore {
   songsSearch: Song[],
   resultSearch: Song[],
 
-  fetchAlbum: () => Promise<void>,
+  fetchAlbum: (option: string) => Promise<void>,
   fetchAlbumById: (albumId: string) => Promise<void>
   fetchFeaturedSong: () => Promise<void>,
   fetchMadeForYouSong: () => Promise<void>,
@@ -104,9 +104,8 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const res = await axiosIntance.post("albums/createAlbum");
-      // console.log(res.data);
       toast.success("Add new album successed");
-      set((state) => ({ albumsUser: [...state.albumsUser, res.data.dataNew] }))
+      set((state) => ({ albumsUser: [...state.albumsUser, res.data.data_new] }))
     } catch (error: any) {
       set({ error: error.message });
     } finally {
@@ -213,17 +212,23 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
       set({ isLoading: false });
     }
   },
-  fetchAlbum: async () => {
+  fetchAlbum: async (option) => {
     // data fetching logic...
     set({ isLoading: true, error: null, });
     try {
-      const res = await axiosIntance.get('albums');
-      // console.log("Check album admin store", res.data);
-      set({
-        albums: res.data,
-        albumsAdmin: res.data.adminAlbums,
-        albumsUser: res.data.userAlbums
-      });
+      if (option === "USER") {
+        const res = await axiosIntance.get('albums');
+        set({ albumsUser: res.data.albums });
+      } else if (option === "ADMIN") {
+        const res = await axiosIntance.get('admin/albums');
+        console.log("Check album admin store", res.data);
+        set({ albumsAdmin: res.data.albums });
+      }
+      // set({
+      //   albums: res.data,
+      //   albumsAdmin: res.data.adminAlbums,
+      //   albumsUser: res.data.userAlbums
+      // });
     } catch (error: any) {
       set({ error: error.respone })
     } finally {
@@ -234,7 +239,10 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const res = await axiosIntance.get(`albums/${albumId}`);
-      set({ currentAlbum: res.data });
+      if (res.data) {
+        if (res.data.EC !== 0) toast.error(res.data.EM);
+        else set({ currentAlbum: res.data.album_data });
+      }
     } catch (error: any) {
       set({ error: error.respone.data.message });
     } finally {

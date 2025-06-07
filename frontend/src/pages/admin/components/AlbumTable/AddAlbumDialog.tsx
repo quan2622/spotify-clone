@@ -63,7 +63,7 @@ const AddAlbumDialog = () => {
       })
       setImageFile(null);
       toast.success('Song added successfully');
-      await fetchAlbum();
+      await fetchAlbum("ADMIN");
     } catch (error: any) {
       toast.error('Failed to add song: ' + error.message);
     } finally {

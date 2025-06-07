@@ -76,7 +76,7 @@ const UpdateAlbum = ({ album }: UpdateAlbum) => {
       const songIds = albumSongs.map(item => item._id);
       await axiosIntance.put(`admin/albums/update/${album._id}`, { songIds })
       toast.success('Update album successed');
-      await fetchAlbum();
+      await fetchAlbum("ADMIN");
       setAlbumDialog(false);
     } catch (error: any) {
       toast.error('Had an error when update album', error.message);

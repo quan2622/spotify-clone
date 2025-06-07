@@ -24,7 +24,7 @@ const ShowAll = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchAlbum();
+    fetchAlbum("ADMIN");
   }, [fetchAlbum]);
 
   useEffect(() => {
