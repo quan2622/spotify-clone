@@ -8,9 +8,7 @@ const PaginationTable = () => {
   const { stat, getSongPaginate, currentPage } = useMusicStore();
   // Paginate
   const totalItems = stat.totalSong;
-  const pageSize = 4;
-
-  // console.log('checl page size: ', pageSize);
+  const pageSize = 10;
 
   const onPageChange = async (page: any) => {
     await getSongPaginate(page);

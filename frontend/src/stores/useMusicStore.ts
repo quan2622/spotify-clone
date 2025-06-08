@@ -203,7 +203,7 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
     try {
       const res = await axiosIntance.get(`admin/songs?page=${page}`);
       set({
-        songs: res.data,
+        songs: res.data.songs,
         currentPage: +page,
       });
     } catch (error: any) {
@@ -221,7 +221,6 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
         set({ albumsUser: res.data.albums });
       } else if (option === "ADMIN") {
         const res = await axiosIntance.get('admin/albums');
-        console.log("Check album admin store", res.data);
         set({ albumsAdmin: res.data.albums });
       }
       // set({
@@ -253,7 +252,7 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const res = await axiosIntance.get('songs/featured');
-      set({ featuredSongs: res.data });
+      set({ featuredSongs: res.data.songs });
     } catch (error: any) {
       set({ error: error.response.data.message });
     } finally {
@@ -264,7 +263,8 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const res = await axiosIntance.get('songs/made-for-you');
-      set({ madeForYouSongs: res.data });
+      console.log("Check songs: ", res.data.songs)
+      set({ madeForYouSongs: res.data.songs });
     } catch (error: any) {
       set({ error: error.response.data.message });
     } finally {
@@ -275,7 +275,7 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const res = await axiosIntance.get('songs/trending');
-      set({ trendingSongs: res.data });
+      set({ trendingSongs: res.data.songs });
     } catch (error: any) {
       set({ error: error.response.data.message });
     } finally {

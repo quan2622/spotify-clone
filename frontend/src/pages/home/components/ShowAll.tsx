@@ -161,7 +161,7 @@ const ShowAll = () => {
               <div className="bg-zinc-900/80 p-8">
                 <h1 className="text-white text-lg font-bold mt-6 mb-4">Suggestion</h1>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-                  {albumsAdmin.map(album => (
+                  {albumsAdmin && albumsAdmin.length > 0 && albumsAdmin.map(album => (
                     <div key={album._id} className="group bg-zinc8700/40 rounded-md hover:bg-zinc-700/40 transition-all cursor-pointer p-4"
                       onClick={() => navigate(`/albums/${album._id}`)}>
                       <div className="relative">
@@ -172,7 +172,7 @@ const ShowAll = () => {
                         </div>
                       </div>
                       <h3 className="font-medium mb-1 mt-2 truncate">{album.title}</h3>
-                      <p className="text-sm text-zinc-400 mb-2">{album.artistId.name}</p>
+                      <p className="text-sm text-zinc-400 mb-2">{album.artistId?.name || 'Unknown Artist'}</p>
                     </div>
                   ))}
                 </div>
