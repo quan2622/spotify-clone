@@ -83,7 +83,7 @@ const createAlbumAdmin = async (payload, imageFile) => {
     const imageUrl = await uploadToCloudinary(imageFile);
 
     const { title, artistId, genreId, releaseYear, type } = payload;
-    if (!payload && !title && !releaseYear && !type)
+    if (!payload || !title || !releaseYear || !type)
       return ({ EC: 2, EM: "Missing required params" })
     const data_update = {
       title: title,
@@ -113,7 +113,7 @@ const UpdateInfoAlbum = async (albumId, payload, image = null) => {
       dataUpdate.imageUrl = imageUrl;
     }
 
-    if (!dataUpdate && _.isEmpty(dataUpdate)) {
+    if (!dataUpdate || _.isEmpty(dataUpdate)) {
       return ({ EC: 1, EM: "Data update error" });
     }
     const updatedAlbum = await Album.findByIdAndUpdate(albumId, dataUpdate, { new: true });
@@ -133,7 +133,7 @@ const UpdateInfoAlbum = async (albumId, payload, image = null) => {
 
 const UpdateSongAlbumAdmin = async (albumId, songs) => {
   try {
-    if (!albumId && songs) return ({ EC: 1, EM: "Missing required params" });
+    if (!albumId || songs) return ({ EC: 1, EM: "Missing required params" });
 
     await Album.findByIdAndUpdate({ _id: albumId }, { songs: [...songs] });
     await Song.updateMany({ _id: { $in: songs } }, { albumId: albumId });
@@ -166,7 +166,7 @@ const DeleteAlbum = async (albumId) => {
 
 const UpdateSongAlbum = async (song, albumId, style) => { //style: ADD || REMOVE
   try {
-    if (!song && !albumId)
+    if (!song || !albumId)
       return ({ EC: 1, EM: "Missing required params", })
 
     const configOption = style === "ADD" ? { $addToSet: { songs: song._id } } : { $pull: { songs: song._id } }

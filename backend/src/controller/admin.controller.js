@@ -2,103 +2,45 @@ import { Song } from "../models/song.model.js";
 import { Album } from "../models/album.model.js";
 import { uploadToCloudinary } from "../helper/uploadToCloudinary.js";
 import albumService from "../services/album.service.js";
+import songService from "../services/song.service.js";
 
+// GET /api/admin/songs?page=...
 export const getAllSong = async (req, res, next) => {
   try {
-    let { page } = req.query;
-    const limit = 4;
-    let number_skip = (+page - 1) * limit
-
-    const songs = await Song.find().populate({ path: "artistId", select: "name" }).sort({ createdAt: "desc" }).skip(number_skip).limit(limit);
-    res.status(200).json(songs);
+    const response = await songService.getAllSong(req.query.page)
+    res.status(200).json({ ...response });
   } catch (error) {
     next(error);
   }
 }
 
+// POST /api/admin/songs
 export const createSong = async (req, res, next) => {
   try {
-    if (!req.files || !req.files.audioFile || !req.files.imageFile) {
-      return res.status(400).json({ message: 'Please upload all files' });
-    }
-
-    const { title, artistId, albumId, duration } = req.body;
-    const audioFile = req.files.audioFile;
-    const imageFile = req.files.imageFile;
-
-    const audioUrl = await uploadToCloudinary(audioFile);
-    const imageUrl = await uploadToCloudinary(imageFile);
-
-    const song = new Song({
-      title,
-      artistId: JSON.parse(artistId),
-      audioUrl,
-      imageUrl,
-      duration,
-      albumId: albumId || null
-    });
-    await song.save();
-
-    // if song belongs to an album, update the album's song array
-    if (albumId) {
-      await Album.findByIdAndUpdate(albumId, {
-        $push: { songs: song.id }
-      })
-    }
-    res.status(201).json(song);
+    const response = await songService.createSong(req.body, req.files)
+    res.status(201).json({ ...response });
   } catch (error) {
     console.log("Error in createSong", error);
     next(error);
   }
 };
 
+// PUT /api/admin/songs/:songId
 export const updateSong = async (req, res, next) => {
   try {
-    const { songId } = req.params;
-    let audioUrl = '';
-    let imageUrl = '';
-    if (req.files) {
-      if (req.files.audioFile) {
-        audioUrl = await uploadToCloudinary(req.files.audioFile);
-      }
-      if (req.files.imageFile) {
-        imageUrl = await uploadToCloudinary(req.files.imageFile);
-      }
-    }
-    if (req.body.artistId) {
-      req.body.artistId = JSON.parse(req.body.artistId);
-    }
-    let data_update = {
-      ...req.body,
-    }
-    if (audioUrl !== '') data_update.audioUrl = audioUrl;
-    if (imageUrl !== '') data_update.imageUrl = imageUrl;
-
-    const song = await Song.findByIdAndUpdate({ _id: songId }, { ...data_update }, { new: true });
-
-    res.status(200).json({
-      song,
-      message: 'Update successed'
-    })
+    const response = await songService.updateSong(req.params.songId, req.body, req.files);
+    return res.status(200).json({ ...response });
   } catch (error) {
     next(error);
   }
 }
 
+// DELETE /api/admin/songs/:id
 export const deleteSong = async (req, res, next) => {
   try {
-    const { id } = req.params;
-    const song = await Song.findById(id);
-    if (song.albumId) {
-      await Album.findByIdAndUpdate(song.albumId, {
-        $pull: { songs: song.id }
-      })
-    }
-
-    await Song.findByIdAndDelete(id);
-    res.status(200).json({ message: 'Song deleted successfully' });
+    const response = await songService.deleteSong(req.params.id);
+    return res.status(200).json({ ...response });
   } catch (error) {
-    console.log('Error in deleteing song', error);
     next(error);
   }
 }
