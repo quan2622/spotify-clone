@@ -32,9 +32,9 @@ const AddAlbumDialog = () => {
     getAllArtist();
   }, []);
 
-  useEffect(() => {
-    setNewAlbum({ ...newAlbum, artist: 'no_artist', genre: 'no_genre' });
-  }, []);
+  // useEffect(() => {
+  //   setNewAlbum({ ...newAlbum, artist: '', genre: '' });
+  // }, []);
 
   const handleSubmitCreate = async () => {
     console.log("check state: ", newAlbum);
@@ -47,6 +47,7 @@ const AddAlbumDialog = () => {
       const formData = new FormData();
       formData.append('title', newAlbum.title);
       formData.append('artistId', newAlbum.artist);
+      formData.append('genreId', newAlbum.genre);
       formData.append('type', 'admin');
       formData.append('releaseYear', (newAlbum.releaseYear).toString());
       formData.append('imageFile', imageFile);

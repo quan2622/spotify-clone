@@ -8,7 +8,7 @@ import { cn } from "../lib/utils";
 import { ChangeEvent } from "react";
 
 type Topbar = {
-  query: any,
+  query: string,
   handleSearch: (event: ChangeEvent<HTMLInputElement>) => void
 }
 
