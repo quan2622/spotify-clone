@@ -1,6 +1,3 @@
-import { uploadToCloudinary } from "../helper/uploadToCloudinary.js";
-import { Album } from '../models/album.model.js'
-import { User } from "../models/user.model.js";
 import albumService from "../services/album.service.js";
 
 // GET /api/albums/

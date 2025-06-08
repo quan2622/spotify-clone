@@ -113,54 +113,34 @@ export const getAllAlbums = async (req, res, next) => {
   }
 }
 
+// POST /api/admin/albums
 export const createAlbum = async (req, res, next) => {
   try {
-    if (!req.files || !req.files.imageFile) {
-      return res.status(400).json({ message: 'Please upload image album' });
-    }
-
-    const { title, artistId, releaseYear, type } = req.body;
-
-    console.log("admin album: ", req.body);
-
-    const { imageFile } = req.files;
-    let data = {
-      ...req.body
-    }
-    if (type === 'admin') data.owner = artistId;
-
-    const imageUrl = await uploadToCloudinary(imageFile);
-    data.imageUrl = imageUrl;
-    const album = new Album({
-      ...data
-    });
-    await album.save();
-    res.status(200).json(album);
+    const response = await albumService.createAlbumAdmin(req.body, req.files.imageFile);
+    return res.status(200).json({ ...response });
   } catch (error) {
     console.log('Error in create Album', error);
     next(error);
   }
 }
 
+// DELETE /api/admin/albums/:albumId
 export const deleteAlbum = async (req, res, next) => {
   try {
     const { albumId } = req.params;
     const response = await albumService.DeleteAlbum(albumId);
-    res.status(200).json({ ...response })
+    return res.status(200).json({ ...response })
   } catch (error) {
     console.error("Error deleting album:", error);
     next(error);
   }
 }
 
+// PUT /api/admin/albums/update/:albumId
 export const updateAlbum = async (req, res, next) => {
   try {
-    const { songIds } = req.body;
-    const { albumId } = req.params;
-
-    await Album.findByIdAndUpdate({ _id: albumId }, { songs: [...songIds] });
-    await Song.updateMany({ _id: { $in: songIds } }, { albumId: albumId });
-    res.status(200).json({ message: 'Update successed' });
+    const response = await albumService.UpdateSongAlbumAdmin(req.params.albumId, req.body.songIds)
+    return res.status(200).json({ ...response });
   } catch (error) {
     next(error)
   }

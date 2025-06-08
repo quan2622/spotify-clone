@@ -1,3 +1,4 @@
+import { uploadToCloudinary } from "../helper/uploadToCloudinary.js";
 import { Album } from "../models/album.model.js";
 import { Song } from "../models/song.model.js";
 import { User } from "../models/user.model.js";
@@ -75,6 +76,33 @@ const createAlbumUser = async (clerkId) => {
   }
 }
 
+const createAlbumAdmin = async (payload, imageFile) => {
+  try {
+    if (!imageFile)
+      return ({ EC: 1, EM: "Please upload image album" })
+    const imageUrl = await uploadToCloudinary(imageFile);
+
+    const { title, artistId, genreId, releaseYear, type } = payload;
+    if (!payload && !title && !releaseYear && !type)
+      return ({ EC: 2, EM: "Missing required params" })
+    const data_update = {
+      title: title,
+      releaseYear: releaseYear,
+      type: type,
+      imageUrl: imageUrl
+    }
+    if (artistId) data_update.artistId = artistId;
+    if (genreId) data_update.genreId = genreId;
+
+    const newAlbum = new Album({ ...data_update });
+    await newAlbum.save();
+
+    return ({ EC: 0, EM: "OK", newAlbum })
+  } catch (error) {
+    throw error
+  }
+}
+
 const UpdateInfoAlbum = async (albumId, payload, image = null) => {
   try {
     const dataUpdate = {};
@@ -100,6 +128,19 @@ const UpdateInfoAlbum = async (albumId, payload, image = null) => {
     });
   } catch (error) {
     throw error;
+  }
+}
+
+const UpdateSongAlbumAdmin = async (albumId, songs) => {
+  try {
+    if (!albumId && songs) return ({ EC: 1, EM: "Missing required params" });
+
+    await Album.findByIdAndUpdate({ _id: albumId }, { songs: [...songs] });
+    await Song.updateMany({ _id: { $in: songs } }, { albumId: albumId });
+
+    return ({ EC: 0, EM: "Update successed!" });
+  } catch (error) {
+    throw error
   }
 }
 
@@ -145,7 +186,9 @@ export default {
   getAllAlbums,
   getAllAlbumById,
   createAlbumUser,
+  createAlbumAdmin,
   UpdateInfoAlbum,
+  UpdateSongAlbumAdmin,
   DeleteAlbum,
   UpdateSongAlbum,
 }
