@@ -13,7 +13,6 @@ const AlbumTable = () => {
     fetchSongAdmin();
   }, [fetchAlbum, fetchSongAdmin]);
 
-  // console.log("check album admin: ", albumsAdmin);
 
   return (
     <Table>
@@ -44,7 +43,7 @@ const AlbumTable = () => {
             <TableCell>
               <div className="inline-flex items-center gap-2">
                 <Music className="w-4 h-4" />
-                {album.songs.length} songs
+                {/* {album.songs.length} songs */}
               </div>
             </TableCell>
             <TableCell className="text-right">

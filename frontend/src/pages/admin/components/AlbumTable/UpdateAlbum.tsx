@@ -24,14 +24,11 @@ const UpdateAlbum = ({ album }: UpdateAlbum) => {
   const [availableSongs, setAvailableSongs] = useState<Song[]>([]);
   const [albumSongs, setAlbumSongs] = useState<Song[]>([]);
 
-  // console.log('check songs admin: ', songs);
-
   useEffect(() => {
     fetchAlbumById(album._id);
   }, [albumDialog]);
 
   useEffect(() => {
-    // console.log('Check current album: ', currentAlbum);
     if (currentAlbum?._id !== album._id) return;
 
     setAvailableSongs(songs.filter(song =>

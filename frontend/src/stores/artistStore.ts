@@ -32,7 +32,7 @@ export const useArtistStore = create<ArtistStore>((set) => ({
     set({ error: null });
     try {
       const res = await artistService.getAllArtist();
-      console.log("check data res store: ", res?.data);
+      // console.log("check data res store: ", res?.data);
       if (res && res.data.EC === 0) {
         set({ artists: [...res.data.artists] });
       } else toast.error(res?.data.EM);

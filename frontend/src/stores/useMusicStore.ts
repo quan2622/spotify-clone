@@ -240,7 +240,12 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
       const res = await axiosIntance.get(`albums/${albumId}`);
       if (res.data) {
         if (res.data.EC !== 0) toast.error(res.data.EM);
-        else set({ currentAlbum: res.data.album_data });
+        else {
+          const songs = res.data.songs;
+          const dataAlbum = _.cloneDeep(res.data.album_data);
+          dataAlbum.songs = songs;
+          set({ currentAlbum: dataAlbum })
+        };
       }
     } catch (error: any) {
       set({ error: error.respone.data.message });
@@ -297,7 +302,9 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
     set({ isSongLoading: true, error: null });
     try {
       const res = await axiosIntance.get('songs/all');
-      set({ songs: res.data.songs })
+      if (res.data && res.data.EC === 0) {
+        set({ songs: res.data.songs })
+      }
     } catch (error: any) {
       set({ error: error.message });
     } finally {
