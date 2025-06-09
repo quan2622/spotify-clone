@@ -4,7 +4,7 @@ import { protectRoute, requireAdmin } from "../middleware/auth.middleware.js";
 
 const router = Router();
 // authencation & authorcation 
-router.use(protectRoute, requireAdmin);
+// router.use(protectRoute, requireAdmin);
 
 router.get('/check', checkAdmin);
 
