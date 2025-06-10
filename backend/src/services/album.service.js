@@ -79,7 +79,7 @@ const getAllAlbumById = async (albumId) => {
         }
       },
       {
-        $addFields: { 'songData.artistData': '$artistData' }
+        $addFields: { 'songData.artistId': '$artistData' }
       },
       {
         $group: {
