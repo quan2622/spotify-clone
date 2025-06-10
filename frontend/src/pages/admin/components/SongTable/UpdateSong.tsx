@@ -158,144 +158,146 @@ const UpdateSong = ({ song }: UpdateSong) => {
           <PenLine className="size-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="bg-zinc-900  border-zinc-700 max-h-[80vh] overflow-auto">
-        <DialogHeader>
-          <DialogTitle>Update Song</DialogTitle>
-          <DialogDescription>
-            Update song to your collection.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="space-y-4 py-4">
-          <input type="file" accept="audio/*" ref={audioInputRef} hidden
-            onChange={(e) => {
-              if (!e.target.files) return;
-              const file = e.target.files[0];
-              handleDuration(file);
-              setFile({ ...files, audio: e.target.files![0] });
-              setIsChange({ ...isChange, cAudio: true, cDuration: true })
-            }
-            }
-          />
-
-          <input type="file" accept="image/*" ref={imageInputRef} hidden
-            onChange={(e) => {
-              setFile({ ...files, image: e.target.files![0] })
-              setIsChange({ ...isChange, cImage: true })
-            }}
-          />
-
-          {/* Image upload area */}
-          <div className="flex items-center justify-center p-6 border-2 border-dashed border-zinc-700 rounded-lg cursor-pointer"
-            onClick={() => imageInputRef.current?.click()}>
-            <div className="text-center">
-
-              {files.image ?
-                (
-                  <div className="space-y-2">
-                    <div className="text-sm text-emerald-500">Image selected:</div>
-                    <div className="text-xs text-zinc-400">{files.image.name.slice(0, 20)}</div>
-                  </div>
-                )
-                : (
-                  <>
-                    <div className="p-3 rounded-full inline-block">
-                      <Upload className="h-10 w-10 text-zinc-600" />
-                    </div>
-                    <div className="text-sm text-zinc-400 mb-2">Upload artwork</div>
-                    <Button variant={'outline'} size={'sm'} className="text-xs">
-                      Choose File
-                    </Button>
-                  </>
-                )
+      <DialogContent className="bg-zinc-900  border-zinc-700 overflow-auto max-w-2xl p-0">
+        <ScrollArea className="max-h-[80vh] p-8">
+          <DialogHeader>
+            <DialogTitle>Update Song</DialogTitle>
+            <DialogDescription>
+              Update song to your collection.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <input type="file" accept="audio/*" ref={audioInputRef} hidden
+              onChange={(e) => {
+                if (!e.target.files) return;
+                const file = e.target.files[0];
+                handleDuration(file);
+                setFile({ ...files, audio: e.target.files![0] });
+                setIsChange({ ...isChange, cAudio: true, cDuration: true })
               }
-            </div>
-          </div>
-          {/* audio upload area */}
-          <div className="space-y-2">
-            <label className="font-medium text-sm" >Audio File</label>
-            <div className="flex items-center">
-              <Button variant={'outline'} className="w-full" onClick={() => audioInputRef.current?.click()}>
-                {files.audio ? files.audio.name.slice(0, 20) : 'Choose Audio File'}
-              </Button>
-            </div>
-          </div>
-
-          {/* Other fields */}
-          <div className="space-y-2">
-            <label className="font-medium text-sm">Title</label>
-            <Input value={newSong.title} onChange={(e) => {
-              setNewSong({ ...newSong, title: e.target.value })
-              setIsChange({ ...isChange, cTitle: true })
-            }}
-              className="bg-zinc-800 border-zinc-700"
+              }
             />
-          </div>
-          <div className="flex item-center">
-            <div className="w-2/5 space-y-2 mt-[6px]">
-              <label className="font-medium text-sm">Artist</label>
-              <Button className="ml-2" size={'default'} variant={'outline'}
-                onClick={() => setIsOpenArtist(true)}>
-                Select {newSong.artist.length} artists
-              </Button>
-              <CommandDialog open={isOpenArtist} onOpenChange={setIsOpenArtist}>
-                <DialogTitle></DialogTitle>
-                <CommandInput placeholder="Type a command or search..." />
 
-                <CommandList>
-                  <ScrollArea className="h-72 rounded-md border py-2 px-3">
-                    <CommandEmpty>No results found.</CommandEmpty>
-                    {artists && artists.length > 0 && artists.map(item => {
-                      const isSelected = newSong.artist.includes(item._id);
-                      return (
-                        <CommandItem key={item._id} onSelect={() => {
-                          handleSelectArtist(item._id)
-                          setIsChange({ ...isChange, cArtist: true });
-                        }}
-                          className={isSelected ? 'bg-emerald-600' : ''}
-                        >{item.name}</CommandItem>
-                      )
-                    })}
-                  </ScrollArea>
-                </CommandList>
-              </CommandDialog>
+            <input type="file" accept="image/*" ref={imageInputRef} hidden
+              onChange={(e) => {
+                setFile({ ...files, image: e.target.files![0] })
+                setIsChange({ ...isChange, cImage: true })
+              }}
+            />
+
+            {/* Image upload area */}
+            <div className="flex items-center justify-center p-6 border-2 border-dashed border-zinc-700 rounded-lg cursor-pointer"
+              onClick={() => imageInputRef.current?.click()}>
+              <div className="text-center">
+
+                {files.image ?
+                  (
+                    <div className="space-y-2">
+                      <div className="text-sm text-emerald-500">Image selected:</div>
+                      <div className="text-xs text-zinc-400">{files.image.name.slice(0, 20)}</div>
+                    </div>
+                  )
+                  : (
+                    <>
+                      <div className="p-3 rounded-full inline-block">
+                        <Upload className="h-10 w-10 text-zinc-600" />
+                      </div>
+                      <div className="text-sm text-zinc-400 mb-2">Upload artwork</div>
+                      <Button variant={'outline'} size={'sm'} className="text-xs">
+                        Choose File
+                      </Button>
+                    </>
+                  )
+                }
+              </div>
             </div>
-            <div className="w-3/5 space-y-2">
-              <label className="font-medium text-sm">Duration (seconds)</label>
-              <Input type="number" min={0} value={newSong.duration} disabled
-                onChange={(e) => {
-                  setNewSong({ ...newSong, duration: e.target.value || "0" })
-                  setIsChange({ ...isChange, cDuration: true })
-                }}
+            {/* audio upload area */}
+            <div className="space-y-2">
+              <label className="font-medium text-sm" >Audio File</label>
+              <div className="flex items-center">
+                <Button variant={'outline'} className="w-full" onClick={() => audioInputRef.current?.click()}>
+                  {files.audio ? files.audio.name.slice(0, 20) : 'Choose Audio File'}
+                </Button>
+              </div>
+            </div>
+
+            {/* Other fields */}
+            <div className="space-y-2">
+              <label className="font-medium text-sm">Title</label>
+              <Input value={newSong.title} onChange={(e) => {
+                setNewSong({ ...newSong, title: e.target.value })
+                setIsChange({ ...isChange, cTitle: true })
+              }}
                 className="bg-zinc-800 border-zinc-700"
               />
             </div>
-          </div>
+            <div className="flex item-center">
+              <div className="w-2/5 space-y-2 mt-[6px]">
+                <label className="font-medium text-sm">Artist</label>
+                <Button className="ml-2" size={'default'} variant={'outline'}
+                  onClick={() => setIsOpenArtist(true)}>
+                  Select {newSong.artist.length} artists
+                </Button>
+                <CommandDialog open={isOpenArtist} onOpenChange={setIsOpenArtist}>
+                  <DialogTitle></DialogTitle>
+                  <CommandInput placeholder="Type a command or search..." />
 
-          <div className="space-y-2">
-            <label >Album (options)</label>
-            <Select value={newSong.album} onValueChange={(value) => {
-              setNewSong({ ...newSong, album: value })
-              setIsChange({ ...isChange, cAlbum: true })
-            }}>
-              <SelectTrigger className="bg-zinc-800 border-zinc-700">
-                <SelectValue placeholder='Select album' />
-              </SelectTrigger>
-              <SelectContent className="bg-zinc-800 border-zinc-700">
-                <SelectItem value="none">No Album (Single)</SelectItem>
-                {albumsAdmin.map((album) => (
-                  <SelectItem key={album._id} value={album._id}>{album.title}</SelectItem>
-                ))}
-              </SelectContent>
+                  <CommandList>
+                    <ScrollArea className="h-72 rounded-md border py-2 px-3">
+                      <CommandEmpty>No results found.</CommandEmpty>
+                      {artists && artists.length > 0 && artists.map(item => {
+                        const isSelected = newSong.artist.includes(item._id);
+                        return (
+                          <CommandItem key={item._id} onSelect={() => {
+                            handleSelectArtist(item._id)
+                            setIsChange({ ...isChange, cArtist: true });
+                          }}
+                            className={isSelected ? 'bg-emerald-600' : ''}
+                          >{item.name}</CommandItem>
+                        )
+                      })}
+                    </ScrollArea>
+                  </CommandList>
+                </CommandDialog>
+              </div>
+              <div className="w-3/5 space-y-2">
+                <label className="font-medium text-sm">Duration (seconds)</label>
+                <Input type="number" min={0} value={newSong.duration} disabled
+                  onChange={(e) => {
+                    setNewSong({ ...newSong, duration: e.target.value || "0" })
+                    setIsChange({ ...isChange, cDuration: true })
+                  }}
+                  className="bg-zinc-800 border-zinc-700"
+                />
+              </div>
+            </div>
 
-            </Select>
+            <div className="space-y-2">
+              <label >Album (options)</label>
+              <Select value={newSong.album} onValueChange={(value) => {
+                setNewSong({ ...newSong, album: value })
+                setIsChange({ ...isChange, cAlbum: true })
+              }}>
+                <SelectTrigger className="bg-zinc-800 border-zinc-700">
+                  <SelectValue placeholder='Select album' />
+                </SelectTrigger>
+                <SelectContent className="bg-zinc-800 border-zinc-700">
+                  <SelectItem value="none">No Album (Single)</SelectItem>
+                  {albumsAdmin.map((album) => (
+                    <SelectItem key={album._id} value={album._id}>{album.title}</SelectItem>
+                  ))}
+                </SelectContent>
+
+              </Select>
+            </div>
           </div>
-        </div>
-        <DialogFooter>
-          <Button variant={'outline'} onClick={() => setSongDialogOpen(false)} disabled={isLoading}>Cancel</Button>
-          <Button onClick={handleSubmitUpdate} disabled={isLoading}>
-            {isLoading ? 'Uploading ...' : 'Add Song'}
-          </Button>
-        </DialogFooter>
+          <DialogFooter>
+            <Button variant={'outline'} onClick={() => setSongDialogOpen(false)} disabled={isLoading}>Cancel</Button>
+            <Button onClick={handleSubmitUpdate} disabled={isLoading}>
+              {isLoading ? 'Uploading ...' : 'Add Song'}
+            </Button>
+          </DialogFooter>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   )
