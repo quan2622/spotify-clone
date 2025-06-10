@@ -221,13 +221,16 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
         set({ albumsUser: res.data.albums });
       } else if (option === "ADMIN") {
         const res = await axiosIntance.get('admin/albums');
-        set({ albumsAdmin: res.data.albums });
+        let songCount = JSON.parse(res.data.dataSongCount);
+        songCount = new Map(songCount);
+
+        const reMakeAlbum = res.data.albums.map((album: Album) => {
+          album.totalSong = songCount.get(album._id.toString())
+          return album;
+        })
+
+        set({ albumsAdmin: reMakeAlbum });
       }
-      // set({
-      //   albums: res.data,
-      //   albumsAdmin: res.data.adminAlbums,
-      //   albumsUser: res.data.userAlbums
-      // });
     } catch (error: any) {
       set({ error: error.respone })
     } finally {
@@ -244,6 +247,7 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
           const songs = res.data.songs;
           const dataAlbum = _.cloneDeep(res.data.album_data);
           dataAlbum.songs = songs;
+
           set({ currentAlbum: dataAlbum })
         };
       }

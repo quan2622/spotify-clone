@@ -33,7 +33,7 @@ const AlbumTable = () => {
               <img src={album.imageUrl} alt={album.title} className="size-12 rounded object-cover" />
             </TableCell>
             <TableCell className="font-medium">{album.title}</TableCell>
-            <TableCell>{album.artistId?.name}</TableCell>
+            <TableCell>{album.artistId ? album.artistId.name : "Created by Admin"}</TableCell>
             <TableCell>
               <span className="inline-flex items-center gap-1 text-zinc-400">
                 <Calendar className="h-4 w-4" />
@@ -43,7 +43,7 @@ const AlbumTable = () => {
             <TableCell>
               <div className="inline-flex items-center gap-2">
                 <Music className="w-4 h-4" />
-                {/* {album.songs.length} songs */}
+                {album.totalSong} songs
               </div>
             </TableCell>
             <TableCell className="text-right">

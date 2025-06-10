@@ -26,6 +26,7 @@ export interface Album {
   sharedWith: string[],
   artistId: Artist,
   genreId: Genre
+  totalSong?: number
 }
 
 export interface newArtist {
