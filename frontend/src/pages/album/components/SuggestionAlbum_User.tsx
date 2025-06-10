@@ -4,6 +4,7 @@ import { Album, Song } from "../../../types";
 import { useMusicStore } from "../../../stores/useMusicStore";
 import toast from "react-hot-toast";
 import { axiosIntance } from "../../../lib/axios";
+import { usePlayerStore } from "../../../stores/usePlayerStore";
 
 type SuggestionAlbum_User = {
   album: Album
@@ -12,13 +13,18 @@ type SuggestionAlbum_User = {
 }
 
 const SuggestionAlbum_User = ({ album, featuredSongs, formatDuraion }: SuggestionAlbum_User) => {
-  const { addSongToAlbumUser } = useMusicStore()
+  const { addSongToAlbumUser, currentAlbum } = useMusicStore()
+  const { setQueue } = usePlayerStore();
   const [songSelected, setSongSelected] = useState<string>('');
   const [dataSuggest, setDataSuggest] = useState<Song[]>([]);
 
   useEffect(() => {
     setDataSuggest(featuredSongs);
   }, [setDataSuggest, featuredSongs]);
+
+  useEffect(() => {
+    setQueue(currentAlbum?.songs ?? [])
+  }, [currentAlbum, setQueue]);
 
   const handleAddNewSong = async (song: Song) => {
     await addSongToAlbumUser(album._id, song);

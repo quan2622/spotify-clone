@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { Song } from "../types";
 import { useChatStore } from "./useChatStore";
 import { axiosIntance } from "../lib/axios";
+import _ from "lodash";
 
 interface PlayerStore {
   currentSong: Song | null,
@@ -13,6 +14,7 @@ interface PlayerStore {
   totalListens: number,
 
   initializeQueue: (songs: Song[]) => void,
+  setQueue: (songs: Song[]) => void,
   playAlbum: (songs: Song[], startIndex?: number) => void,
   setCurrentSong: (song: Song | null) => void,
   togglePlay: () => void,
@@ -61,24 +63,49 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
       currentIndex: get().currentIndex === -1 ? 0 : get().currentIndex,
     });
   },
+  setQueue: (songs: Song[]) => {
+    set({
+      queue: [...songs],
+    });
+  },
   playAlbum: (songs: Song[], startIndex = 0) => {
     if (songs.length === 0) return;
-    const song = songs[startIndex];
 
-    const socket = useChatStore.getState().socket;
-    if (socket.auth) {
-      socket.emit('update_activity', {
-        userId: socket.auth.userId,
-        activity: `Playing ${song.title} by ${song.artistId.map(item => item.name).join(" • ")}`
-      })
+    let song = <Song>{};
+
+    if (get().queue && !_.isEqual(get().queue, songs)) {
+      if (startIndex === 0) {
+
+        // const songInAlbum = songs.some(song => song._id === get().currentSong?._id);
+
+        const index = songs.findIndex(item => item._id === get().currentSong?._id)
+        console.log("Check current song: ", get().currentSong);
+        console.log("Check song in album: ", songs);
+        console.log("Check index: ", startIndex, ' - ', index);
+        song = songs[index !== -1 ? index : startIndex];
+      } else {
+        song = songs[startIndex];
+      }
+    } else {
+      song = songs[startIndex];
     }
 
-    set({
-      queue: songs,
-      currentSong: song,
-      currentIndex: startIndex,
-      isPlaying: true,
-    })
+    if (song) {
+      const socket = useChatStore.getState().socket;
+      if (socket.auth) {
+        socket.emit('update_activity', {
+          userId: socket.auth.userId,
+          activity: `Playing ${song.title} by ${song.artistId.map(item => item.name).join(" • ")}`
+        })
+      }
+
+      set({
+        queue: songs,
+        currentSong: song,
+        currentIndex: startIndex,
+        isPlaying: true,
+      })
+    }
   },
   setCurrentSong: (song: Song | null) => {
     if (!song) return;

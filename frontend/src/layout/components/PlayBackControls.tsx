@@ -59,7 +59,7 @@ const PlayBackControls = () => {
                   {
                     currentSong.artistId.map((item, index) => (
                       <>
-                        <Link to={`artist/${item._id}`} className="inline-block cursor-pointer hover:underline">{item.name}</Link>
+                        <Link to={`artist/${item._id}`} className="inline-block cursor-pointer hover:underline" key={index}>{item.name}</Link>
                         {index < currentSong.artistId.length - 1 && ` | `}
                       </>
                     ))

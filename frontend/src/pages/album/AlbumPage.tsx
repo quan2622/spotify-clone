@@ -33,7 +33,7 @@ const AlbumPage = () => {
   const navigate = useNavigate();
   const { isLoading, fetchAlbumById, currentAlbum, featuredSongs, fetchFeaturedSong, minusSongAlbumUser } = useMusicStore();
 
-  const { playAlbum, currentSong, isPlaying, togglePlay } = usePlayerStore();
+  const { playAlbum, currentSong, currentIndex, isPlaying, togglePlay, setQueue } = usePlayerStore();
 
   useEffect(() => {
     if (albumId) fetchAlbumById(albumId)
@@ -42,6 +42,10 @@ const AlbumPage = () => {
   useEffect(() => {
     fetchFeaturedSong();
   }, [fetchFeaturedSong]);
+
+  useEffect(() => {
+    setQueue(currentAlbum?.songs ?? [])
+  }, [currentAlbum, setQueue]);
 
   const handlePlayAlbum = () => {
     if (!currentAlbum) return;
@@ -59,10 +63,21 @@ const AlbumPage = () => {
 
   const handleDeleteSong = async (e: React.MouseEvent, song: Song) => {
     e.stopPropagation();
-    if (isPlaying)
-      togglePlay();
     if (albumId) {
       await minusSongAlbumUser(albumId, song);
+    }
+    if (currentAlbum?.songs.length === 1) {
+      toast.error("No song in album here!")
+    } else {
+      if (currentAlbum?.songs) {
+        console.log("Check current song: ", currentAlbum.songs, ' - ', currentIndex)
+        if (currentIndex - 1 === 0) playAlbum(currentAlbum.songs)
+
+        const newSongs = currentAlbum.songs.filter(item => item._id !== song._id)
+        const newIndex = currentIndex - 1 === -1 ? 0 : currentIndex - 1;
+        playAlbum(newSongs, newIndex);
+        // togglePlay();
+      }
     }
   }
 
