@@ -8,7 +8,7 @@ export interface Song {
   totalListens: number,
   createdAt: string,
   udpatedAt: string,
-  genreId: Genre,
+  genreId: Genre | string,
   artistId: Artist[],
 }
 

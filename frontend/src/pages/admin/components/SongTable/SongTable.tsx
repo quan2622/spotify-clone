@@ -1,14 +1,15 @@
-import { Calendar, Trash2 } from "lucide-react";
+import { Calendar, PenLine, Trash2 } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../components/ui/table";
 import { useMusicStore } from "../../../../stores/useMusicStore"
 import { Button } from "../../../../components/ui/button";
 import PaginationTable from "../Pagination/Pagination";
 import UpdateSong from "./UpdateSong";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import type { Song } from "../../../../types";
 
 const SongTable = () => {
   const { songs, isLoading, error, deleteSongAdmin, getSongPaginate } = useMusicStore();
-
+  const [editSong, setEditSong] = useState<Song | null>(null);
   useEffect(() => {
     getSongPaginate();
   }, []);
@@ -27,6 +28,10 @@ const SongTable = () => {
         <div className="text-red-400">{error}</div>
       </div>
     )
+  }
+
+  const handleRemoveEditSong = () => {
+    setEditSong(null);
   }
 
 
@@ -61,7 +66,11 @@ const SongTable = () => {
               <TableCell className="text-right">
                 <div className="flex gap-2 justify-end">
 
-                  <UpdateSong song={song} />
+                  {/* <UpdateSong song={song} /> */}
+                  <Button variant={"ghost"} size={'sm'} onClick={() => setEditSong(song)}
+                    className="text-yellow-500 hover:text-yellow-300 hover:bg-red-400/10" >
+                    <PenLine className="size-4" />
+                  </Button>
                   <Button variant={"ghost"} size={'sm'}
                     className="text-red-400 hover:text-red-300 hover:bg-red-400/10"
                     onClick={() => {
@@ -78,6 +87,11 @@ const SongTable = () => {
 
       </Table >
       <PaginationTable />
+
+
+      {editSong &&
+        <UpdateSong song={editSong} handleRemoveEditSong={handleRemoveEditSong} />
+      }
     </>
   )
 }

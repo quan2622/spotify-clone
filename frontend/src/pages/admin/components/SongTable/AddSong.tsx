@@ -76,29 +76,36 @@ const AddSong = () => {
       formData.append('title', titleRef.current?.value ?? "");
       formData.append('artistId', JSON.stringify(newSong.artist));
       formData.append('duration', newSong.duration);
+      formData.append('genreId', newSong.genre);
       if (newSong && newSong.album !== 'none') {
         formData.append('albumId', newSong.album);
       }
       formData.append('audioFile', files.audio);
       formData.append('imageFile', files.image);
 
-      await axiosIntance.post('admin/songs', formData, {
+      const res = await axiosIntance.post('admin/songs', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-
-      setNewSong({
-        title: '',
-        duration: '0',
-        album: '',
-        artist: [],
-        genre: '',
-      })
-      setFile({
-        audio: null,
-        image: null,
-      })
-      toast.success('Song added successfully');
-      await getSongPaginate();
+      if (res.data && res.data.EC === 0) {
+        setNewSong({
+          title: '',
+          duration: '0',
+          album: '',
+          artist: [],
+          genre: '',
+        })
+        setFile({
+          audio: null,
+          image: null,
+        });
+        if (titleRef && titleRef.current) {
+          titleRef.current.value = "";
+        }
+        toast.success('Song added successfully');
+        await getSongPaginate();
+      } else {
+        toast.error(res.data.EM);
+      }
     } catch (error: unknown) {
       if (error instanceof Error) {
         toast.error('Failed to add song: ' + error.message);
@@ -189,12 +196,14 @@ const AddSong = () => {
             <div className="flex item-center gap-4">
               <div className="flex-1 space-y-2">
                 <label className="font-medium text-sm">Genre</label>
-                <Select value={newSong.genre} onValueChange={(value) => setNewSong({ ...newSong, genre: value })}>
+                <Select value={newSong.genre} onValueChange={(value) => {
+                  setNewSong({ ...newSong, genre: value })
+                }}>
                   <SelectTrigger className="bg-zinc-800 border-zinc-700">
-                    <SelectValue placeholder='Select album' />
+                    <SelectValue placeholder='Select genre' />
                   </SelectTrigger>
                   <SelectContent className="bg-zinc-800 border-zinc-700">
-                    <SelectItem value="none">No Album (Single)</SelectItem>
+                    <SelectItem value="none" disabled>Not Empty Here!</SelectItem>
                     {listGenre.map((genre) => (
                       <SelectItem key={genre._id} value={genre._id}>{genre.name}</SelectItem>
                     ))}

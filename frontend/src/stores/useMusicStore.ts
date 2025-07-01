@@ -189,7 +189,7 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
       const res = await axiosIntance.put(`admin/songs/${songId}`, data, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-      toast.success(res.data.message);
+      toast.success(res.data.EM);
       const new_songs = get().songs.map(item => item._id === res.data.song._id ? res.data.song : item);
       set({ songs: new_songs });
     } catch (error: any) {
