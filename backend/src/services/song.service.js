@@ -5,6 +5,7 @@ import { ListenHistory } from "../models/History.model.js";
 import { Song } from "../models/song.model.js"
 import AppError from "../utils/AppError.js";
 import { albumSong } from "../models/albumSong.model.js";
+import mongoose from "mongoose";
 
 const getAllSong = async (page = 0) => {
   try {
@@ -18,7 +19,8 @@ const getAllSong = async (page = 0) => {
         .populate({ path: "artistId", select: "name" })
         .sort({ createdAt: "desc" })
         .skip(number_skip)
-        .limit(SONG_PER_PAGE);
+        .limit(SONG_PER_PAGE)
+
       totalSong = await Song.countDocuments();
     } else {
       songs = await Song.find().populate({ path: "artistId", select: "name" });
@@ -138,8 +140,8 @@ const createSong = async (payload, files) => {
     if (!files || !files.audioFile || !files.imageFile)
       return ({ EC: 1, EM: 'Not found image or audio file!' });
 
-    const { title, artistId, duration } = payload;
-    if (!payload || !title || !artistId || !duration)
+    const { title, artistId, duration, genreId, albumId } = payload;
+    if (!payload || !title || !artistId || !duration || !genreId)
       return ({ EC: 2, EM: "Missing required params" })
 
     const data_create = {
@@ -148,11 +150,22 @@ const createSong = async (payload, files) => {
       title,
       artistId: JSON.parse(artistId),
       duration,
+      genreId: genreId
     };
+
+    if (albumId) data_create["albumId"] = albumId;
 
     const newSong = new Song({ ...data_create })
     await newSong.save()
 
+    let res = {};
+    if (albumId && newSong) {
+      const albumIdConvert = new mongoose.Types.ObjectId(String(albumId));
+      res = await albumSong.create({ albumId: albumIdConvert, songId: newSong._id });
+      if (_.isEmpty(res)) {
+        return ({ EC: 1, EM: "Create song success. But, it had error when add song to album." });
+      }
+    }
     return ({ EC: 0, EM: "Create new song successed", newSong })
   } catch (error) {
     throw error
