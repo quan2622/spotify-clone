@@ -183,9 +183,9 @@ const AlbumPage = () => {
                 onClick={handlePlayAlbum}
               >
                 {isPlaying &&
-                currentAlbum?.songs?.some(
-                  (song) => currentSong?._id === song._id
-                ) ? (
+                  currentAlbum?.songs?.some(
+                    (song) => currentSong?._id === song._id
+                  ) ? (
                   <Pause className="h-8 w-8 text-black" />
                 ) : (
                   <Play className="h-8 w-8 text-black" />

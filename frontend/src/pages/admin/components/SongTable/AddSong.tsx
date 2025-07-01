@@ -1,9 +1,9 @@
 import { Button } from "../../../../components/ui/button"
+import { Input } from "../../../../components/ui/input";
 import { useMusicStore } from "../../../../stores/useMusicStore"
-import { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTrigger } from "../../../../components/ui/dialog";
 import { DialogDescription, DialogTitle } from "@radix-ui/react-dialog";
-import { Input } from "../../../../components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../../components/ui/select";
 import toast from "react-hot-toast";
 import { axiosIntance } from "../../../../lib/axios";
@@ -11,7 +11,11 @@ import { useArtistStore } from "../../../../stores/artistStore";
 import { CommandDialog, CommandEmpty, CommandInput, CommandItem, CommandList } from "../../../../components/ui/command";
 import { ScrollArea } from "../../../../components/ui/scroll-area";
 import { CirclePlus, Upload } from "lucide-react";
+import genreService from "../../../../services/genre.service";
+import type { Genre } from "../../../../types";
 
+// import type { FormProps } from 'antd';
+// import { Button, Checkbox, Form, Input } from 'antd';
 
 const AddSong = () => {
   const { artists, getAllArtist } = useArtistStore();
@@ -19,13 +23,17 @@ const AddSong = () => {
   const [songDialogOpen, setSongDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isOpenArtist, setIsOpenArtist] = useState(false);
+  const [listGenre, setListGenre] = useState<Genre[]>([]);
 
-  const [newSong, setNewSong] = useState<{ title: string, artist: string[], album: string, duration: string }>({
+  const [newSong, setNewSong] = useState<{ title: string, artist: string[], album: string, duration: string, genre: string }>({
     title: '',
     album: '',
     artist: [],
     duration: '0',
+    genre: '',
   });
+
+  const titleRef = useRef<HTMLInputElement>(null);
 
   const [files, setFile] = useState<{ audio: File | null, image: File | null }>({
     audio: null,
@@ -35,9 +43,22 @@ const AddSong = () => {
   const audioInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
 
+
+
   useEffect(() => {
+    const handleGetALlGenre = async () => {
+      const res = await genreService.GetAllGenre();
+      if (res && res.data && res.data.EC === 0) {
+        setListGenre([...res.data.list]);
+      } else {
+        toast.error(res?.data.EM);
+      }
+    }
+
     getAllArtist();
+    handleGetALlGenre();
   }, [getAllArtist]);
+
 
   const handleSelectArtist = (value: string) => {
     setNewSong((prev) => prev.artist.includes(value) ?
@@ -52,7 +73,7 @@ const AddSong = () => {
       }
 
       const formData = new FormData();
-      formData.append('title', newSong.title);
+      formData.append('title', titleRef.current?.value ?? "");
       formData.append('artistId', JSON.stringify(newSong.artist));
       formData.append('duration', newSong.duration);
       if (newSong && newSong.album !== 'none') {
@@ -70,6 +91,7 @@ const AddSong = () => {
         duration: '0',
         album: '',
         artist: [],
+        genre: '',
       })
       setFile({
         audio: null,
@@ -162,14 +184,27 @@ const AddSong = () => {
             {/* Other fields */}
             <div className="space-y-2">
               <label className="font-medium text-sm">Title</label>
-              <Input value={newSong.title} onChange={(e) => setNewSong({ ...newSong, title: e.target.value })}
-                className="bg-zinc-800 border-zinc-700"
-              />
+              <Input defaultValue={newSong.title} ref={titleRef} />
             </div>
-            <div className="flex item-center">
-              <div className="w-2/5 space-y-2 mt-[6px]">
+            <div className="flex item-center gap-4">
+              <div className="flex-1 space-y-2">
+                <label className="font-medium text-sm">Genre</label>
+                <Select value={newSong.genre} onValueChange={(value) => setNewSong({ ...newSong, genre: value })}>
+                  <SelectTrigger className="bg-zinc-800 border-zinc-700">
+                    <SelectValue placeholder='Select album' />
+                  </SelectTrigger>
+                  <SelectContent className="bg-zinc-800 border-zinc-700">
+                    <SelectItem value="none">No Album (Single)</SelectItem>
+                    {listGenre.map((genre) => (
+                      <SelectItem key={genre._id} value={genre._id}>{genre.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+              </div>
+              <div className="w-[200px] flex flex-col space-y-2">
                 <label className="font-medium text-sm">Artist</label>
-                <Button className="ml-2" size={'default'} variant={'outline'}
+                <Button size="lg" className="py-2" variant={'outline'}
                   onClick={() => setIsOpenArtist(true)}>
                   Select {newSong.artist.length} artists
                 </Button>
@@ -184,7 +219,7 @@ const AddSong = () => {
                         const isSelected = newSong.artist.includes(item._id);
                         return (
                           <CommandItem key={item._id} onSelect={() => handleSelectArtist(item._id)}
-                            className={isSelected ? 'bg-emerald-600' : ''}
+                            className={isSelected ? 'bg-emerald-600 border-2 border-white' : ''}
                           >{item.name}</CommandItem>
                         )
                       })}
@@ -192,7 +227,25 @@ const AddSong = () => {
                   </CommandList>
                 </CommandDialog>
               </div>
-              <div className="w-3/5 space-y-2">
+            </div>
+
+
+            <div className="flex items-center gap-4">
+              <div className="flex-1 space-y-2">
+                <label className="">Album (options)</label>
+                <Select value={newSong.album} onValueChange={(value) => setNewSong({ ...newSong, album: value })}>
+                  <SelectTrigger className="bg-zinc-800 border-zinc-700">
+                    <SelectValue placeholder='Select album' />
+                  </SelectTrigger>
+                  <SelectContent className="bg-zinc-800 border-zinc-700">
+                    <SelectItem value="none">No Album (Single)</SelectItem>
+                    {albumsAdmin.map((album) => (
+                      <SelectItem key={album._id} value={album._id}>{album.title}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="w-[200px] space-y-2">
                 <label className="font-medium text-sm">Duration (seconds)</label>
                 <Input type="number" min={0} value={newSong.duration} disabled
                   onChange={(e) => setNewSong({ ...newSong, duration: e.target.value || "0" })}
@@ -200,26 +253,11 @@ const AddSong = () => {
                 />
               </div>
             </div>
-
-
-            <div className="space-y-2">
-              <label >Album (options)</label>
-              <Select value={newSong.album} onValueChange={(value) => setNewSong({ ...newSong, album: value })}>
-                <SelectTrigger className="bg-zinc-800 border-zinc-700">
-                  <SelectValue placeholder='Select album' />
-                </SelectTrigger>
-                <SelectContent className="bg-zinc-800 border-zinc-700">
-                  <SelectItem value="none">No Album (Single)</SelectItem>
-                  {albumsAdmin.map((album) => (
-                    <SelectItem key={album._id} value={album._id}>{album.title}</SelectItem>
-                  ))}
-                </SelectContent>
-
-              </Select>
-            </div>
           </div>
+
           <DialogFooter>
-            <Button variant={'outline'} onClick={() => setSongDialogOpen(false)} disabled={isLoading}>Cancel</Button>
+            {/* <Button variant={'outline'} onClick={() => setSongDialogOpen(false)} disabled={isLoading}>Cancel</Button> */}
+            <Button onClick={() => setSongDialogOpen(false)} disabled={isLoading}>Cancel</Button>
             <Button onClick={handleSubmitCreate} disabled={isLoading}>
               {isLoading ? 'Uploading ...' : 'Add Song'}
             </Button>

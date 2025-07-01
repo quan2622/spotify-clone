@@ -63,6 +63,8 @@ const UpdateSong = ({ song }: UpdateSong) => {
     cImage: false,
   })
 
+  const titleRef = useRef<HTMLInputElement>(null);
+
   const audioInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
 
@@ -118,8 +120,8 @@ const UpdateSong = ({ song }: UpdateSong) => {
       }
 
       const formData = new FormData();
-      if (isChange.cTitle)
-        formData.append('title', newSong.title);
+      if (newSong.title !== titleRef.current?.value && titleRef.current)
+        formData.append('title', titleRef.current.value);
       if (isChange.cArtist)
         formData.append('artistId', JSON.stringify(newSong.artist));
       if (isChange.cDuration)
@@ -137,6 +139,7 @@ const UpdateSong = ({ song }: UpdateSong) => {
       // for (const pair of formData.entries()) {
       //   console.log(`${pair[0]}:`, pair[1]);
       // }
+      // return;
       await updateSong(formData, song._id)
       await getSongPaginate();
     } catch (error: unknown) {
@@ -149,7 +152,7 @@ const UpdateSong = ({ song }: UpdateSong) => {
       setIsLoading(false);
     }
   }
-
+  console.log("component render");
   return (
     <Dialog open={songDialogOpen} onOpenChange={setSongDialogOpen}>
       <DialogTrigger asChild>
@@ -224,12 +227,7 @@ const UpdateSong = ({ song }: UpdateSong) => {
             {/* Other fields */}
             <div className="space-y-2">
               <label className="font-medium text-sm">Title</label>
-              <Input value={newSong.title} onChange={(e) => {
-                setNewSong({ ...newSong, title: e.target.value })
-                setIsChange({ ...isChange, cTitle: true })
-              }}
-                className="bg-zinc-800 border-zinc-700"
-              />
+              <Input defaultValue={newSong.title} ref={titleRef} className="bg-zinc-800 border-zinc-700" />
             </div>
             <div className="flex item-center">
               <div className="w-2/5 space-y-2 mt-[6px]">
