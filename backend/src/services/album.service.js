@@ -2,11 +2,12 @@ import mongoose from "mongoose";
 import { uploadToCloudinary } from "../helper/uploadToCloudinary.js";
 import { Album } from "../models/album.model.js";
 import { albumSong } from "../models/albumSong.model.js";
-import { Song } from "../models/song.model.js";
 import { User } from "../models/user.model.js";
 import { Artist } from "../models/artist.model.js";
 import AppError from "../utils/AppError.js";
 import _ from "lodash";
+import { startOfDay, startOfMonth, startOfToday, subDays } from "date-fns";
+import { ListenHistory } from "../models/History.model.js";
 
 const getAllAlbums = async (clerkId, option) => {
   // ADMIN || USER
@@ -101,8 +102,6 @@ const getAllAlbumById = async (albumId) => {
         },
       },
     ]);
-
-    // console.log("Check res: ", resDB);
 
     if (!album_data) throw new AppError("Cannot find album", 404);
     return {
@@ -208,7 +207,6 @@ const UpdateSongAlbumAdmin = async (albumId, songs) => {
   try {
     if (!albumId || !songs) return { EC: 1, EM: "Missing required params" };
 
-    // console.log("====================================================0");
     const session = await mongoose.startSession();
     session.startTransaction();
     try {
@@ -218,10 +216,7 @@ const UpdateSongAlbumAdmin = async (albumId, songs) => {
       );
 
       const songsUpdate = new Set(songs.map((id) => id.toString()));
-      // console.log("Check data: ", data);
-      // console.log("chek exists: ", associateExists);
-      // console.log("chek song update: ", songsUpdate);
-      // console.log("====================================================1")
+
       // song need add
       const song_add = songs.filter(
         (songId) => !associateExists.has(songId.toString())
@@ -231,9 +226,6 @@ const UpdateSongAlbumAdmin = async (albumId, songs) => {
         (link) => !songsUpdate.has(link.songId.toString())
       );
 
-      // console.log("Check song add: ", song_add)
-      // console.log("Check song remove: ", song_remove);
-      // console.log("====================================================2")
 
       await Promise.all(
         song_add.map(async (songId) => {
@@ -305,6 +297,118 @@ const UpdateSongAlbum = async (song, albumId, style) => {
   }
 };
 
+const recordListeningAlbum = async (albumId, userId) => {
+  try {
+    if (!albumId || !userId) return { EC: 1, EM: "Missing required params" };
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const record = await ListenHistory.findOne({ albumId, userId, date: today });
+    let result = {};
+    if (record) {
+      result = await ListenHistory.findOneAndUpdate({ albumId, userId, date: today }, { $inc: { count: 1 } });
+    } else {
+      result = await ListenHistory.create({ albumId, userId, date: today });
+    }
+
+    if (!result) throw new AppError("Cannot record listening album", 404);
+    return {
+      EC: 0,
+      EM: "Record listening album success",
+      result,
+    };
+  } catch (error) {
+    throw error;
+  }
+}
+
+
+const getRecentListeningAlbums = async (userId, page = 1) => {
+  try {
+    const end = startOfDay(new Date());
+    const start = subDays(end, 7);
+    const LIMIT = 10;
+    const SKIP = (page - 1) * LIMIT;
+    const data_history = await ListenHistory
+      .find({
+        userId,
+        date: { $gte: start, $lte: end },
+        albumId: { $exists: true }, songId: { $exists: false },
+      })
+      .sort({ date: -1 }).populate("albumId").limit(LIMIT).skip(SKIP);
+    return data_history.map(item => item.albumId);
+  } catch (error) {
+    throw (error);
+  }
+}
+
+const getRecommendedAlbums = async (userId, page = 1) => {
+  try {
+    const end = startOfDay(new Date());
+    const start = subDays(end, 7);
+    const LIMIT = 10;
+    const SKIP = (page - 1) * LIMIT;
+    const data_history = await ListenHistory
+      .find({
+        userId,
+        date: { $gte: start, $lte: end },
+        albumId: { $exists: true }, songId: { $exists: false },
+      })
+      .sort({ date: -1 });
+
+    const albumIds = data_history.map(item => item.albumId);
+    const result = await Album.find({ _id: { $nin: albumIds }, type: 'admin' }).limit(LIMIT).skip(SKIP);
+    return result;
+  } catch (error) {
+    throw (error);
+  }
+}
+
+const getPopularAlbums = async (page = 1) => {
+  try {
+    const start = startOfMonth(new Date());
+    const end = startOfToday(new Date());
+
+    const LIMIT = 10;
+    const SKIP = (page - 1) * LIMIT;
+
+    const data_history = await ListenHistory
+      .find({
+        date: { $gte: start, $lte: end },
+        albumId: { $exists: true }, songId: { $exists: false },
+      })
+      .sort({ count: -1 })
+      .populate("albumId")
+      .limit(LIMIT).skip(SKIP);
+    return data_history.map(item => ({
+      ...item.albumId.toObject(),
+      count: item.count
+    }));
+  } catch (error) {
+    throw (error);
+  }
+}
+
+const getNewReleases = async (page = 1) => {
+  try {
+    const end = startOfToday(new Date());
+    const start = subDays(end, 30);
+    const LIMIT = 10;
+    const SKIP = (page - 1) * LIMIT;
+
+    return await Album
+      .find({
+        type: "admin",
+        createdAt: { $gte: start, $lte: end }
+      })
+      .sort({ createdAt: -1 }).limit(LIMIT).skip(SKIP);
+  } catch (error) {
+    throw (error);
+  }
+}
+
+
 export default {
   getAllAlbums,
   getAllAlbumById,
@@ -314,4 +418,9 @@ export default {
   UpdateSongAlbumAdmin,
   DeleteAlbum,
   UpdateSongAlbum,
+  getRecentListeningAlbums,
+  getPopularAlbums,
+  getRecommendedAlbums,
+  getNewReleases,
+  recordListeningAlbum,
 };
