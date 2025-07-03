@@ -18,11 +18,11 @@ export default {
 				marquee: {
 					'0%': { transform: 'translateX(0%)' },
 					'100%': { transform: 'translateX(-10%)' },
-				}
+				},
 			},
 			animation: {
 				shake: 'shake 0.4s ease-in-out',
-				marquee: 'marquee 4s linear infinite'
+				marquee: 'marquee 4s linear infinite',
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

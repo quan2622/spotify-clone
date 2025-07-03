@@ -88,7 +88,7 @@ export const DeleteAlbumUser = async (req, res, next) => {
   }
 };
 
-// GET api/albums/get/caches?categoryKey=...
+// GET api/albums/get/caches?categoryKey=...&page=...
 export const getCacheAlbum = async (req, res, next) => {
   try {
     const { categoryKey, page } = req.query;

@@ -1,19 +1,30 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useUserStore } from "../../stores/useUserStore"
-import { HeadphonesIcon, Music, Users } from "lucide-react";
+import { HeadphonesIcon, Music, PanelRightClose, PanelRightOpen, Users } from "lucide-react";
 import { useUser } from "@clerk/clerk-react";
 import { ScrollArea } from "../../components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar";
 import { useChatStore } from "../../stores/useChatStore";
+import MarqueeName from "./MarqueeName";
 
-const RightSide = ({ isCollapseRight }: { isCollapseRight: boolean }) => {
+type RightSideType = {
+  isCollapseRight: boolean;
+  handleCollapse: () => void;
+}
+
+const RightSide = ({ isCollapseRight, handleCollapse }: RightSideType) => {
   const { onlineUsers, userActivities } = useChatStore();
   const { users, fetchUser } = useUserStore();
+  const [isHover, setIsHover] = useState(false);
 
   const { user } = useUser();
   useEffect(() => {
     if (user) fetchUser();
   }, [fetchUser, user]);
+
+  useEffect(() => {
+    setIsHover(false);
+  }, [isCollapseRight])
 
   const handleAvtName = (userName: string) => {
     const new_name = userName.split(' ');
@@ -21,10 +32,30 @@ const RightSide = ({ isCollapseRight }: { isCollapseRight: boolean }) => {
   }
 
   return (
-    <div className="h-full bg-zinc-900 rounded-lg flex flex-col">
-      <div className="p-4 flex justify-between items-center border-b border-zinc-800">
-        <div className={`flex items-center gap-2 ${isCollapseRight ? 'justify-center mx-auto' : ''} `}>
-          <Users className={`size-5 shrink-0  ${isCollapseRight ? 'mx-auto' : ''}`} />
+    <div className="h-full bg-zinc-900 rounded-lg flex flex-col"
+      onMouseEnter={() => setIsHover(true)}
+      onMouseLeave={() => setIsHover(false)}
+    >
+      <div className="p-4 flex justify-between items-center border-b border-zinc-800 mx-auto relative">
+        <span className={`transition-all ease duration-300 absolute -left-[10px] ${isHover ? 'opacity-100 translate-x-2 left-3' : 'opacity-0 -translate-x-4'}`}>
+          {!isCollapseRight &&
+            <PanelRightClose className="size-5 shrink-0 cursor-pointer" onClick={handleCollapse} />
+          }
+        </span>
+        <div className={`relative flex items-center gap-2 transition-all duration-300 ${isCollapseRight ? 'justify-center' : ''} ${isHover ? 'translate-x-2' : ''}`}>
+
+          <PanelRightOpen className={`absolute size-5 shrink-0 cursor-pointer
+          ${isCollapseRight && isHover ? 'opacity-100 -translate-x-3' : 'opacity-0 -translate-x-2 pointer-events-none'}
+          transition-all duration-300 ease-in-out
+          `}
+            onClick={handleCollapse} />
+
+
+          <Users className={`size-5 shrink-0  
+            transition-all duration-300 ease-in-out
+            ${isCollapseRight ? 'mx-auto' : ''}
+            ${!isCollapseRight || !isHover ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-1'}
+            `} />
           {!isCollapseRight &&
             <h2 className="font-semibold">What they're listening to</h2>
           }
@@ -53,8 +84,8 @@ const RightSide = ({ isCollapseRight }: { isCollapseRight: boolean }) => {
                   </div>
                   {!isCollapseRight &&
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium text-sm text-white">{user.fullName}</span>
+                      <div className="flex items-center gap-2 overflow-hidden">
+                        <MarqueeName>{user.fullName}</MarqueeName>
                         {isPlaying && <Music className="size-3.5 text-emerald-400 shrink-0" />}
                       </div>
                       {isPlaying ?

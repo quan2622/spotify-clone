@@ -8,6 +8,7 @@ import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { ScrollArea } from "../components/ui/scroll-area";
 import Topbar from "../components/Topbar";
 import { useSearchStore } from "../stores/useSearchStore";
+import { useUIStore } from "../stores/useUIStore";
 
 
 const MainLayout = () => {
@@ -20,6 +21,13 @@ const MainLayout = () => {
   const location = useLocation();
   const prevPath = useRef(location.pathname);
   const { dataSearch: searchKey } = useSearchStore();
+
+  const rightPanelRef = useRef<any>(null);
+  const leftPanelRef = useRef<any>(null);
+
+  const { hanldeChangeMainSize, mainSize } = useUIStore();
+
+  console.log("Check main size: ", mainSize);
 
   useEffect(() => {
     if (!searchKey) return;
@@ -75,18 +83,42 @@ const MainLayout = () => {
     // }
   }
 
+  const handleCollpaseRight = () => {
+    if (rightPanelRef.current) {
+      if (isCollapseRight) {
+        rightPanelRef.current.expand();
+      } else {
+        rightPanelRef.current.collapse();
+      }
+    }
+  }
+
+  const handleCollpaseLeft = () => {
+    if (leftPanelRef.current) {
+      if (isCollapseLeft) {
+        leftPanelRef.current.expand();
+      } else {
+        leftPanelRef.current.collapse();
+      }
+    }
+  }
+
+
   return (
     <div className="h-screen bg-black text-white flex flex-col">
       <ResizablePanelGroup direction="horizontal" className="flex flex-1 h-full overflow-hidden p-2">
         <AudioPlayer />
         {/* Left side */}
-        <ResizablePanel defaultSize={20} minSize={isMobile ? 0 : 10} maxSize={20} collapsedSize={6} collapsible
-          onCollapse={() => { setIsCollapseLeft(true); }} onExpand={() => setIsCollapseLeft(false)}>
-          <LeftSideBar isCollapseLeft={isCollapseLeft} />
+        <ResizablePanel defaultSize={20} minSize={isMobile ? 0 : 20} maxSize={20} collapsedSize={6} collapsible
+          onCollapse={() => setIsCollapseLeft(true)}
+          onExpand={() => setIsCollapseLeft(false)}
+          ref={leftPanelRef}
+        >
+          <LeftSideBar isCollapseLeft={isCollapseLeft} handleCollapse={handleCollpaseLeft} />
         </ResizablePanel>
         <ResizableHandle className="w-2 bg-black rounded-lg transition-colors" />
         {/* Main side */}
-        <ResizablePanel defaultSize={isMobile ? 80 : 60} className="flex gap-2 flex-col">
+        <ResizablePanel defaultSize={isMobile ? 80 : 60} className="flex gap-2 flex-col" onResize={(number: number) => hanldeChangeMainSize(number)}>
           <Topbar query={dataSearch} handleSearch={handleSearch} />
           <ScrollArea className="h-full flex flex-col overflow-auto rounded-md border bg-gradient-to-b from-zinc-800 to-zinc-900/40">
             <Outlet />
@@ -96,9 +128,12 @@ const MainLayout = () => {
           <>
             <ResizableHandle className="w-2 bg-black rounded-lg transition-colors" />
             {/* Right side */}
-            <ResizablePanel defaultSize={20} minSize={14} maxSize={25} collapsedSize={6} collapsible
-              onCollapse={() => { setIsCollapseRight(true); }} onExpand={() => setIsCollapseRight(false)}>
-              <RightSide isCollapseRight={isCollapseRight} />
+            <ResizablePanel defaultSize={20} minSize={20} maxSize={20} collapsedSize={6} collapsible
+              onCollapse={() => setIsCollapseRight(true)}
+              onExpand={() => setIsCollapseRight(false)}
+              ref={rightPanelRef}
+            >
+              <RightSide isCollapseRight={isCollapseRight} handleCollapse={handleCollpaseRight} />
             </ResizablePanel>
           </>
         }

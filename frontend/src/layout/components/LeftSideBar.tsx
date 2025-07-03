@@ -1,4 +1,4 @@
-import { HomeIcon, Library, MessageCircle, Music, Plus, Search } from "lucide-react"
+import { HomeIcon, Library, MessageCircle, Music, PanelRightClose, PanelRightOpen, Plus, Search } from "lucide-react"
 import { Link } from "react-router-dom"
 import { cn } from "../../lib/utils"
 import { buttonVariants } from "../../components/ui/button"
@@ -10,12 +10,18 @@ import { useEffect, useState } from "react"
 import Fuse from "fuse.js"
 import { Album } from "../../types"
 
-const LeftSideBar = ({ isCollapseLeft }: { isCollapseLeft: boolean }) => {
+type LeftSideBarType = {
+  isCollapseLeft: boolean;
+  handleCollapse: () => void;
+}
+
+const LeftSideBar = ({ isCollapseLeft, handleCollapse }: LeftSideBarType) => {
   const { user } = useUser();
   const { albumsUser, fetchAlbum, isLoading, createAlbumUser } = useMusicStore();
   const { userId } = useAuth();
   const [album_rd, setAlbum_rd] = useState<Album[] | null>(null);
   const [query, setQuery] = useState("");
+  const [isHover, setIsHover] = useState(false);
 
   useEffect(() => {
     fetchAlbum("USER");
@@ -24,6 +30,10 @@ const LeftSideBar = ({ isCollapseLeft }: { isCollapseLeft: boolean }) => {
   useEffect(() => {
     setAlbum_rd(albumsUser);
   }, [albumsUser]);
+
+  useEffect(() => {
+    setIsHover(false);
+  }, [isCollapseLeft]);
 
   const handleCreateNew = async () => {
     await createAlbumUser();
@@ -83,11 +93,38 @@ const LeftSideBar = ({ isCollapseLeft }: { isCollapseLeft: boolean }) => {
 
       </div>
       {/* Library section */}
-      <div className="flex-1 rounded-lg bg-zinc-900 p-4">
+      <div className="flex-1 rounded-lg bg-zinc-900 p-4"
+        onMouseEnter={() => setIsHover(true)}
+        onMouseLeave={() => setIsHover(false)}
+      >
         <div className="flex items-center justify-center mb-4 flex-col">
-          <div className="flex items-center text-white px-2">
-            <Library className={`size-5 mr-2 ${isCollapseLeft ? 'mr-0' : ''}`} />
-            {!isCollapseLeft && <span className="hidden md:inline">Playlists</span>}
+          <div className="flex justify-between items-center">
+            <span className={`transition-all ease duration-300 absolute left-[300px] ${isHover ? 'opacity-100 -translate-x-8 right-3' : 'opacity-0 -translate-x-4'}`}>
+              {!isCollapseLeft &&
+                < PanelRightOpen className="size-5 shrink-0 cursor-pointer" onClick={handleCollapse} />
+              }
+            </span>
+            <div className="flex items-center text-white px-2 mx-auto relative">
+              <PanelRightClose
+                className={` absolute
+                size-5 shrink-0 cursor-pointer
+                transition-all duration-300 ease-in-out
+                ${isCollapseLeft && isHover ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-1 pointer-events-none'}
+              `}
+                onClick={handleCollapse}
+              />
+
+              <Library
+                className={`
+                size-5 
+                transition-all duration-300 ease-in-out
+                ${isCollapseLeft ? 'mr-0' : 'mr-2'}
+                ${!isCollapseLeft || !isHover ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-1 pointer-events-none'}
+              `}
+              />
+
+              {!isCollapseLeft && <span className="hidden md:inline">Playlists</span>}
+            </div>
           </div>
           <div className="flex items-center justify-between w-full px-2 mt-2">
             {userId && !isCollapseLeft &&
