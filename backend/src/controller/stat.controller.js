@@ -170,42 +170,6 @@ export const getDataAnalysts = async (req, res, next) => {
     }
     // console.log(startDate, endDate);
 
-    const getAggregateStats = async (
-      collection,
-      startDate,
-      endDate,
-      dateFormat,
-      key,
-      valueField
-    ) => {
-      const raw_stats = await collection.aggregate([
-        {
-          $match: { date: { $gte: startDate, $lte: endDate } },
-        },
-        {
-          $group: {
-            _id: { $dateToString: { format: dateFormat, date: "$date" } },
-            total: { $sum: "$count" },
-          },
-        },
-        {
-          $sort: { _id: 1 },
-        },
-      ]);
-
-      let stats = new Map();
-      key.forEach((k) => stats.set(k, 0));
-
-      raw_stats.forEach((item) => {
-        stats.set(item._id, item.total);
-      });
-
-      return Array.from(stats.entries()).map(([k, v]) => ({
-        _id: k,
-        [valueField]: v,
-      }));
-    };
-
     // Total Login
     const Login = await getAggregateStats(
       LoginHistory,
@@ -239,4 +203,40 @@ export const getDataAnalysts = async (req, res, next) => {
   } catch (error) {
     next(error.message);
   }
+};
+
+const getAggregateStats = async (
+  collection,
+  startDate,
+  endDate,
+  dateFormat,
+  key,
+  valueField
+) => {
+  const raw_stats = await collection.aggregate([
+    {
+      $match: { date: { $gte: startDate, $lte: endDate } },
+    },
+    {
+      $group: {
+        _id: { $dateToString: { format: dateFormat, date: "$date" } },
+        total: { $sum: "$count" },
+      },
+    },
+    {
+      $sort: { _id: 1 },
+    },
+  ]);
+
+  let stats = new Map();
+  key.forEach((k) => stats.set(k, 0));
+
+  raw_stats.forEach((item) => {
+    stats.set(item._id, item.total);
+  });
+
+  return Array.from(stats.entries()).map(([k, v]) => ({
+    _id: k,
+    [valueField]: v,
+  }));
 };
