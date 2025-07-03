@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getAllAlbums, getAllAlbumById, createAlbumUser, AddSongToAlbum, UpdateInfoAlbum, DeleteSongAlbum, DeleteAlbumUser } from "../controller/album.controller.js";
+import { getAllAlbums, getAllAlbumById, createAlbumUser, AddSongToAlbum, UpdateInfoAlbum, DeleteSongAlbum, DeleteAlbumUser, getCacheAlbum, recordListeningAlbum } from "../controller/album.controller.js";
 const router = Router();
 
 router.get('/', getAllAlbums);
@@ -9,5 +9,7 @@ router.post('/addnew', AddSongToAlbum);
 router.post('/deleteSong', DeleteSongAlbum);
 router.put('/update/:albumId', UpdateInfoAlbum);
 router.delete("/delete/:albumId", DeleteAlbumUser);
+router.get("/get/caches", getCacheAlbum);
+router.post("/record-album/:albumId", recordListeningAlbum);
 
 export default router;

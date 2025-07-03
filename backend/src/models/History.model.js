@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
 
 const ListHistorySchema = new mongoose.Schema({
-  songId: { type: mongoose.Schema.ObjectId, ref: 'Song', required: true },
+  songId: { type: mongoose.Schema.ObjectId, ref: 'Song' },
+  albumId: { type: mongoose.Schema.ObjectId, ref: 'Album' },
   userId: { type: String, required: true },
   date: { type: Date, required: true },
   count: { type: Number, default: 1 },

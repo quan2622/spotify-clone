@@ -1,4 +1,5 @@
 import albumService from "../services/album.service.js";
+import cachingService from "../services/caching.service.js";
 
 // GET /api/albums/
 export const getAllAlbums = async (req, res, next) => {
@@ -86,3 +87,30 @@ export const DeleteAlbumUser = async (req, res, next) => {
     next(error);
   }
 };
+
+// GET api/albums/get/caches?categoryKey=...
+export const getCacheAlbum = async (req, res, next) => {
+  try {
+    const { categoryKey, page } = req.query;
+    console.log("Check query: ", req.query);
+    const { userId } = req.auth;
+    console.log("Check input: ", userId, categoryKey, page);
+    const data = await cachingService.getCategoryAlbums(userId, categoryKey, page);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.error("Error caching album:", error);
+    next(error);
+  }
+}
+
+// POST /api/albums/record-album/:albumId
+export const recordListeningAlbum = async (req, res, next) => {
+  try {
+    const { albumId } = req.params;
+    const { userId } = req.auth;
+    const response = await albumService.recordListeningAlbum(albumId, userId);
+    return res.status(200).json({ ...response });
+  } catch (error) {
+    next(error);
+  }
+}
