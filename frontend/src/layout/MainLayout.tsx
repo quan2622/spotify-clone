@@ -17,18 +17,36 @@ const MainLayout = () => {
   const [isCollapseLeft, setIsCollapseLeft] = useState(false);
   const [isCollapseRight, setIsCollapseRight] = useState(false);
   const [dataSearch, setDataSearch] = useState<string>("");
+
   const navigate = useNavigate();
   const location = useLocation();
   const prevPath = useRef(location.pathname);
   const { dataSearch: searchKey } = useSearchStore();
+  const [currentBg, setCurrentBg] = useState("");
+  const [nextBg, setNextBg] = useState("");
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   const rightPanelRef = useRef<any>(null);
   const leftPanelRef = useRef<any>(null);
 
-  const { hanldeChangeMainSize, mainSize } = useUIStore();
+  const { hanldeChangeMainSize, primColor } = useUIStore();
 
-  console.log("Check main size: ", mainSize);
+  // HANDLE CHANGE BACKGROUND COLOR WITH GRADIENT
+  useEffect(() => {
+    if (primColor === currentBg) return;
+    setIsTransitioning(true);
+    setNextBg(primColor);
 
+    const timeout = setTimeout(() => {
+      setCurrentBg(primColor);
+      setIsTransitioning(false);
+    }, 300);
+
+    return () => clearTimeout(timeout);
+  }, [primColor, currentBg]);
+
+
+  // RESET KEY-WORD SEARCH
   useEffect(() => {
     if (!searchKey) return;
     setDataSearch(encodeURIComponent(searchKey));
@@ -45,6 +63,7 @@ const MainLayout = () => {
     }
   }, [dataSearch]);
 
+  // CHECK IS MOBILE
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768)
@@ -55,6 +74,7 @@ const MainLayout = () => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  // COMPARE SEARCH ROUTE
   useEffect(() => {
     const wasSearchDetail = matchPath("/search/:dataSearch", prevPath.current);
     const isSearchDetail = matchPath("/search/:dataSearch", location.pathname);
@@ -120,9 +140,24 @@ const MainLayout = () => {
         {/* Main side */}
         <ResizablePanel defaultSize={isMobile ? 80 : 60} className="flex gap-2 flex-col" onResize={(number: number) => hanldeChangeMainSize(number)}>
           <Topbar query={dataSearch} handleSearch={handleSearch} />
-          <ScrollArea className="h-full flex flex-col overflow-auto rounded-md border bg-gradient-to-b from-zinc-800 to-zinc-900/40">
-            <Outlet />
+          <ScrollArea className="h-full flex flex-col overflow-auto rounded-md border">
+            <div className="relative h-full w-full overflow-hidden">
+              <div
+                className="absolute inset-0 transition-opacity duration-300 ease-linear z-0"
+                style={{ background: currentBg, }}
+              />
+
+              <div
+                className={`absolute inset-0 transition-opacity duration-300 ease-linear z-0 ${isTransitioning ? "opacity-100" : "opacity-0"}`}
+                style={{ background: nextBg }}
+              />
+
+              <div className="relative z-10">
+                <Outlet />
+              </div>
+            </div>
           </ScrollArea>
+
         </ResizablePanel>
         {!isMobile &&
           <>
