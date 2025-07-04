@@ -37,7 +37,7 @@ const RightSide = ({ isCollapseRight, handleCollapse }: RightSideType) => {
       onMouseLeave={() => setIsHover(false)}
     >
       <div className="p-4 flex justify-between items-center border-b border-zinc-800 mx-auto relative">
-        <span className={`transition-all ease duration-300 absolute -left-[10px] ${isHover ? 'opacity-100 translate-x-2 left-3' : 'opacity-0 -translate-x-4'}`}>
+        <span className={`transition-all ease duration-300 absolute -left-[10px] ${isHover ? 'opacity-100 translate-x-2' : 'opacity-0 -translate-x-4'}`}>
           {!isCollapseRight &&
             <PanelRightClose className="size-5 shrink-0 cursor-pointer" onClick={handleCollapse} />
           }

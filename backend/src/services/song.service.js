@@ -100,7 +100,7 @@ const getMadeForYouSong = async (userId) => {
 const getFeatureSong = async () => {
   try {
     const songs = await Song.aggregate([
-      { $sample: { size: 6 } },
+      { $sample: { size: 12 } },
       {
         $lookup: {
           from: 'artists',
