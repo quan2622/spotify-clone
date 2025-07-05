@@ -93,7 +93,7 @@ const LeftSideBar = ({ isCollapseLeft, handleCollapse }: LeftSideBarType) => {
 
       </div>
       {/* Library section */}
-      <div className="flex-1 rounded-lg bg-zinc-900 p-4"
+      <div className="flex-1 rounded-lg bg-zinc-900 p-4 overflow-hidden"
         onMouseEnter={() => setIsHover(true)}
         onMouseLeave={() => setIsHover(false)}
       >
