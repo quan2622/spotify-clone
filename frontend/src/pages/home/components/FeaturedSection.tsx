@@ -5,9 +5,6 @@ import { useUIStore } from "../../../stores/useUIStore"
 import PlayButton from "./PlayButton"
 import type { Song } from "../../../types"
 
-import { motion } from 'framer-motion'
-
-
 const FeaturedSection = () => {
   const { isLoading, featuredSongs, error } = useMusicStore()
   const { mainSize, handleGetPrimColor } = useUIStore();

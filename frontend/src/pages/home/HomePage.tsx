@@ -46,7 +46,7 @@ const HomePage = () => {
   }, [new Date()]);
 
   return (
-    <main className="h-full   rounded-md overflow-hidden">
+    <main className="h-full rounded-md overflow-hidden">
       <ScrollArea className="h-[calc(100vh-178px)] pb-6 pt-2">
         <div className="p-4 sm:p-6">
           <h1 className="text-2xl sm:text-3xl font-bold mb-6">
@@ -54,7 +54,7 @@ const HomePage = () => {
           </h1>
           <FeaturedSection />
 
-          <div className="space-y-8">
+          <div className="space-y-8 w-full overflow-hidden">
             {userId &&
               <SectionGrid title='Made for you' songs={madeForYouSongs} isLoading={isLoading} />
             }
