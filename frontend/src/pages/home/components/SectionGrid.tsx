@@ -8,6 +8,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Card, CardContent } from "../../../components/ui/card";
 import { useUIStore } from "../../../stores/useUIStore";
 import { useEffect, useState } from "react";
+import useUpdateMainSize from "../../../hooks/useUpdateMainSize";
 
 const CustomArrow = ({ direction }: { direction: "prev" | "next" }) => {
   const Component = direction === "prev" ? CarouselPrevious : CarouselNext;
@@ -27,24 +28,10 @@ type SectionGrid = {
 }
 
 const SectionGrid = ({ songs, title, isLoading }: SectionGrid) => {
-  const { mainSize } = useUIStore();
-  const [typeSize, setTypeSize] = useState<string>("");
-  useEffect(() => {
-    console.log("Check main size: ", mainSize);
-    if (mainSize == 88) {
-      setTypeSize('large');
-    } else if (mainSize == 74) {
-      setTypeSize('medium');
-    } else if (mainSize == 60) {
-      setTypeSize('small');
-    } else
-      setTypeSize('');
-  }, [mainSize]);
+  const typeSize = useUpdateMainSize()
 
   const navigate = useNavigate();
   if (isLoading) return <SectionGridSkeleton />
-
-  console.log("Check type size: ", typeSize);
 
   return (
     <div className="mb-8 w-full">

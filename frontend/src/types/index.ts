@@ -29,6 +29,10 @@ export interface Album {
   totalSong?: number
 }
 
+export interface AlbumCaching extends Album {
+  count: Number,
+}
+
 export interface newArtist {
   name: string,
   realName: string,

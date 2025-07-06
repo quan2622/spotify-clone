@@ -34,7 +34,6 @@ export const useUIStore = create<UIStore>((set) => ({
         try {
           // const dominantColor = colorThief.getColor(img); // get primary color
           const palette = <number[][]> colorThief.getPalette(img, 8);
-          console.log("Check palette: ", palette);
           let mainColor = <number[]> [];
           if (palette.length > 0) {
             const brightness = palette.reduce((max, curr) => getBrightNess(curr) > getBrightNess(max) ? curr : max);

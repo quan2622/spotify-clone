@@ -71,7 +71,7 @@ const LeftSideBar = ({ isCollapseLeft, handleCollapse }: LeftSideBarType) => {
                 className: `w-full text-white hover:bg-zinc-800 ${isCollapseLeft ? 'flex items-center justify-center' : 'justify-start'}`
               })
             )}>
-            <HomeIcon className={`mr-2 size-5 ${isCollapseLeft ? 'mr-0' : ''}`} />
+            <HomeIcon className={`size-5 ${isCollapseLeft ? 'mr-0' : 'mr-2'}`} />
             {!isCollapseLeft && <span className="hidden md:inline">Home</span>}
           </Link>
 
@@ -84,7 +84,7 @@ const LeftSideBar = ({ isCollapseLeft, handleCollapse }: LeftSideBarType) => {
                   className: `w-full text-white hover:bg-zinc-800 ${isCollapseLeft ? 'flex items-center justify-center' : 'justify-start'}`
                 })
               )}>
-              <MessageCircle className={`mr-2 size-5 ${isCollapseLeft ? 'mr-0' : ''}`} />
+              <MessageCircle className={`size-5 ${isCollapseLeft ? 'mr-0' : 'mr-2'}`} />
               {!isCollapseLeft && <span className="hidden md:inline">Message</span>}
             </Link>
           </SignedIn>

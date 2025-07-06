@@ -5,6 +5,7 @@ import { ScrollArea } from "../../components/ui/scroll-area";
 import SectionGrid from "./components/SectionGrid";
 import { usePlayerStore } from "../../stores/usePlayerStore";
 import { useAuth } from "@clerk/clerk-react";
+import AlbumSectionGrid from "./components/AlbumSectionGrid";
 
 
 const HomePage = () => {
@@ -45,6 +46,9 @@ const HomePage = () => {
     else setHello("Working Late 🌜");
   }, [new Date()]);
 
+
+
+
   return (
     <main className="h-full rounded-md overflow-hidden">
       <ScrollArea className="h-[calc(100vh-178px)] pb-6 pt-2">
@@ -59,6 +63,8 @@ const HomePage = () => {
               <SectionGrid title='Made for you' songs={madeForYouSongs} isLoading={isLoading} />
             }
             <SectionGrid title='Trending' songs={trendingSongs} isLoading={isLoading} />
+            <AlbumSectionGrid title='Recommend Album' type="single" />
+            <AlbumSectionGrid title='Popular Album' type="double" />
           </div>
           <div className="">
 
