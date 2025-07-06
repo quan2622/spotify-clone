@@ -92,7 +92,6 @@ export const DeleteAlbumUser = async (req, res, next) => {
 export const getCacheAlbum = async (req, res, next) => {
   try {
     const { categoryKey, page } = req.query;
-    console.log("Check query: ", req.query);
     const { userId } = req.auth;
     console.log("Check input: ", userId, categoryKey, page);
     const data = await cachingService.getCategoryAlbums(userId, categoryKey, page);

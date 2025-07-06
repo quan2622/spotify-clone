@@ -1,3 +1,4 @@
+import _ from "lodash";
 import { AlbumCategoryCache } from "../models/albumCategoryCache.js";
 import albumService from "./album.service.js";
 
@@ -10,7 +11,11 @@ const getCategoryAlbums = async (userId, categoryKey, page) => {
   }).populate("albumIds");
 
   if (cached) {
-    return cached.albumIds;
+    return {
+      EC: 0,
+      EM: "Ok",
+      data: cached.albumIds
+    };
   }
 
   const data = await generateCategoryAlbums(userId, categoryKey, page);
