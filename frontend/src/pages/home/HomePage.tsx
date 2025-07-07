@@ -6,6 +6,7 @@ import SectionGrid from "./components/SectionGrid";
 import { usePlayerStore } from "../../stores/usePlayerStore";
 import { useAuth } from "@clerk/clerk-react";
 import AlbumSectionGrid from "./components/AlbumSectionGrid";
+import MainDisplay from "../../layout/components/DisplayAlbum/MainDisplay";
 
 
 const HomePage = () => {
@@ -66,8 +67,8 @@ const HomePage = () => {
             <AlbumSectionGrid title='Recommend Album' type="single" />
             <AlbumSectionGrid title='Popular Album' type="double" />
           </div>
-          <div className="">
-
+          <div className="w-full">
+            <MainDisplay />
           </div>
         </div>
       </ScrollArea>
