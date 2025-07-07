@@ -8,7 +8,10 @@ const getCategoryAlbums = async (userId, categoryKey, page) => {
     userId,
     categoryKey,
     expiresAt: { $gt: new Date() }
-  }).populate("albumIds");
+  }).populate({
+    path: "albumIds",
+    populate: { path: "genreId", select: 'name' }
+  });
 
   if (cached) {
     return {

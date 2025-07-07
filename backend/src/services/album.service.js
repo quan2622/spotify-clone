@@ -355,10 +355,17 @@ const getRecommendedAlbums = async (userId, page = 1) => {
         date: { $gte: start, $lte: end },
         albumId: { $exists: true }, songId: { $exists: false },
       })
+      .populate({
+        path: "albumId",
+        populate: { path: "genreId", select: 'name' }
+      })
       .sort({ date: -1 });
 
     const albumIds = data_history.map(item => item.albumId);
-    const result = await Album.find({ _id: { $nin: albumIds }, type: 'admin' }).limit(LIMIT).skip(SKIP);
+    const result = await Album.find({ _id: { $nin: albumIds }, type: 'admin' })
+      .limit(LIMIT)
+      .skip(SKIP)
+      .populate({ path: "genreId", select: 'name' });
     return result;
   } catch (error) {
     throw (error);
@@ -379,8 +386,12 @@ const getPopularAlbums = async (page = 1) => {
         albumId: { $exists: true }, songId: { $exists: false },
       })
       .sort({ count: -1 })
-      .populate("albumId")
+      .populate({
+        path: "albumId",
+        populate: { path: "genreId", select: 'name' }
+      })
       .limit(LIMIT).skip(SKIP);
+
     return data_history.map(item => ({
       ...item.albumId.toObject(),
       count: item.count
@@ -402,6 +413,7 @@ const getNewReleases = async (page = 1) => {
         type: "admin",
         createdAt: { $gte: start, $lte: end }
       })
+      .populate({ path: "genreId", select: 'name' })
       .sort({ createdAt: -1 }).limit(LIMIT).skip(SKIP);
   } catch (error) {
     throw (error);
