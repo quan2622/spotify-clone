@@ -5,7 +5,6 @@ const useUpdateMainSize = () => {
   const { mainSize } = useUIStore();
   const [typeSize, setTypeSize] = useState<string>("");
 
-  console.log("Check main size: ", mainSize)
 
   useEffect(() => {
     if (mainSize === 88) {

@@ -3,8 +3,9 @@ import CarouselCardGroup from "./CarouselCardGroup";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import clsx from "clsx";
 import useUpdateMainSize from "../../../hooks/useUpdateMainSize";
+import type { AlbumCaching } from "../../../types";
 
-const CarouselDouble = ({ data }: { data: any }) => {
+const CarouselDouble = ({ data }: { data: AlbumCaching[] }) => {
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const [atStart, setAtStart] = useState(true);
   const [atEnd, setAtEnd] = useState(false);
@@ -35,7 +36,17 @@ const CarouselDouble = ({ data }: { data: any }) => {
     }
   }
 
-  console.log("CHECK: ", atStart, ' - ', atEnd);
+  // console.log("CHECK: ", atStart, ' - ', atEnd);
+
+  const chunkSize = 2;
+  const reMakeData = data.reduce<AlbumCaching[][]>((acc, item, index) => {
+    if (index % chunkSize === 0) {
+      acc.push(data.slice(index, index + chunkSize));
+    }
+    return acc;
+  }, []);
+
+
 
   return (
     <div className="max-w-[100%] w-full group">
@@ -55,9 +66,10 @@ const CarouselDouble = ({ data }: { data: any }) => {
             typeSize === 'large' ? 'max-w-[1220px]' : ''
           )}
         >
-          {data.map((group: any, i: number) => (
-            <CarouselCardGroup key={i} group={group} />
-          ))}
+          {
+            reMakeData.map((group: any, i: number) => (
+              <CarouselCardGroup key={i} group={group} />
+            ))}
         </div>
         <button
           onClick={() => scroll("right")}

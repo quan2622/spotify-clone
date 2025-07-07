@@ -1,15 +1,16 @@
 import clsx from "clsx";
 import { useState } from "react"
 import useUpdateMainSize from "../../../hooks/useUpdateMainSize";
+import type { Genre } from "../../../types";
 
 type CarouselCardType = {
   title: string,
-  subtitle: string,
+  genreId: Genre,
   imageUrl: string,
 }
 
 
-const CarouselCard = ({ title, subtitle, imageUrl }: CarouselCardType) => {
+const CarouselCard = ({ title, genreId, imageUrl }: CarouselCardType) => {
   const [imgLoaded, setImgLoaded] = useState(false);
   const typeSize = useUpdateMainSize();
 
@@ -34,7 +35,7 @@ const CarouselCard = ({ title, subtitle, imageUrl }: CarouselCardType) => {
           typeSize === 'medium' ? 'max-w-[135px]' : '',
           typeSize === 'large' ? 'max-w-[187px]' : ''
         )}>
-          {subtitle}</div>
+          {genreId?.name}</div>
         <div className="font-bold text-base leading-tight max-w-[160px] text-wrap truncate ">{title}</div>
       </div>
       <style>

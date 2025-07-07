@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import CarouselDouble from "../../../layout/components/Carousel/Carousel";
 import useUpdateMainSize from "../../../hooks/useUpdateMainSize";
+import _ from "lodash";
 
 const CustomArrow = ({ direction }: { direction: "prev" | "next" }) => {
   const Component = direction === "prev" ? CarouselPrevious : CarouselNext;
@@ -30,19 +31,18 @@ const AlbumSectionGrid = ({ title, type }: { title: string, type: string }) => {
 
 
   useEffect(() => {
-    handleFetchData();
+    handleFetchData(title === 'Recommend Album' ? 'recommended' : 'popular_albums');
   }, [title])
 
-  const handleFetchData = async () => {
+  const handleFetchData = async (albumFetching: string) => {
     setIsLoading(true);
     try {
-      const res = await albumService.getCachingAlbum('recommended');
+      const res = await albumService.getCachingAlbum(`${albumFetching}`);
       if (res && res.data && res.data.EC === 0) {
         setAlbums(res.data.data);
       } else {
         toast.error(res?.data.EM)
       }
-      console.log("Check res return: ", res?.data);
     } catch (error) {
       console.log(error);
     } finally {
@@ -50,51 +50,11 @@ const AlbumSectionGrid = ({ title, type }: { title: string, type: string }) => {
     }
   }
 
+
   if (isLoading) {
     return <></>
   }
 
-  console.log("Check album data: ", albums);
-
-  const radioData = [
-    [
-      { title: "Oh? Canada!", subtitle: "STROMBO", imageUrl: "https://res.cloudinary.com/dchv5jtrl/image/upload/v1747929641/tmp-1-1747929636315_va5j7s.jpg" },
-      { title: "10 Years of Apple Music", subtitle: "THE MATT WILKINSON SHOW", imageUrl: "https://res.cloudinary.com/dchv5jtrl/image/upload/v1749351305/tmp-2-1749351303681_tnesqw.jpg" },
-    ],
-    [
-      { title: "Don't Be Boring", subtitle: "10 YEARS OF APPLE MUSIC RADIO", imageUrl: "https://res.cloudinary.com/dchv5jtrl/image/upload/v1749351403/tmp-1-1749351402170_pixi9n.jpg" },
-      { title: "LIVE: 10 Years", subtitle: "10 YEARS OF APPLE MUSIC RADIO", imageUrl: "https://res.cloudinary.com/dchv5jtrl/image/upload/v1749522824/tmp-1-1749522823524_yd9l3o.jpg" },
-    ],
-    [
-      { title: "Oh? Canada1!", subtitle: "STROMBO", imageUrl: "https://res.cloudinary.com/dchv5jtrl/image/upload/v1747929641/tmp-1-1747929636315_va5j7s.jpg" },
-      { title: "10 Years of Apple Music1", subtitle: "THE MATT WILKINSON SHOW", imageUrl: "https://res.cloudinary.com/dchv5jtrl/image/upload/v1749351305/tmp-2-1749351303681_tnesqw.jpg" },
-    ],
-    [
-      { title: "Don't Be Boring2", subtitle: "10 YEARS OF APPLE MUSIC RADIO", imageUrl: "https://res.cloudinary.com/dchv5jtrl/image/upload/v1749351403/tmp-1-1749351402170_pixi9n.jpg" },
-      { title: "LIVE: 10 Years2", subtitle: "10 YEARS OF APPLE MUSIC RADIO", imageUrl: "https://res.cloudinary.com/dchv5jtrl/image/upload/v1749522824/tmp-1-1749522823524_yd9l3o.jpg" },
-    ],
-    [
-      { title: "Don't Be Boring2", subtitle: "10 YEARS OF APPLE MUSIC RADIO", imageUrl: "https://res.cloudinary.com/dchv5jtrl/image/upload/v1749351403/tmp-1-1749351402170_pixi9n.jpg" },
-      { title: "LIVE: 10 Years2", subtitle: "10 YEARS OF APPLE MUSIC RADIO", imageUrl: "https://res.cloudinary.com/dchv5jtrl/image/upload/v1749522824/tmp-1-1749522823524_yd9l3o.jpg" },
-    ],
-    [
-      { title: "Don't Be Boring2", subtitle: "10 YEARS OF APPLE MUSIC RADIO", imageUrl: "https://res.cloudinary.com/dchv5jtrl/image/upload/v1749351403/tmp-1-1749351402170_pixi9n.jpg" },
-      { title: "LIVE: 10 Years2", subtitle: "10 YEARS OF APPLE MUSIC RADIO", imageUrl: "https://res.cloudinary.com/dchv5jtrl/image/upload/v1749522824/tmp-1-1749522823524_yd9l3o.jpg" },
-    ],
-    [
-      { title: "Don't Be Boring2", subtitle: "10 YEARS OF APPLE MUSIC RADIO", imageUrl: "https://res.cloudinary.com/dchv5jtrl/image/upload/v1749351403/tmp-1-1749351402170_pixi9n.jpg" },
-      { title: "LIVE: 10 Years2", subtitle: "10 YEARS OF APPLE MUSIC RADIO", imageUrl: "https://res.cloudinary.com/dchv5jtrl/image/upload/v1749522824/tmp-1-1749522823524_yd9l3o.jpg" },
-    ],
-    [
-      { title: "Don't Be Boring2", subtitle: "10 YEARS OF APPLE MUSIC RADIO", imageUrl: "https://res.cloudinary.com/dchv5jtrl/image/upload/v1749351403/tmp-1-1749351402170_pixi9n.jpg" },
-      { title: "LIVE: 10 Years2", subtitle: "10 YEARS OF APPLE MUSIC RADIO", imageUrl: "https://res.cloudinary.com/dchv5jtrl/image/upload/v1749522824/tmp-1-1749522823524_yd9l3o.jpg" },
-    ],
-    [
-      { title: "Don't Be Boring2", subtitle: "10 YEARS OF APPLE MUSIC RADIO", imageUrl: "https://res.cloudinary.com/dchv5jtrl/image/upload/v1749351403/tmp-1-1749351402170_pixi9n.jpg" },
-      { title: "LIVE: 10 Years2", subtitle: "10 YEARS OF APPLE MUSIC RADIO", imageUrl: "https://res.cloudinary.com/dchv5jtrl/image/upload/v1749522824/tmp-1-1749522823524_yd9l3o.jpg" },
-    ],
-
-  ];
 
 
   return (
@@ -105,8 +65,8 @@ const AlbumSectionGrid = ({ title, type }: { title: string, type: string }) => {
       </div>
 
       <div>
-        {type === "double" ?
-          <CarouselDouble data={radioData} />
+        {type === "double" && albums && albums.length > 0 ?
+          <CarouselDouble data={albums} />
           :
           <div className="w-full max-w-full mx-auto px-4">
             {albums && albums.length > 0 &&
@@ -132,8 +92,7 @@ const AlbumSectionGrid = ({ title, type }: { title: string, type: string }) => {
                           <div className="w-full mt-2 max-w-full relative">
                             <h3 className="font-semibold text-sm text-wrap truncate">{album.title}</h3>
                             <span className="text-sm w-full block max-w-20 truncate">
-                              {/* {album.artistId.map(item => item.name).join(" • ")} */}
-                              description
+                              {album?.genreId?.name}
                             </span>
                           </div>
                         </CardContent>
