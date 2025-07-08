@@ -93,7 +93,7 @@ export const getCacheAlbum = async (req, res, next) => {
   try {
     const { categoryKey, page } = req.query;
     const { userId } = req.auth;
-    console.log("Check input: ", userId, categoryKey, page);
+    // console.log("Check input: ", userId, categoryKey, page);
     const data = await cachingService.getCategoryAlbums(userId, categoryKey, page);
     return res.status(200).json(data);
   } catch (error) {

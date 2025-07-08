@@ -18,7 +18,16 @@ const recordListeningAlbum = (albumId: string) => {
   }
 }
 
+const getDataAlbumSystem = (albumId: string) => {
+  try {
+    return axiosIntance.get(`albums/${albumId}`);
+  } catch (error) {
+    console.log("Had error when fetching data album: ", error);
+  }
+}
+
 export default {
   getCachingAlbum,
   recordListeningAlbum,
+  getDataAlbumSystem
 }
