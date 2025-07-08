@@ -26,22 +26,16 @@ interface MusicStore {
   sloganTrending: string,
   songsSearch: Song[],
   resultSearch: Song[],
-
-  fetchAlbum: (option: string) => Promise<void>,
-  fetchAlbumById: (albumId: string) => Promise<void>
   fetchFeaturedSong: () => Promise<void>,
   fetchMadeForYouSong: () => Promise<void>,
   fetchTrendingSong: () => Promise<void>,
   fetchStat: () => Promise<void>,
   fetchSongAdmin: () => Promise<void>,
   deleteSongAdmin: (songId: string) => Promise<void>,
-  deleteAlbumAdmin: (albumId: string) => Promise<void>,
   getSongPaginate: (page?: string) => Promise<void>,
   updateSong: (data: any, songId: string) => Promise<void>,
   getSongByID: (id: string) => Promise<void>,
   createAlbumUser: () => Promise<void>,
-  addSongToAlbumUser: (albumId: string, song: Song) => Promise<void>,
-  minusSongAlbumUser: (albumId: string, song: Song) => Promise<void>,
   getAllSong: () => Promise<void>,
   handleSearch: (query: string) => void,
 }
@@ -112,66 +106,6 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
       set({ isLoading: false });
     }
   },
-  minusSongAlbumUser: async (albumId, song) => {
-    set({ isLoading: true, error: null });
-    const originalAlbum = _.cloneDeep(get().currentAlbum);
-
-    try {
-      const current = _.cloneDeep(get().currentAlbum);
-      if (current) {
-        const newDataSong = current.songs.filter(i => i._id !== song._id);
-        set({
-          currentAlbum: { ...current, songs: newDataSong },
-          isLoading: false,
-        });
-      }
-
-      try {
-        await axiosIntance.post("albums/deleteSong", { albumId, song });
-      } catch (error: any) {
-        set({
-          currentAlbum: originalAlbum,
-          error: error.message,
-        });
-        toast.error("Had error when delete song");
-      }
-    } catch (error: any) {
-      set({ error: error });
-    } finally {
-      set({ isLoading: false });
-    }
-  },
-  addSongToAlbumUser: async (albumId, song) => {
-    set({ isLoading: true, error: null });
-    const originalAlbum = _.cloneDeep(get().currentAlbum);
-    try {
-      const current = get().currentAlbum;
-      if (current) {
-        const newSongs = [...current.songs, song];
-        set({
-          currentAlbum: { ...current, songs: newSongs },
-          isLoading: false
-        });
-      }
-
-      // Call  API update data
-      try {
-        await axiosIntance.post("albums/addnew", { albumId, song });
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      } catch (apiError) {
-        set({
-          currentAlbum: originalAlbum,
-          error: "Had error when update data in DB"
-        });
-
-        toast.error("Had error when update data in Album");
-      }
-    } catch (error: any) {
-      set({ error: error.message });
-    } finally {
-      set({ isLoading: false })
-    }
-  },
   getSongByID: async (id) => {
     set({ isLoading: true, error: null });
     try {
@@ -208,51 +142,6 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
       });
     } catch (error: any) {
       set({ error: error.message });
-    } finally {
-      set({ isLoading: false });
-    }
-  },
-  fetchAlbum: async (option) => {
-    // data fetching logic...
-    set({ isLoading: true, error: null, });
-    try {
-      if (option === "USER") {
-        const res = await axiosIntance.get('albums');
-        set({ albumsUser: res.data.albums });
-      } else if (option === "ADMIN") {
-        const res = await axiosIntance.get('admin/albums');
-        let songCount = JSON.parse(res.data.dataSongCount);
-        songCount = new Map(songCount);
-
-        const reMakeAlbum = res.data.albums.map((album: Album) => {
-          album.totalSong = songCount.get(album._id.toString())
-          return album;
-        })
-
-        set({ albumsAdmin: reMakeAlbum });
-      }
-    } catch (error: any) {
-      set({ error: error.respone })
-    } finally {
-      set({ isLoading: false });
-    }
-  },
-  fetchAlbumById: async (albumId) => {
-    set({ isLoading: true, error: null });
-    try {
-      const res = await axiosIntance.get(`albums/${albumId}`);
-      if (res.data) {
-        if (res.data.EC !== 0) toast.error(res.data.EM);
-        else {
-          const songs = res.data.songs;
-          const dataAlbum = _.cloneDeep(res.data.album_data);
-          dataAlbum.songs = songs;
-
-          set({ currentAlbum: dataAlbum })
-        };
-      }
-    } catch (error: any) {
-      set({ error: error.respone.data.message });
     } finally {
       set({ isLoading: false });
     }
@@ -328,25 +217,6 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
     } catch (error: any) {
       toast.error(error.message || 'Fail to delete song');
       set({ error: error });
-    } finally {
-      set({ isLoading: false });
-    }
-  },
-  deleteAlbumAdmin: async (albumId) => {
-    set({ isLoading: true, error: null });
-    try {
-      const res = await axiosIntance.delete(`admin/albums/${albumId}`);
-
-      set(state => ({
-        albums: state.albums.filter(a => a._id !== albumId),
-        songs: state.songs.map((song) =>
-          song.albumId === state.albums.find(a => a._id === albumId)?.title ? { ...song, albumId: null } : song,
-        )
-      }));
-      toast.success(res.data.message);
-    } catch (error: any) {
-      toast.error(error.message || 'Fail to delete album');
-      // set({ error: error });
     } finally {
       set({ isLoading: false });
     }

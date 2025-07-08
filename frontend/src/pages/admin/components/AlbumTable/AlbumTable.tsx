@@ -4,9 +4,11 @@ import { Calendar, Music, Trash2 } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../components/ui/table";
 import { Button } from "../../../../components/ui/button";
 import UpdateAlbum from "./UpdateAlbum";
+import { useAlbumStore } from "../../../../stores/useAlbumStore";
 
 const AlbumTable = () => {
-  const { albumsAdmin, deleteAlbumAdmin, fetchAlbum, fetchSongAdmin } = useMusicStore();
+  const { deleteAlbumAdmin, fetchSongAdmin } = useMusicStore();
+  const { fetchAlbum, albumsAdmin } = useAlbumStore();
 
   useEffect(() => {
     fetchAlbum("ADMIN");

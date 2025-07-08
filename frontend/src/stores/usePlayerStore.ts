@@ -1,17 +1,19 @@
 import { create } from "zustand";
-import { Song } from "../types";
+import { Song, type Album } from "../types";
 import { useChatStore } from "./useChatStore";
 import { axiosIntance } from "../lib/axios";
 import _ from "lodash";
 
 interface PlayerStore {
   currentSong: Song | null,
+  currentAlbum: any | null,
   isPlaying: boolean,
   queue: Song[],
   currentIndex: number,
   isShuffle: boolean,
   isLoop: boolean,
   totalListens: number,
+  setCurrentAlbum: (album: any | null) => void,
 
   initializeQueue: (songs: Song[]) => void,
   setQueue: (songs: Song[]) => void,
@@ -35,7 +37,13 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
   isShuffle: false,
   isLoop: false,
   totalListens: 0,
+  currentAlbum: null,
 
+  setCurrentAlbum: (album) => {
+    if (!album) return;
+
+    set({ currentAlbum: album, queue: album.songs });
+  },
   toggleLoop: () => {
     set({ isLoop: !get().isLoop });
   },
@@ -71,7 +79,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
   playAlbum: (songs: Song[], startIndex = 0) => {
     if (songs.length === 0) return;
 
-    let song = <Song>{};
+    let song = <Song> {};
 
     if (get().queue && !_.isEqual(get().queue, songs)) {
       if (startIndex === 0) {
@@ -79,9 +87,9 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
         // const songInAlbum = songs.some(song => song._id === get().currentSong?._id);
 
         const index = songs.findIndex(item => item._id === get().currentSong?._id)
-        console.log("Check current song: ", get().currentSong);
-        console.log("Check song in album: ", songs);
-        console.log("Check index: ", startIndex, ' - ', index);
+        // console.log("Check current song: ", get().currentSong);
+        // console.log("Check song in album: ", songs);
+        // console.log("Check index: ", startIndex, ' - ', index);
         song = songs[index !== -1 ? index : startIndex];
       } else {
         song = songs[startIndex];
@@ -127,7 +135,6 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
   },
   togglePlay: () => {
     const isPlaying = !get().isPlaying;
-
     const currentSong = get().currentSong;
     const socket = useChatStore.getState().socket;
     if (socket.auth) {
@@ -136,7 +143,6 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
         activity: isPlaying && currentSong ? `Playing ${currentSong.title} by ${currentSong.artistId.map(item => item.name).join(" • ")}` : 'Idle'
       })
     }
-
     set({ isPlaying: !get().isPlaying });
   },
   playNext: () => {

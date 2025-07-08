@@ -5,6 +5,7 @@ import { useMusicStore } from "../../../stores/useMusicStore";
 import toast from "react-hot-toast";
 import { axiosIntance } from "../../../lib/axios";
 import { usePlayerStore } from "../../../stores/usePlayerStore";
+import { useAlbumStore } from "../../../stores/useAlbumStore";
 
 type SuggestionAlbum_User = {
   album: Album;
@@ -15,7 +16,8 @@ const SuggestionAlbum_User = ({
   album,
   formatDuraion,
 }: SuggestionAlbum_User) => {
-  const { addSongToAlbumUser, currentAlbum, featuredSongs } = useMusicStore();
+  const { featuredSongs } = useMusicStore();
+  const { addSongToAlbumUser, currentAlbum } = useAlbumStore();
   const { setQueue } = usePlayerStore();
   const [songSelected, setSongSelected] = useState<string>("");
   const [dataSuggest, setDataSuggest] = useState<Song[]>([]);
@@ -53,9 +55,8 @@ const SuggestionAlbum_User = ({
               return (
                 <div
                   key={song._id}
-                  className={`grid grid-cols-[16px_4fr_2fr_1fr] px-4 py-2 gap-4 text-sm text-zinc-400 hover:bg-white/5 rounded-md group cursor-pointer group ${
-                    isSelected ? "bg-zinc-600 hover:bg-zinc-600" : ""
-                  }`}
+                  className={`grid grid-cols-[16px_4fr_2fr_1fr] px-4 py-2 gap-4 text-sm text-zinc-400 hover:bg-white/5 rounded-md group cursor-pointer group ${isSelected ? "bg-zinc-600 hover:bg-zinc-600" : ""
+                    }`}
                   onClick={() => setSongSelected(song._id)}
                 >
                   <div className="flex items-center opacity-0">{index + 1}</div>
@@ -81,9 +82,8 @@ const SuggestionAlbum_User = ({
                   <div className="flex items-center gap-3">
                     <span className="ml-1">{formatDuraion(song.duration)}</span>
                     <PlusCircle
-                      className={`${
-                        isSelected ? "opacity-100" : "opacity-0"
-                      } group-hover:opacity-100 ml-4`}
+                      className={`${isSelected ? "opacity-100" : "opacity-0"
+                        } group-hover:opacity-100 ml-4`}
                       onClick={() => handleAddNewSong(song)}
                     />
                   </div>

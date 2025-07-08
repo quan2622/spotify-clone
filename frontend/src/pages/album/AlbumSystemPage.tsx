@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useMusicStore } from "../../stores/useMusicStore";
 import { ScrollArea } from "../../components/ui/scroll-area";
 import { Button } from "../../components/ui/button";
 import {
@@ -23,9 +22,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../../components/ui/dropdown-menu";
-import { axiosIntance } from "../../lib/axios";
-import toast from "react-hot-toast";
 import { useUser } from "@clerk/clerk-react";
+import { useAlbumStore } from "../../stores/useAlbumStore";
 
 export const formatDuraion = (duration: number) => {
   const minutes = Math.floor(duration / 60);
@@ -36,7 +34,7 @@ export const formatDuraion = (duration: number) => {
 const AlbumSystemPage = () => {
   const { user } = useUser();
   const { albumId } = useParams();
-  console.log("Check link: ", albumId);
+  // console.log("Check link: ", albumId);
 
 
   const navigate = useNavigate();
@@ -44,7 +42,7 @@ const AlbumSystemPage = () => {
     isLoading,
     fetchAlbumById,
     currentAlbum,
-  } = useMusicStore();
+  } = useAlbumStore();
 
   const {
     playAlbum,

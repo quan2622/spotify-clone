@@ -9,10 +9,12 @@ import { useEffect } from "react"
 import { useMusicStore } from "../../stores/useMusicStore"
 import Analysts from "./components/Analysts/Analysts"
 import GenreContent from "./components/GenreTable/GenreContent"
+import { useAlbumStore } from "../../stores/useAlbumStore"
 
 const AdminPage = () => {
   const { isAdmin, isLoading } = useAuthStore()
-  const { fetchStat, fetchAlbum } = useMusicStore();
+  const { fetchStat } = useMusicStore();
+  const { fetchAlbum } = useAlbumStore();
 
   useEffect(() => {
     fetchAlbum("ADMIN");

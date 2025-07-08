@@ -11,6 +11,7 @@ import toast from "react-hot-toast";
 import CarouselDouble from "../../../layout/components/Carousel/Carousel";
 import useUpdateMainSize from "../../../hooks/useUpdateMainSize";
 import _ from "lodash";
+import { useAlbumStore } from "../../../stores/useAlbumStore";
 
 const CustomArrow = ({ direction }: { direction: "prev" | "next" }) => {
   const Component = direction === "prev" ? CarouselPrevious : CarouselNext;
@@ -24,44 +25,45 @@ const CustomArrow = ({ direction }: { direction: "prev" | "next" }) => {
 };
 
 const AlbumSectionGrid = ({ title, type }: { title: string, type: string }) => {
-  const [isLoading, setIsLoading] = useState(false);
+  const { isLoading, recommendAlbum, popularAlbum, fetchDataAlbum } = useAlbumStore();
+  const [typePath, setTypePath] = useState<string>("");
   const [albums, setAlbums] = useState<null | AlbumCaching[]>(null);
+
+
   const navigate = useNavigate();
   const typeSize = useUpdateMainSize();
 
+  const typeAlbum = (title === 'Recommend Album') ? 'recommended' : 'popular_albums';
 
   useEffect(() => {
-    handleFetchData(title === 'Recommend Album' ? 'recommended' : 'popular_albums');
+    if (title !== '') {
+      handleFetchData(typeAlbum);
+      setTypePath(typeAlbum);
+    }
   }, [title])
 
-  const handleFetchData = async (albumFetching: string) => {
-    setIsLoading(true);
-    try {
-      const res = await albumService.getCachingAlbum(`${albumFetching}`);
-      if (res && res.data && res.data.EC === 0) {
-        setAlbums(res.data.data);
-      } else {
-        toast.error(res?.data.EM)
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
+  useEffect(() => {
+    if (typeAlbum === 'popular_albums' && !_.isEmpty(popularAlbum)) {
+      setAlbums(popularAlbum);
+    } else if (typeAlbum === 'recommended' && !_.isEmpty(recommendAlbum)) {
+      setAlbums(recommendAlbum);
     }
-  }
+  }, [popularAlbum, recommendAlbum])
 
+
+  const handleFetchData = async (albumFetching: string) => {
+    await fetchDataAlbum(albumFetching);
+  }
 
   if (isLoading) {
     return <></>
   }
 
-
-
   return (
     <div className="mb-8 w-full">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl sm:text-2xl font-bold">{title}</h2>
-        <Button variant={'link'} className="text-sm text-zinc-400 hover:text-white" onClick={() => navigate(`/${title}`)}>Show all</Button>
+        <Button variant={'link'} className="text-sm text-zinc-400 hover:text-white" onClick={() => navigate(`/show-all-albums/${typePath}`)}>Show all</Button>
       </div>
 
       <div>

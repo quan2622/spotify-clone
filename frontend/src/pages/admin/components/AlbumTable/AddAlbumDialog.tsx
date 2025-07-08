@@ -7,15 +7,15 @@ import { BadgeAlert, CirclePlus, Upload } from "lucide-react";
 import { Input } from "../../../../components/ui/input";
 import toast from "react-hot-toast";
 import { axiosIntance } from "../../../../lib/axios";
-import { useMusicStore } from "../../../../stores/useMusicStore";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../../components/ui/select";
 import { useGenreStore } from "../../../../stores/genreStore";
 import { useArtistStore } from "../../../../stores/artistStore";
 import { Textarea } from "../../../../components/ui/textarea";
 import { ScrollArea } from "../../../../components/ui/scroll-area";
+import { useAlbumStore } from "../../../../stores/useAlbumStore";
 
 const AddAlbumDialog = () => {
-  const { fetchAlbum } = useMusicStore();
+  const { fetchAlbum } = useAlbumStore();
   const { genres, fetchDataGenre } = useGenreStore();
   const { artists, getAllArtist } = useArtistStore();
   const [albumDialog, setAlbumDialog] = useState(false);

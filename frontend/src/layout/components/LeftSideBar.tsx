@@ -9,6 +9,7 @@ import { useMusicStore } from "../../stores/useMusicStore"
 import { useEffect, useState } from "react"
 import Fuse from "fuse.js"
 import { Album } from "../../types"
+import { useAlbumStore } from "../../stores/useAlbumStore"
 
 type LeftSideBarType = {
   isCollapseLeft: boolean;
@@ -17,7 +18,8 @@ type LeftSideBarType = {
 
 const LeftSideBar = ({ isCollapseLeft, handleCollapse }: LeftSideBarType) => {
   const { user } = useUser();
-  const { albumsUser, fetchAlbum, isLoading, createAlbumUser } = useMusicStore();
+  const { isLoading, createAlbumUser } = useMusicStore();
+  const { albumsUser, fetchAlbum } = useAlbumStore()
   const { userId } = useAuth();
   const [album_rd, setAlbum_rd] = useState<Album[] | null>(null);
   const [query, setQuery] = useState("");

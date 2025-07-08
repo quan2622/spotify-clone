@@ -10,14 +10,15 @@ import { useMusicStore } from "../../../../stores/useMusicStore";
 import { ScrollArea } from "../../../../components/ui/scroll-area";
 import { axiosIntance } from "../../../../lib/axios";
 import toast from "react-hot-toast";
+import { useAlbumStore } from "../../../../stores/useAlbumStore";
 
 type UpdateAlbum = {
   album: Album
 }
 
 const UpdateAlbum = ({ album }: UpdateAlbum) => {
-  const { songs, fetchAlbum, fetchAlbumById, currentAlbum } = useMusicStore();
-
+  const { songs } = useMusicStore();
+  const { fetchAlbum, fetchAlbumById, currentAlbum } = useAlbumStore();
   const [albumDialog, setAlbumDialog] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [query, setQuery] = useState('');

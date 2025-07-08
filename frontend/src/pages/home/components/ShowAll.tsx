@@ -12,6 +12,7 @@ import { formatDuraion } from "../../album/AlbumPage";
 import MadeOfYouImage from '/SectionGrid/MadeForYou.jpg';
 import TrendingImage from '/SectionGrid/viral_trending.jpg';
 import { useAuth } from "@clerk/clerk-react";
+import { useAlbumStore } from "../../../stores/useAlbumStore";
 
 const ShowAll = () => {
   const { userId } = useAuth()
@@ -20,7 +21,7 @@ const ShowAll = () => {
   const { currentSong, isPlaying, togglePlay, playAlbum } = usePlayerStore()
   const [songs, setSongs] = useState<Song[]>([]);
   const [bgCL, setBgCL] = useState('');
-  const { albumsAdmin, fetchAlbum } = useMusicStore();
+  const { albumsAdmin, fetchAlbum } = useAlbumStore();
   const navigate = useNavigate();
 
   useEffect(() => {

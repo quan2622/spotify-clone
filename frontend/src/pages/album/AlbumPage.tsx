@@ -27,6 +27,7 @@ import {
 import { axiosIntance } from "../../lib/axios";
 import toast from "react-hot-toast";
 import { useUser } from "@clerk/clerk-react";
+import { useAlbumStore } from "../../stores/useAlbumStore";
 
 export const formatDuraion = (duration: number) => {
   const minutes = Math.floor(duration / 60);
@@ -38,14 +39,9 @@ const AlbumPage = () => {
   const { user } = useUser();
   const { albumId } = useParams();
   const navigate = useNavigate();
-  const {
-    isLoading,
-    fetchAlbumById,
-    currentAlbum,
-    featuredSongs,
-    fetchFeaturedSong,
-    minusSongAlbumUser,
-  } = useMusicStore();
+  const { fetchFeaturedSong } = useMusicStore();
+
+  const { isLoading, fetchAlbumById, currentAlbum, minusSongAlbumUser } = useAlbumStore();
 
   const {
     playAlbum,
@@ -92,12 +88,6 @@ const AlbumPage = () => {
       toast.error("No song in album here!");
     } else {
       if (currentAlbum?.songs) {
-        console.log(
-          "Check current song: ",
-          currentAlbum.songs,
-          " - ",
-          currentIndex
-        );
         if (currentIndex - 1 === 0) playAlbum(currentAlbum.songs);
 
         const newSongs = currentAlbum.songs.filter(
