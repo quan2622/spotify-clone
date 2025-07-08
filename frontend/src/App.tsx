@@ -13,6 +13,8 @@ import ShowAll from "./pages/home/components/ShowAll";
 import SearchPage from "./pages/search/SearchPage";
 import BrownseAll from "./pages/search/BrownseAll";
 import DetailArtist from "./pages/home/components/DetailArtist";
+import ShowAllAlbum from "./pages/album/ShowAllAlbum";
+import AlbumSystemPage from "./pages/album/AlbumSystemPage";
 
 function App() {
   return (
@@ -31,6 +33,8 @@ function App() {
           <Route path="/artist/:artistId" element={<DetailArtist />} />
           <Route path="/:page" element={<ShowAll />} />
           <Route path="/chats" element={<ChatPage />} />
+          <Route path="/show-all-albums/:type" element={<ShowAllAlbum />} />
+          <Route path="/show-all-albums/detail/:albumId" element={<AlbumSystemPage />} />
           <Route path="/albums/:albumId" element={<AlbumPage />} />
           <Route path="/search" element={<BrownseAll />} />
           <Route path="/search/:dataSearch" element={<SearchPage />} />

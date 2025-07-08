@@ -123,9 +123,11 @@ const MainLayout = () => {
         <ResizablePanel defaultSize={isMobile ? 80 : 60} className="flex gap-2 flex-col" onResize={(number: number) => hanldeChangeMainSize(number)}>
           <Topbar query={dataSearch} handleSearch={handleSearch} />
           <ScrollArea className="h-full flex flex-col overflow-auto rounded-md border">
-            <div className="relative h-full w-full overflow-hidden">
-              <div className="relative z-10">
-                <ChangeBGGradient />
+            <div className="relative h-[550px] w-full overflow-hidden">
+              <div className="relative z-10 h-[550px]">
+                {location.pathname === '/' &&
+                  <ChangeBGGradient />
+                }
                 <Outlet />
               </div>
             </div>
