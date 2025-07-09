@@ -6,7 +6,7 @@ import SectionGrid from "./components/SectionGrid";
 import { usePlayerStore } from "../../stores/usePlayerStore";
 import { useAuth } from "@clerk/clerk-react";
 import AlbumSectionGrid from "./components/AlbumSectionGrid";
-import MainDisplay from "../../layout/components/DisplayAlbum/MainDisplay";
+import MainDisplay from "./components/DisplayAlbum/MainDisplay";
 
 
 const HomePage = () => {

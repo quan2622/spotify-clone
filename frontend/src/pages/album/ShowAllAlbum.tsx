@@ -61,14 +61,12 @@ const ShowAllAlbum = () => {
                   src={album.imageUrl} alt={album.title} />
                 <PlayButtonAlbum album={album} />
               </div>
-              <div className="pt-1 cursor-pointer group-hover:underline" onClick={() => handleRedirectToAlbumDetail('31')}>
+              <div className="pt-1 cursor-pointer group-hover:underline" onClick={() => handleRedirectToAlbumDetail(album._id)}>
                 <h2 className="font-semibold text-lg">{album.title}</h2>
                 <h4 className="text-sm text-zinc-300">{album?.genreId?.name || "not found"}</h4>
               </div>
             </div>
           ))}
-
-
         </div>
       </ScrollArea>
     </div>

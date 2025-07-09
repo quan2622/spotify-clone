@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { ScrollArea } from "../../components/ui/scroll-area";
 import { Button } from "../../components/ui/button";
 import {
@@ -11,7 +11,6 @@ import {
   Play,
 } from "lucide-react";
 import { usePlayerStore } from "../../stores/usePlayerStore";
-import UpdateAlbumUserDialog from "../../layout/components/UpdateAlbumUserDialog";
 import SuggestionAlbum_User from "./components/SuggestionAlbum_User";
 import {
   DropdownMenu,
@@ -34,10 +33,6 @@ export const formatDuraion = (duration: number) => {
 const AlbumSystemPage = () => {
   const { user } = useUser();
   const { albumId } = useParams();
-  // console.log("Check link: ", albumId);
-
-
-  const navigate = useNavigate();
   const {
     isLoading,
     fetchAlbumById,
@@ -47,7 +42,6 @@ const AlbumSystemPage = () => {
   const {
     playAlbum,
     currentSong,
-    currentIndex,
     isPlaying,
     togglePlay,
     setQueue,
@@ -101,13 +95,6 @@ const AlbumSystemPage = () => {
                 ) : (
                   <Music className="size-20 m-auto text-stone-400 group-hover:hidden" />
                 )}
-
-                <div className="hidden group-hover:block mx-auto absolute w-full h-full bg-neutral-900 opacity-70">
-                  <UpdateAlbumUserDialog
-                    albumId={albumId}
-                    currentAlbum={currentAlbum}
-                  />
-                </div>
               </div>
               <div className="flex flex-col justify-end">
                 <p className="text-sm font-medium">Album</p>
@@ -118,11 +105,16 @@ const AlbumSystemPage = () => {
                   {currentAlbum?.description}
                 </div>
                 <div className="flex items-center gap-2 text-sm text-zinc-100">
-                  <span className="font-medium text-white">
-                    {currentAlbum?.type === "user"
-                      ? `${user?.lastName} ${user?.firstName}`
-                      : currentAlbum?.artistId.name}
-                  </span>
+                  {currentAlbum?.type === "user" &&
+                    <span className="font-medium text-white">
+                      {user?.lastName && user?.firstName ? `${user?.lastName} ${user?.firstName}` : ''}
+                    </span>
+                  }
+                  {currentAlbum?.type === 'admin' &&
+                    <span className="font-medium text-white">
+                      {currentAlbum?.artistId?.name ? `${currentAlbum?.artistId.name}` : 'system'}
+                    </span>
+                  }
                   <span>• {currentAlbum?.songs.length} songs</span>
                   <span>• {currentAlbum?.releaseYear}</span>
                 </div>
@@ -229,13 +221,6 @@ const AlbumSystemPage = () => {
                 </div>
               </div>
             </div>
-            {/* Suggestion */}
-            {currentAlbum?.type === "user" && (
-              <SuggestionAlbum_User
-                album={currentAlbum}
-                formatDuraion={formatDuraion}
-              />
-            )}
           </div>
         </div>
       </ScrollArea>
