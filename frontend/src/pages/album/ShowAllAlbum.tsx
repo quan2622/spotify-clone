@@ -6,14 +6,20 @@ import { useAlbumStore } from "../../stores/useAlbumStore";
 import type { AlbumCaching } from "../../types";
 import _ from "lodash";
 import { usePlayerStore } from "../../stores/usePlayerStore";
+import { useUIStore } from "../../stores/useUIStore";
+import useUpdateMainSize from "../../hooks/useUpdateMainSize";
+import clsx from "clsx";
 
 const ShowAllAlbum = () => {
   const { recommendAlbum, popularAlbum, fetchDataAlbum } = useAlbumStore();
+  const typeSize = useUpdateMainSize();
   const { setCurrentAlbum } = usePlayerStore();
   const { type } = useParams();
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [albums, setAlbums] = useState<null | AlbumCaching[]>();
+  const [layout, setLayout] = useState<string>('');
+
 
 
   useEffect(() => {
@@ -53,7 +59,11 @@ const ShowAllAlbum = () => {
     <div className="h-full ">
       <ScrollArea className="h-full rounded-md px-6 py-6">
         <div className="text-xl font-semibold"> {title} </div>
-        <div className="grid grid-cols-2 md:grid-cols-10 mt-6 gap-3">
+        <div className={clsx("grid grid-cols-2 mt-6 gap-3",
+          typeSize === 'small' ? 'md:grid-cols-8' : '',
+          typeSize === 'medium' ? 'md:grid-cols-10' : '',
+          typeSize === 'large' ? 'md:grid-cols-12' : ''
+        )}>
           {!_.isEmpty(albums) && albums?.map(album => (
             <div key={album._id} className="col-span-2 p-2 min-h-[270px] bg-zinc-800 rounded-md group">
               <div className="h-[200px] w-full overflow-hidden rounded-md relative">

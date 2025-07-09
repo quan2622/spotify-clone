@@ -69,14 +69,16 @@ const MainDisplay = () => {
 
   const selectedCardData = cardData.find((card) => card.id === selectedCard)
 
+
+
   return (
     <>
-      <div className="w-full min-h-screen p-3">
+      <div className="w-full min-h-screen p-3 mt-2">
         <LayoutGroup>
           <div className="max-w-full mx-auto">
             {/* Header */}
             <div className="flex items-center justify-between mb-8">
-              <h1 className="text-4xl font-bold text-gray-900">Album For Day</h1>
+              <h1 className="text-xl sm:text-2xl font-bold">Album For Day</h1>
               <Button variant={'link'} className="text-sm text-zinc-400 hover:text-white"
               // onClick={() => navigate(`/${title}`)}
               >
