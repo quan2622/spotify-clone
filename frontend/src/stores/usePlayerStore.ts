@@ -17,7 +17,7 @@ interface PlayerStore {
 
   initializeQueue: (songs: Song[]) => void,
   setQueue: (songs: Song[]) => void,
-  playAlbum: (songs: Song[], startIndex?: number) => void,
+  playAlbum: (songs: Song[], startIndex?: number, albumId?: string) => void,
   setCurrentSong: (song: Song | null) => void,
   togglePlay: () => void,
   playNext: () => void,
@@ -76,20 +76,19 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
       queue: [...songs],
     });
   },
-  playAlbum: (songs: Song[], startIndex = 0) => {
+  playAlbum: (songs: Song[], startIndex = 0, albumId = '-1') => {
     if (songs.length === 0) return;
+    if (albumId !== '-1' && albumId === get().currentAlbum._id && _.isEqual(get().queue, songs)) {
+      get().togglePlay();
+      return;
+    }
+
 
     let song = <Song> {};
 
     if (get().queue && !_.isEqual(get().queue, songs)) {
       if (startIndex === 0) {
-
-        // const songInAlbum = songs.some(song => song._id === get().currentSong?._id);
-
         const index = songs.findIndex(item => item._id === get().currentSong?._id)
-        // console.log("Check current song: ", get().currentSong);
-        // console.log("Check song in album: ", songs);
-        // console.log("Check index: ", startIndex, ' - ', index);
         song = songs[index !== -1 ? index : startIndex];
       } else {
         song = songs[startIndex];

@@ -5,42 +5,48 @@ import { useEffect, useState } from "react";
 import albumService from "../../../services/album.service";
 import toast from "react-hot-toast";
 import _ from "lodash";
+import type { Album } from "../../../types";
 
-const PlayButtonAlbum = ({ albumId }: { albumId: string }) => {
-  const { playAlbum, setCurrentAlbum, currentAlbum, isPlaying, togglePlay, queue } = usePlayerStore();
-  const [isCurrentAlbum, setIsCurrentAlbum] = useState(false);
+const PlayButtonAlbum = ({ album }: { album: Album }) => {
+  const { playAlbum, setCurrentAlbum, currentAlbum, isPlaying } = usePlayerStore();
+  const [albumPlay, setAlbumPlay] = useState<any>();
+  const isCurrentAlbum = currentAlbum._id === album._id;
 
   useEffect(() => {
-    if (albumId !== " ") {
-      handleFecthingData();
+    handleFecthingData();
+  }, []);
+
+  useEffect(() => {
+    if (!currentAlbum.songs) {
+
     }
-  }, [albumId]);
 
+  }, [currentAlbum]);
 
-  useEffect(() => {
-    if (currentAlbum)
-      setIsCurrentAlbum(currentAlbum.album_data._id === albumId);
-  }, [currentAlbum])
+  const handlePlayAlbum = () => {
+    if (isCurrentAlbum) {
+      playAlbum(albumPlay.songs, 0, album._id);
+    }
+    else if (albumPlay && albumPlay.songs?.length > 0) {
+      playAlbum(albumPlay.songs);
+      setCurrentAlbum(albumPlay.album_data);
+    }
+    else toast.error("Not found song!");
+  }
 
   const handleFecthingData = async () => {
-    const response = await albumService.getDataAlbumSystem(albumId);
+    const response = await albumService.getDataAlbumSystem(album._id);
     if (response && response.data && response.data.EC === 0) {
       const dataSave = {
         album_data: response.data.album_data,
         songs: response.data.songs,
       }
-      setCurrentAlbum(dataSave)
+      setAlbumPlay(dataSave);
     } else {
       toast.error(response?.data.EM);
     }
   }
 
-  const handlePlayAlbum = () => {
-    const isCurrentAlbumPLaying = _.isEqual(currentAlbum.songs, queue);
-    if (isCurrentAlbumPLaying) togglePlay();
-    else if (currentAlbum && currentAlbum.songs.length > 0)
-      playAlbum(currentAlbum.songs);
-  }
 
   return (
     <Button onClick={handlePlayAlbum} size={'icon'}

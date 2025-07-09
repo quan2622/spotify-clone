@@ -5,9 +5,11 @@ import PlayButtonAlbum from "./components/PlayButtonAlbum";
 import { useAlbumStore } from "../../stores/useAlbumStore";
 import type { AlbumCaching } from "../../types";
 import _ from "lodash";
+import { usePlayerStore } from "../../stores/usePlayerStore";
 
 const ShowAllAlbum = () => {
   const { recommendAlbum, popularAlbum, fetchDataAlbum } = useAlbumStore();
+  const { setCurrentAlbum } = usePlayerStore();
   const { type } = useParams();
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
@@ -34,18 +36,18 @@ const ShowAllAlbum = () => {
   }, [type, fetchDataAlbum, recommendAlbum, popularAlbum]);
 
   useEffect(() => {
-    if (type === 'recommended' && !_.isEmpty(recommendAlbum)) {
+    if (type === 'recommended' && Array.isArray(recommendAlbum) && !_.isEmpty(recommendAlbum)) {
       setAlbums(recommendAlbum);
-    } else if (type === 'popular_albums' && !_.isEmpty(popularAlbum)) {
+      setCurrentAlbum(recommendAlbum[0]);
+    } else if (type === 'popular_albums' && Array.isArray(popularAlbum) && !_.isEmpty(popularAlbum)) {
       setAlbums(popularAlbum);
+      setCurrentAlbum(popularAlbum[0]);
     }
   }, [type, recommendAlbum, popularAlbum]);
 
   const handleRedirectToAlbumDetail = (albumId: string) => {
     navigate(`/show-all-albums/detail/${albumId}`)
   }
-
-  console.log("Check albums: ", albums);
 
   return (
     <div className="h-full ">
@@ -57,7 +59,7 @@ const ShowAllAlbum = () => {
               <div className="h-[200px] w-full overflow-hidden rounded-md relative">
                 <img className="object-center object-cover w-full h-full group-hover:scale-105 transition-all ease-linear"
                   src={album.imageUrl} alt={album.title} />
-                <PlayButtonAlbum albumId={album._id} />
+                <PlayButtonAlbum album={album} />
               </div>
               <div className="pt-1 cursor-pointer group-hover:underline" onClick={() => handleRedirectToAlbumDetail('31')}>
                 <h2 className="font-semibold text-lg">{album.title}</h2>
