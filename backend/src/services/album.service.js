@@ -324,11 +324,11 @@ const recordListeningAlbum = async (albumId, userId) => {
 }
 
 
-const getRecentListeningAlbums = async (userId, page = 1) => {
+const getRecentListeningAlbums = async (userId, page = 1, pageSize = 10) => {
   try {
     const end = startOfDay(new Date());
     const start = subDays(end, 7);
-    const LIMIT = 10;
+    const LIMIT = pageSize;
     const SKIP = (page - 1) * LIMIT;
     const data_history = await ListenHistory
       .find({
@@ -343,11 +343,11 @@ const getRecentListeningAlbums = async (userId, page = 1) => {
   }
 }
 
-const getRecommendedAlbums = async (userId, page = 1) => {
+const getRecommendedAlbums = async (userId, page = 1, pageSize = 10) => {
   try {
     const end = startOfDay(new Date());
     const start = subDays(end, 7);
-    const LIMIT = 10;
+    const LIMIT = pageSize;
     const SKIP = (page - 1) * LIMIT;
     const data_history = await ListenHistory
       .find({
@@ -372,12 +372,12 @@ const getRecommendedAlbums = async (userId, page = 1) => {
   }
 }
 
-const getPopularAlbums = async (page = 1) => {
+const getPopularAlbums = async (page = 1, pageSize = 10) => {
   try {
     const start = startOfMonth(new Date());
     const end = startOfToday(new Date());
 
-    const LIMIT = 10;
+    const LIMIT = pageSize;
     const SKIP = (page - 1) * LIMIT;
 
     const data_history = await ListenHistory
@@ -390,7 +390,8 @@ const getPopularAlbums = async (page = 1) => {
         path: "albumId",
         populate: { path: "genreId", select: 'name' }
       })
-      .limit(LIMIT).skip(SKIP);
+      .limit(LIMIT + 1) // lấy thêm 1 record để ktr còn data phía sau hay không
+      .skip(SKIP);
 
     return data_history.map(item => ({
       ...item.albumId.toObject(),
@@ -401,11 +402,11 @@ const getPopularAlbums = async (page = 1) => {
   }
 }
 
-const getNewReleases = async (page = 1) => {
+const getNewReleases = async (page = 1, pageSize = 10) => {
   try {
-    const end = startOfToday(new Date());
-    const start = subDays(end, 30);
-    const LIMIT = 10;
+    const end = new Date();
+    const start = new Date(subDays(end, 30).setHours(0, 0, 0, 0));
+    const LIMIT = pageSize;
     const SKIP = (page - 1) * LIMIT;
 
     return await Album

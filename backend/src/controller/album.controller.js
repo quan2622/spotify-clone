@@ -91,10 +91,10 @@ export const DeleteAlbumUser = async (req, res, next) => {
 // GET api/albums/get/caches?categoryKey=...&page=...
 export const getCacheAlbum = async (req, res, next) => {
   try {
-    const { categoryKey, page } = req.query;
+    const { categoryKey, page, pageSize } = req.query;
     const { userId } = req.auth;
     // console.log("Check input: ", userId, categoryKey, page);
-    const data = await cachingService.getCategoryAlbums(userId, categoryKey, page);
+    const data = await cachingService.getCategoryAlbums(userId, categoryKey, page, pageSize);
     return res.status(200).json(data);
   } catch (error) {
     console.error("Error caching album:", error);

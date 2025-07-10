@@ -3,7 +3,7 @@ import { AlbumCategoryCache } from "../models/albumCategoryCache.js";
 import albumService from "./album.service.js";
 
 
-const getCategoryAlbums = async (userId, categoryKey, page) => {
+const getCategoryAlbums = async (userId, categoryKey, page, pageSize) => {
   const cached = await AlbumCategoryCache.findOne({
     userId,
     categoryKey,
@@ -21,7 +21,7 @@ const getCategoryAlbums = async (userId, categoryKey, page) => {
     };
   }
 
-  const data = await generateCategoryAlbums(userId, categoryKey, page);
+  const data = await generateCategoryAlbums(userId, categoryKey, page, pageSize);
   if (!_.isEmpty(data)) {
     await cacheResults(userId, categoryKey, data);
     return {
@@ -38,12 +38,12 @@ const getCategoryAlbums = async (userId, categoryKey, page) => {
   }
 }
 
-const generateCategoryAlbums = async (userId, categoryKey, page) => {
+const generateCategoryAlbums = async (userId, categoryKey, page, pageSize) => {
   const algorithms = {
-    'recent_listening': () => albumService.getRecentListeningAlbums(userId, page),
-    'popular_albums': () => albumService.getPopularAlbums(page),
-    'recommended': () => albumService.getRecommendedAlbums(userId, page),
-    'new_releases': () => albumService.getNewReleases(page)
+    'recent_listening': () => albumService.getRecentListeningAlbums(userId, page, pageSize),
+    'popular_albums': () => albumService.getPopularAlbums(page, pageSize),
+    'recommended': () => albumService.getRecommendedAlbums(userId, page, pageSize),
+    'new_releases': () => albumService.getNewReleases(page, pageSize)
   };
 
   const algorithm = algorithms[categoryKey];
