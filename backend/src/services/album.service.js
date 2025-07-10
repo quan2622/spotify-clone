@@ -147,22 +147,22 @@ const createAlbumAdmin = async (payload, imageFile) => {
 
     const { title, artistId, genreId, releaseYear, type, description } =
       payload;
-    if (!payload || !title || !releaseYear || !type || !description)
+    if (!payload || !title || !releaseYear || !type)
       return { EC: 2, EM: "Missing required params" };
     const data_update = {
       title: title,
       description: description,
-      releaseYear: releaseYear,
+      releaseYear: +releaseYear,
       type: type,
       imageUrl: imageUrl,
     };
-    if (artistId) {
+    if (artistId !== 'no_artist') {
       const dataArtist = await Artist.findOne({ _id: artistId });
       data_update.artistId = artistId;
       if (!dataArtist) throw new AppError("Cannot find data artist", 404);
       data_update.owner = dataArtist.name;
     }
-    if (genreId) data_update.genreId = genreId;
+    if (genreId !== 'no_genre') data_update.genreId = genreId;
 
     const newAlbum = new Album({ ...data_update });
     await newAlbum.save();

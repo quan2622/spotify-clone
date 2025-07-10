@@ -195,7 +195,7 @@ const UpdateSong = ({ song, handleRemoveEditSong }: UpdateSong) => {
     handleRemoveEditSong();
     setSongDialogOpen(false);
   }
-  console.log("Check song: ", song);
+
   return (
     <Dialog open={songDialogOpen} onOpenChange={setSongDialogOpen}>
 

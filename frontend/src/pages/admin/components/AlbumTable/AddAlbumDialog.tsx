@@ -21,15 +21,17 @@ const AddAlbumDialog = () => {
   const [albumDialog, setAlbumDialog] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const imageInputRef = useRef<HTMLInputElement>(null);
-  const [newAlbum, setNewAlbum] = useState<{ title: string, artist: string, genre: string, description: string, releaseYear: number }>({
+  const [newAlbum, setNewAlbum] = useState<{ title: string, artist: string, genre: string, description: string, releaseYear: string }>({
     title: '',
-    artist: '',
-    genre: '',
+    artist: 'no_artist',
+    genre: 'no_genre',
     description: '',
-    releaseYear: new Date().getFullYear(),
+    releaseYear: `${new Date().getFullYear()}`,
   })
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const wordCount = newAlbum.description.trim().split(/\s+/).length > 50;
+  const description = useRef<HTMLTextAreaElement | null>(null);
+  const title = useRef<HTMLInputElement | null>(null);
+  const [checkD, setCheckD] = useState(true);
 
   useEffect(() => {
     fetchDataGenre();
@@ -38,16 +40,25 @@ const AddAlbumDialog = () => {
 
 
   const handleSubmitCreate = async () => {
-    console.log("check state: ", newAlbum);
     setIsLoading(true);
     try {
       if (!imageFile) {
         return toast.error('Please upload image file');
       }
 
+      if (description.current?.value) {
+        const word = description.current?.value.trim().split(/\s+/);
+        if (word.length > 50) { setCheckD(false); return; }
+        setCheckD(true);
+      }
+
       const formData = new FormData();
-      formData.append('title', newAlbum.title);
-      formData.append('description', newAlbum.description);
+      if (title.current?.value) {
+        formData.append('title', title.current?.value);
+      }
+      if (description.current?.value) {
+        formData.append('description', description.current?.value);
+      }
       formData.append('artistId', newAlbum.artist);
       formData.append('genreId', newAlbum.genre);
       formData.append('type', 'admin');
@@ -58,12 +69,17 @@ const AddAlbumDialog = () => {
         headers: { 'Content-Type': 'multipart/from-data' }
       });
 
+      if (description.current)
+        description.current.value = "";
+      if (title.current)
+        title.current.value = '';
+
       setNewAlbum({
         title: '',
-        artist: '',
-        genre: '',
+        artist: 'no_artist',
+        genre: 'no_genre',
         description: '',
-        releaseYear: new Date().getFullYear(),
+        releaseYear: `${new Date().getFullYear()}`,
       })
       setImageFile(null);
       toast.success('Song added successfully');
@@ -126,14 +142,13 @@ const AddAlbumDialog = () => {
             <div className="flex-1 w-[50%] pr-2">
               <div className="space-y-2">
                 <label className="font-medium text-sm">Title</label>
-                <Input value={newAlbum.title} onChange={(e) => setNewAlbum({ ...newAlbum, title: e.target.value })}
-                  className="bg-zinc-800 border-zinc-700" />
+                <Input ref={title} className="bg-zinc-800 border-zinc-700" placeholder="Enter 'Title' of this album ..." />
               </div>
               <div className="py-4">
                 <div className="flex gap-3">
                   <div className="w-1/2 space-y-2">
                     <label className="font-medium text-sm">Genre</label>
-                    <Select onValueChange={(value) => setNewAlbum({ ...newAlbum, genre: value })}>
+                    <Select value={newAlbum.genre} onValueChange={(value) => setNewAlbum({ ...newAlbum, genre: value })}>
                       <SelectTrigger className="w-full h-10 bg-zinc-800 border-zinc-700">
                         <SelectValue placeholder="Select Artist" />
                       </SelectTrigger>
@@ -147,7 +162,7 @@ const AddAlbumDialog = () => {
                   </div>
                   <div className="w-1/2 space-y-2">
                     <label className="font-medium text-sm">Artist</label>
-                    <Select onValueChange={(value) => setNewAlbum({ ...newAlbum, artist: value })}>
+                    <Select value={newAlbum.artist} onValueChange={(value) => setNewAlbum({ ...newAlbum, artist: value })}>
                       <SelectTrigger className="w-full h-10 bg-zinc-800 border-zinc-700">
                         <SelectValue placeholder="Select Artist" />
                       </SelectTrigger>
@@ -163,7 +178,7 @@ const AddAlbumDialog = () => {
               </div>
               <div className="space-y-2">
                 <label className="font-medium text-sm">Release Year</label>
-                <Select onValueChange={(value) => setNewAlbum({ ...newAlbum, releaseYear: +value })}>
+                <Select value={newAlbum.releaseYear} onValueChange={(value) => setNewAlbum({ ...newAlbum, releaseYear: value })}>
                   <SelectTrigger className="w-full  h-10 bg-zinc-800 border-zinc-700">
                     <SelectValue placeholder="Get year" />
                   </SelectTrigger>
@@ -182,10 +197,9 @@ const AddAlbumDialog = () => {
               </div>
               <div className="space-y-2 py-3">
                 <label className="font-medium text-sm">Descriptions</label>
-                <Textarea placeholder="Type description for album here ...." className="bg-zinc-800 border-zinc-700 min-h-[100px]"
-                  onChange={(e) => setNewAlbum({ ...newAlbum, description: e.target.value })}
-                />
-                <span className={`flex space-y-2 gap-1 items-center  font-thin cursor-default ${wordCount ? "text-red-700/80" : "text-amber-300/50"}`}><BadgeAlert className="size-5 mt-0.5" />  {wordCount ? "Exceeding 50 characters" : "Write a short description of no more than 50 words."} </span>
+                <Textarea placeholder="Type description for album here ...." ref={description}
+                  className="bg-zinc-800 border-zinc-700 min-h-[100px]" />
+                <span className={`flex space-y-2 gap-1 items-center  font-thin cursor-default ${!checkD ? "text-red-700/80" : "text-amber-300/50"}`}><BadgeAlert className="size-5 mt-0.5" />  {!checkD ? "Exceeding 50 characters" : "Write a short description of no more than 50 words."} </span>
               </div>
             </div>
           </div>
