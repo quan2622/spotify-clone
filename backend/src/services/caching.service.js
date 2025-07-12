@@ -23,7 +23,9 @@ const getCategoryAlbums = async (userId, categoryKey, page, pageSize) => {
 
   const data = await generateCategoryAlbums(userId, categoryKey, page, pageSize);
   if (!_.isEmpty(data)) {
-    await cacheResults(userId, categoryKey, data);
+    if (categoryKey !== "new_releases")
+      await cacheResults(userId, categoryKey, data);
+
     return {
       EC: 0,
       EM: "Ok",
