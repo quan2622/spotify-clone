@@ -10,18 +10,18 @@ import type { Album } from "../../../types";
 const PlayButtonAlbum = ({ album }: { album: Album }) => {
   const { playAlbum, setCurrentAlbum, currentAlbum, isPlaying } = usePlayerStore();
   const [albumPlay, setAlbumPlay] = useState<any>();
-  const isCurrentAlbum = currentAlbum._id === album._id;
+  let isCurrentAlbum = currentAlbum?._id && album?._id && currentAlbum._id === album._id;
 
   useEffect(() => {
     handleFecthingData();
   }, []);
 
-  useEffect(() => {
-    if (!currentAlbum.songs) {
+  // useEffect(() => {
+  //   if (!currentAlbum.songs) {
 
-    }
+  //   }
 
-  }, [currentAlbum]);
+  // }, [currentAlbum]);
 
   const handlePlayAlbum = () => {
     if (isCurrentAlbum) {
