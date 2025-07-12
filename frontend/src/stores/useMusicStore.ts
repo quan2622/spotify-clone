@@ -161,7 +161,6 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const res = await axiosIntance.get('songs/made-for-you');
-      console.log("Check songs: ", res.data.songs)
       set({ madeForYouSongs: res.data.songs });
     } catch (error: any) {
       set({ error: error.response.data.message });

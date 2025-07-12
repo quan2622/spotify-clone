@@ -9,6 +9,7 @@ interface ALbumStore {
   isLoading: boolean;
   recommendAlbum: AlbumCaching[] | null;
   popularAlbum: AlbumCaching[] | null;
+  releaseAlbum: AlbumCaching[] | null;
   albums: Album[],
   albumsAdmin: Album[];
   albumsUser: Album[];
@@ -18,7 +19,9 @@ interface ALbumStore {
   fetchDataAlbum: (type: string) => Promise<void>;
   createAlbumUser: () => Promise<void>;
   fetchAlbum: (option: string) => Promise<void>;
+  fetchDataNewRelease: (page: number, pageSize: number) => Promise<{ hasMore: boolean; currentPage: number }>;
   fetchAlbumById: (albumId: string) => Promise<void>;
+  fetchAlbumByIdv2: (albumId: string) => Promise<{ dataAlbum: Album } | null>;
   addSongToAlbumUser: (albumId: string, song: Song) => Promise<void>;
   minusSongAlbumUser: (albumId: string, song: Song) => Promise<void>;
 }
@@ -28,11 +31,33 @@ export const useAlbumStore = create<ALbumStore>((set, get) => ({
   isLoading: false,
   recommendAlbum: null,
   popularAlbum: null,
+  releaseAlbum: null,
   albums: [],
   albumsAdmin: [],
   albumsUser: [],
   currentAlbum: null,
 
+  fetchDataNewRelease: async (page, pageSize) => {
+    const response = await albumService.getCachingAlbum('new_releases', page, pageSize);
+
+    if (response && response.data && response.data.EC === 0) {
+      const configData = response?.data.data.slice(0, pageSize) ?? [];
+      set(state => ({
+        releaseAlbum: page === 1
+          ? configData
+          : [
+            ...(state.releaseAlbum ?? []),
+            ...configData
+          ]
+      }));
+    } else {
+      toast.error(response?.data.EM);
+    }
+    return {
+      hasMore: response?.data.data.length > pageSize,
+      currentPage: page,
+    }
+  },
 
   deleteAlbumAdmin: async (albumId) => {
     set({ isLoading: true });
@@ -56,7 +81,6 @@ export const useAlbumStore = create<ALbumStore>((set, get) => ({
     set({ isLoading: true });
     try {
       const res = await albumService.getCachingAlbum(`${type}`); // recommended &  popular_albums
-      console.log("Check data return: ", res?.data);
       if (res && res.data && res.data.EC === 0) {
         if (type === 'popular_albums') {
           set({ popularAlbum: res.data.data });
@@ -128,6 +152,25 @@ export const useAlbumStore = create<ALbumStore>((set, get) => ({
     } finally {
       set({ isLoading: false });
     }
+  },
+  fetchAlbumByIdv2: async (albumId) => {
+    try {
+      const res = await axiosIntance.get(`albums/${albumId}`);
+      if (res.data) {
+        if (res.data.EC !== 0) {
+          toast.error(res.data.EM);
+        }
+        else {
+          const songs = res.data.songs;
+          const dataAlbum = _.cloneDeep(res.data.album_data);
+          dataAlbum.songs = songs;
+          return { dataAlbum: dataAlbum };
+        };
+      }
+    } catch (error: any) {
+      console.log("Had error when fetch album by Id: ", error);
+    }
+    return null;
   },
   addSongToAlbumUser: async (albumId, song) => {
     set({ isLoading: true });
