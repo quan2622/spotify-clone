@@ -1,10 +1,10 @@
 import { axiosIntance } from "../lib/axios";
 
 
-const getCachingAlbum = (categoryKey: string, page = 1) => {
+const getCachingAlbum = (categoryKey: string, page = 1, pageSize = 10) => {
   // recent_listening, popular_albums, recommended, new_releases
   try {
-    return axiosIntance.get(`albums/get/caches?categoryKey=${categoryKey}&page=${page}`);
+    return axiosIntance.get(`albums/get/caches?categoryKey=${categoryKey}&page=${page}&pageSize=${pageSize}`);
   } catch (error) {
     console.log("Had error when get caching album: ", error);
   }

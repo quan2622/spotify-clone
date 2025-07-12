@@ -415,7 +415,9 @@ const getNewReleases = async (page = 1, pageSize = 10) => {
         createdAt: { $gte: start, $lte: end }
       })
       .populate({ path: "genreId", select: 'name' })
-      .sort({ createdAt: -1 }).limit(LIMIT).skip(SKIP);
+      .sort({ createdAt: -1 })
+      .limit(LIMIT).skip(SKIP);
+
   } catch (error) {
     throw (error);
   }
