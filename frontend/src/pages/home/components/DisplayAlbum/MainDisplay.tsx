@@ -33,7 +33,6 @@ const MainDisplay = () => {
   const navigate = useNavigate();
   const selectedCardData = albums.find((album) => album._id === selectedCard)
 
-
   return (
     <>
       <div className="w-full min-h-screen p-3 mt-2">

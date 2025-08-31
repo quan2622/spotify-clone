@@ -25,8 +25,9 @@ interface CardShowcase {
 
 const CardShowcase = ({ cardData, selectedCard, setSelectedCard, loading, hasMore, loadMore, triggerRef, isEnd, initialLoading, isEmpty, error, refresh, retry, currentPage, totalItems }: CardShowcase) => {
 
+  console.log("Check data: ", cardData);
 
-  if (initialLoading) {
+  if (initialLoading && _.isEmpty(cardData)) {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
@@ -63,6 +64,7 @@ const CardShowcase = ({ cardData, selectedCard, setSelectedCard, loading, hasMor
       </div>
     );
   }
+
 
   return (
     <>
