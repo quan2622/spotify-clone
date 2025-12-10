@@ -1,7 +1,6 @@
 import { useState } from "react"
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion"
 import { Button } from "@/components/ui/button"
-import { useNavigate } from "react-router-dom"
 import CardShowcase from "./CardShowcase"
 import ModalInfoAlbum from "./ModalInfoAlbum"
 import useCachingAlbumLazy from "../../../../hooks/useCachingAlbumLazy"
@@ -20,8 +19,6 @@ const MainDisplay = () => {
     triggerRef,
     isEmpty,
     isEnd,
-    currentPage,
-    totalItems,
   } = useCachingAlbumLazy({
     pageSize: 2,
     threshold: 0.1,
@@ -30,7 +27,6 @@ const MainDisplay = () => {
 
 
   const [selectedCard, setSelectedCard] = useState<string | null>(null)
-  const navigate = useNavigate();
   const selectedCardData = albums.find((album) => album._id === selectedCard)
 
   return (
@@ -63,8 +59,6 @@ const MainDisplay = () => {
                 error={error}
                 refresh={refresh}
                 retry={retry}
-                currentPage={currentPage}
-                totalItems={totalItems}
               />
             </AnimatePresence>
 

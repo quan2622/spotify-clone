@@ -1,8 +1,8 @@
-import { Loader, PenLine, Upload } from "lucide-react"
+import { Loader, Upload } from "lucide-react"
 import { Button } from "../../../../components/ui/button"
 import { useMusicStore } from "../../../../stores/useMusicStore"
 import { useEffect, useRef, useState } from "react";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTrigger } from "../../../../components/ui/dialog";
+import { Dialog, DialogContent, DialogFooter, DialogHeader } from "../../../../components/ui/dialog";
 import { DialogDescription, DialogTitle } from "@radix-ui/react-dialog";
 import { Input } from "../../../../components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../../components/ui/select";
@@ -40,7 +40,7 @@ const urlToFile = async (url: string, filename: string, mimeType: string) => {
 
 const UpdateSong = ({ song, handleRemoveEditSong }: UpdateSong) => {
   const { artists, getAllArtist } = useArtistStore();
-  const { albumsAdmin, getSongPaginate, updateSong } = useMusicStore();
+  const { getSongPaginate, updateSong } = useMusicStore();
   const [songDialogOpen, setSongDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingData, setIsLoadingData] = useState(false);

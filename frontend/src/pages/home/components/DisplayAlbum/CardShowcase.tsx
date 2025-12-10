@@ -2,7 +2,6 @@ import { motion } from "framer-motion"
 import type { AlbumCaching } from "../../../../types";
 import { CirclePlus, Ellipsis, Play, VolumeX } from "lucide-react";
 import _ from "lodash";
-import type { RefObject } from "react";
 
 interface CardShowcase {
   cardData: AlbumCaching[];
@@ -18,12 +17,10 @@ interface CardShowcase {
   error: string | null;
   refresh: () => void;
   retry: () => void;
-  currentPage: number;
-  totalItems: number;
 }
 
 
-const CardShowcase = ({ cardData, selectedCard, setSelectedCard, loading, hasMore, loadMore, triggerRef, isEnd, initialLoading, isEmpty, error, refresh, retry, currentPage, totalItems }: CardShowcase) => {
+const CardShowcase = ({ cardData, selectedCard, setSelectedCard, loading, hasMore, loadMore, triggerRef, isEnd, initialLoading, isEmpty, error, refresh, retry }: CardShowcase) => {
 
   console.log("Check data: ", cardData);
 

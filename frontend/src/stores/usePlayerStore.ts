@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Song, type Album } from "../types";
+import { Song } from "../types";
 import { useChatStore } from "./useChatStore";
 import { axiosIntance } from "../lib/axios";
 import _ from "lodash";
@@ -84,7 +84,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
     }
 
 
-    let song = <Song> {};
+    let song = <Song>{};
 
     if (get().queue && !_.isEqual(get().queue, songs)) {
       if (startIndex === 0) {

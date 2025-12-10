@@ -28,7 +28,7 @@ const CarouselDouble = ({ data }: { data: AlbumCaching[] }) => {
   }, []);
 
 
-  const scroll = (dir: any) => {
+  const scroll = (dir: unknown) => {
     if (scrollRef && scrollRef.current) {
       const container = scrollRef.current;
       const scrollAmount = 320;
@@ -39,7 +39,7 @@ const CarouselDouble = ({ data }: { data: AlbumCaching[] }) => {
   // console.log("CHECK: ", atStart, ' - ', atEnd);
 
   const chunkSize = 2;
-  const reMakeData = data.reduce<AlbumCaching[][]>((acc, item, index) => {
+  const reMakeData = data.reduce<AlbumCaching[][]>((acc, _item, index) => {
     if (index % chunkSize === 0) {
       acc.push(data.slice(index, index + chunkSize));
     }
@@ -67,7 +67,7 @@ const CarouselDouble = ({ data }: { data: AlbumCaching[] }) => {
           )}
         >
           {
-            reMakeData.map((group: any, i: number) => (
+            reMakeData.map((group: unknown, i: number) => (
               <CarouselCardGroup key={i} group={group} />
             ))}
         </div>

@@ -6,7 +6,6 @@ import { useAlbumStore } from "../../stores/useAlbumStore";
 import type { AlbumCaching } from "../../types";
 import _ from "lodash";
 import { usePlayerStore } from "../../stores/usePlayerStore";
-import { useUIStore } from "../../stores/useUIStore";
 import useUpdateMainSize from "../../hooks/useUpdateMainSize";
 import clsx from "clsx";
 
@@ -18,7 +17,6 @@ const ShowAllAlbum = () => {
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [albums, setAlbums] = useState<null | AlbumCaching[]>();
-  const [layout, setLayout] = useState<string>('');
 
 
 

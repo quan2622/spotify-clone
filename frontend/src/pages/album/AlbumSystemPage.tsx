@@ -11,7 +11,6 @@ import {
   Play,
 } from "lucide-react";
 import { usePlayerStore } from "../../stores/usePlayerStore";
-import SuggestionAlbum_User from "./components/SuggestionAlbum_User";
 import {
   DropdownMenu,
   DropdownMenuContent,

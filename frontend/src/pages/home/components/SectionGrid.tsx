@@ -6,8 +6,6 @@ import PlayButton from "./PlayButton";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "../../../components/ui/carousel";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Card, CardContent } from "../../../components/ui/card";
-import { useUIStore } from "../../../stores/useUIStore";
-import { useEffect, useState } from "react";
 import useUpdateMainSize from "../../../hooks/useUpdateMainSize";
 
 const CustomArrow = ({ direction }: { direction: "prev" | "next" }) => {
