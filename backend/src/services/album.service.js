@@ -6,7 +6,7 @@ import { User } from "../models/user.model.js";
 import { Artist } from "../models/artist.model.js";
 import AppError from "../utils/AppError.js";
 import _ from "lodash";
-import { startOfDay, startOfMonth, startOfToday, subDays } from "date-fns";
+import { endOfToday, startOfDay, startOfMonth, startOfToday, subDays } from "date-fns";
 import { ListenHistory } from "../models/History.model.js";
 
 const getAllAlbums = async (clerkId, option) => {
@@ -375,7 +375,7 @@ const getRecommendedAlbums = async (userId, page = 1, pageSize = 10) => {
 const getPopularAlbums = async (page = 1, pageSize = 10) => {
   try {
     const start = startOfMonth(new Date());
-    const end = startOfToday(new Date());
+    const end = endOfToday(new Date());
 
     const LIMIT = pageSize;
     const SKIP = (page - 1) * LIMIT;

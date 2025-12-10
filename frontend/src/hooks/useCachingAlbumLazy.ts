@@ -22,7 +22,7 @@ const useCachingAlbumLazy = ({
   pageSize = 10,
   threshold = 0.1,
   rootMargin = '100px',
-  debounceDelay = 300,
+  debounceDelay = 100,
   enabled = true,
 }: UseCachingAlbumLazyOptions = {}) => {
   const { fetchDataNewRelease, releaseAlbum } = useAlbumStore();
